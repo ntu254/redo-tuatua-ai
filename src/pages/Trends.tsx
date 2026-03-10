@@ -80,25 +80,6 @@ const Trends = () => {
         <AITrendInsights />
         <TrendInspirationGrid />
 
-        {/* CTA */}
-        <section className="border-t border-border">
-          <div className="container mx-auto max-w-3xl px-6 py-20 text-center">
-            <p className="editorial-label mb-4">AI-Powered Styling</p>
-            <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground mb-4">
-              Create outfits inspired by <span className="italic">trends</span>
-            </h2>
-            <p className="font-body text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Let StyleAI generate personalized outfits based on the trends you love.
-            </p>
-            <button
-              onClick={() => navigate("/recommender")}
-              className="inline-flex items-center gap-2 bg-foreground text-background px-8 py-3.5 text-[10px] font-body font-medium uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors"
-            >
-              <Wand2 className="w-3.5 h-3.5" />
-              Generate Outfit from Trends
-            </button>
-          </div>
-        </section>
       </div>
 
       <Footer />
