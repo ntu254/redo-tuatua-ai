@@ -191,7 +191,7 @@ const Recommender = () => {
           </div>
 
           {/* Outfit cards - scrollable */}
-          <div className="flex-1 overflow-y-auto px-8 py-5 grid grid-cols-2 gap-5 auto-rows-min content-start">
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
             {sampleOutfits.map(outfit => (
               <motion.div key={outfit.id}
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
