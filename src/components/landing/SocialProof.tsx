@@ -34,10 +34,10 @@ const SocialProof = () => (
     {/* Stats strip */}
     <div className="mag-grid grid-cols-2 md:grid-cols-4 border-t border-border">
       {stats.map((s, i) => (
-        <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-          className="py-14 text-center">
-          <p className="font-heading text-4xl md:text-5xl font-light text-foreground">{s.value}</p>
+        <motion.div key={s.label} initial={{ opacity: 0, y: 30, scale: 0.95 }} whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }} transition={{ delay: i * 0.1, type: "spring", damping: 20 }}
+          className="py-14 text-center group cursor-default">
+          <p className="font-heading text-4xl md:text-5xl font-semibold text-foreground group-hover:text-accent transition-colors duration-500">{s.value}</p>
           <p className="editorial-label mt-3">{s.label}</p>
         </motion.div>
       ))}
@@ -46,22 +46,27 @@ const SocialProof = () => (
     {/* Testimonials */}
     <div className="border-t border-border">
       <div className="px-6 py-16 text-center">
-        <p className="editorial-label mb-4">Người dùng nói gì</p>
-        <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
+        <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          className="editorial-label mb-4">Người dùng nói gì</motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="font-heading text-3xl md:text-4xl font-medium text-foreground">
           Được yêu thích bởi <span className="italic">tín đồ thời trang</span>
-        </h2>
+        </motion.h2>
       </div>
 
       <div className="mag-grid grid-cols-1 md:grid-cols-3">
         {testimonials.map((t, i) => (
-          <motion.div key={t.author} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-            className="p-8 md:p-10 flex flex-col">
-            <Quote className="w-6 h-6 text-accent/30 mb-5" />
+          <motion.div key={t.author} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ delay: i * 0.12, type: "spring", damping: 20 }}
+            className="p-8 md:p-10 flex flex-col group hover:bg-secondary/30 transition-colors duration-500">
+            <Quote className="w-6 h-6 text-accent/30 mb-5 group-hover:text-accent/60 transition-colors" />
             <p className="text-sm font-body text-foreground leading-relaxed mb-6 flex-1">{t.text}</p>
             <div className="flex items-center gap-1 mb-3">
               {Array.from({ length: t.rating }).map((_, j) => (
-                <Star key={j} className="w-3.5 h-3.5 fill-accent text-accent" />
+                <motion.div key={j} initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }} transition={{ delay: i * 0.1 + j * 0.05 }}>
+                  <Star className="w-3.5 h-3.5 fill-accent text-accent" />
+                </motion.div>
               ))}
             </div>
             <div>

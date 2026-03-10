@@ -32,35 +32,45 @@ const HowItWorks = () => (
   <section id="how-it-works" className="py-0 bg-background">
     <div className="mag-grid grid-cols-1 md:grid-cols-[280px_1fr]">
       {/* Left label */}
-      <div className="flex items-center justify-center p-12 md:p-16 bg-off-white">
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center justify-center p-12 md:p-16 bg-off-white"
+      >
         <div>
           <p className="editorial-label mb-4">Cách hoạt động</p>
-          <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground leading-tight">
+          <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground leading-tight">
             Ba bước để có<br /><span className="italic">outfit hoàn hảo</span>
           </h2>
           <div className="editorial-divider mt-6" />
         </div>
-      </div>
+      </motion.div>
 
       {/* Right — 3 cards */}
       <div className="mag-grid grid-cols-1 md:grid-cols-3">
         {steps.map((step, i) => (
           <motion.div
             key={step.title}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.12, duration: 0.5 }}
-            className={`${step.bg} p-8 md:p-10 flex flex-col justify-between min-h-[320px]`}
+            transition={{ delay: i * 0.15, type: "spring", damping: 20 }}
+            className={`${step.bg} p-8 md:p-10 flex flex-col justify-between min-h-[320px] group hover:shadow-lg transition-shadow duration-500`}
           >
             <div>
               <span className="editorial-label">{step.num}</span>
-              <div className={`mt-6 mb-5 ${step.accent}`}>
+              <motion.div
+                className={`mt-6 mb-5 ${step.accent}`}
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <step.icon className="w-7 h-7" strokeWidth={1.5} />
-              </div>
+              </motion.div>
             </div>
             <div>
-              <h3 className="font-heading text-xl font-medium text-foreground mb-3">{step.title}</h3>
+              <h3 className="font-heading text-xl font-semibold text-foreground mb-3">{step.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed font-body">{step.desc}</p>
             </div>
           </motion.div>
