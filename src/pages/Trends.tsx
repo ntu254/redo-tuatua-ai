@@ -3,6 +3,7 @@ import { Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import trendsHeroBg from "@/assets/trends-hero-bg.jpg";
 import TrendingSearches from "@/components/trends/TrendingSearches";
 import TrendingColors from "@/components/trends/TrendingColors";
 import TrendingItems from "@/components/trends/TrendingItems";
