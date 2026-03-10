@@ -7,7 +7,7 @@ const navLinks = [
   { label: "Trang chủ", href: "/" },
   { label: "Phối đồ", href: "/recommender" },
   { label: "Tủ đồ", href: "/wardrobe" },
-  { label: "Lookbook", href: "/lookbook" },
+  { label: "Style Profile", href: "/style-profile" },
   { label: "Xu hướng", href: "/trends" },
 ];
 

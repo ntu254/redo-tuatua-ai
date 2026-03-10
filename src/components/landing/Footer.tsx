@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const cols = [
   { title: "Products", links: [
     { label: "Outfits", href: "/recommender" },
-    { label: "Lookbook", href: "/lookbook" },
+    { label: "Style Profile", href: "/style-profile" },
     { label: "Style Quiz", href: "/quiz" },
     { label: "Trends", href: "/trends" },
   ]},
