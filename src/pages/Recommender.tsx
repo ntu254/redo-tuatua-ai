@@ -79,25 +79,22 @@ const Recommender = () => {
   const [activeFilter, setActiveFilter] = useState("Tất cả");
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-off-white">
       <Navbar />
       <div className="pt-16 flex h-screen">
-        {/* AI Chat Sidebar */}
         <ChatSidebar isOpen={chatOpen} onToggle={() => setChatOpen(!chatOpen)} />
 
-        {/* Right panel — outfit suggestions */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <OutfitHeader
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
-          />
+          <OutfitHeader activeFilter={activeFilter} onFilterChange={setActiveFilter} />
 
-          {/* Outfit cards grid */}
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-              {sampleOutfits.map((outfit, i) => (
-                <OutfitCard key={outfit.id} outfit={outfit} index={i} />
-              ))}
+          {/* Outfit grid with generous spacing */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-8 xl:px-10">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-7">
+                {sampleOutfits.map((outfit, i) => (
+                  <OutfitCard key={outfit.id} outfit={outfit} index={i} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
