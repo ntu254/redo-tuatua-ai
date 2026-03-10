@@ -106,21 +106,22 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
             </motion.button>
           </motion.div>
 
-          {/* Bottom badges — positioned at bottom-left so they don't cover the image */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-            <span className="bg-foreground/75 text-background text-[10px] font-body font-medium px-2.5 py-1 rounded-lg backdrop-blur-md">
-              {outfit.style}
-            </span>
-            {outfit.aiMatch && (
-              <span className="bg-accent text-accent-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm shadow-accent/30">
-                <Sparkles className="w-3 h-3" /> Best Match
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Right: content */}
         <div className="flex-1 p-5 xl:p-6 flex flex-col min-w-0">
+          {/* Labels above title */}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="bg-secondary text-foreground text-[10px] font-body font-medium px-2.5 py-1 rounded-lg border border-border">
+              {outfit.style}
+            </span>
+            {outfit.aiMatch && (
+              <span className="bg-accent text-accent-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                <Sparkles className="w-3 h-3" /> Best Match
+              </span>
+            )}
+          </div>
+
           {/* Title */}
           <div className="flex items-start justify-between mb-3">
             <h3 className="font-heading text-xl font-semibold text-foreground leading-tight">
