@@ -219,27 +219,27 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/60">
-            <div>
-              <p className="text-[10px] font-body text-muted-foreground uppercase tracking-[0.15em] mb-0.5">
+          <div className="grid grid-cols-[1fr_auto] items-end gap-3 mt-4 pt-4 border-t border-border/60">
+            <div className="leading-none">
+              <p className="text-[10px] font-body text-muted-foreground uppercase tracking-[0.15em] mb-1.5">
                 Estimated total
               </p>
               <p className="text-lg font-heading font-bold text-accent">
                 {outfit.totalPrice}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-[11px] rounded-xl px-3.5 h-8 gap-1.5 hover:shadow-sm active:scale-95 transition-all"
+                className="text-[11px] rounded-xl px-3.5 h-9 min-w-[112px] gap-1.5 whitespace-nowrap hover:shadow-sm active:scale-95 transition-all"
               >
                 <RefreshCw className="w-3 h-3" /> Replace
               </Button>
               <Button
                 variant="accent"
                 size="sm"
-                className="text-[11px] rounded-xl px-4 h-8 gap-1.5 shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all"
+                className="text-[11px] rounded-xl px-4 h-9 min-w-[132px] gap-1.5 whitespace-nowrap shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all"
               >
                 <ShoppingCart className="w-3 h-3" /> Buy Outfit
               </Button>
