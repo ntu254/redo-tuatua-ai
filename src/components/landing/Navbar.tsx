@@ -1,0 +1,88 @@
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Sparkles, Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const Navbar = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = [
+    { label: "Trang chủ", href: "/" },
+    { label: "Phối đồ", href: "/recommender" },
+    { label: "Phong cách", href: "/lookbook" },
+    { label: "Xu hướng", href: "/trends" },
+  ];
+
+  return (
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-card/80 backdrop-blur-xl border-b border-border/50"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="container mx-auto flex items-center justify-between h-16 px-4">
+        <Link to="/" className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-accent" />
+          <span className="font-heading font-semibold text-lg text-foreground">
+            StyleAI
+          </span>
+        </Link>
+
+        <div className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-body"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="hidden md:block">
+          <Button variant="accent" size="sm" className="gap-2">
+            Thử ngay miễn phí
+            <Sparkles className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+
+        <button
+          className="md:hidden text-foreground"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
+
+      {mobileOpen && (
+        <div className="md:hidden bg-card/95 backdrop-blur-xl border-b border-border px-4 py-4 space-y-3">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              className="block text-sm text-muted-foreground hover:text-foreground py-2"
+              onClick={() => setMobileOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Button variant="accent" size="sm" className="w-full gap-2">
+            Thử ngay miễn phí
+            <Sparkles className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+export default Navbar;
