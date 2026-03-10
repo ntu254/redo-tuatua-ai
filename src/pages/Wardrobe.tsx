@@ -132,7 +132,7 @@ const Wardrobe = () => {
                   className="gap-1.5 rounded-xl h-10 px-4 shrink-0"
                   onClick={() => setUploadOpen(true)}
                 >
-                  <Plus className="w-4 h-4" /> Add Item
+                  <Plus className="w-4 h-4" /> Thêm món đồ
                 </Button>
               </div>
 
