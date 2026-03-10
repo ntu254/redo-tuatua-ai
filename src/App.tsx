@@ -9,7 +9,7 @@ import Recommender from "./pages/Recommender.tsx";
 import Wardrobe from "./pages/Wardrobe.tsx";
 import Analysis from "./pages/Analysis.tsx";
 import Trends from "./pages/Trends.tsx";
-import Lookbook from "./pages/Lookbook.tsx";
+import StyleProfile from "./pages/StyleProfile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
