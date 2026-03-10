@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 
 const items = [
-  { type: "Shirt", name: "Áo sơ mi denim xanh nhạt", price: "245.000đ", originalPrice: "350.000đ", platform: "Shopee", rating: 4.8 },
-  { type: "Pants", name: "Quần âu slim-fit xám", price: "380.000đ", originalPrice: "520.000đ", platform: "Lazada", rating: 4.7 },
-  { type: "Shoes", name: "Sneaker trắng low-top", price: "329.000đ", originalPrice: "450.000đ", platform: "Tiki", rating: 4.9 },
-  { type: "Bag", name: "Túi xách tote canvas beige", price: "135.000đ", originalPrice: "200.000đ", platform: "Shopee", rating: 4.5 },
+  { type: "Áo", name: "Áo sơ mi denim xanh nhạt", price: "245.000đ", originalPrice: "350.000đ", platform: "Shopee", rating: 4.8 },
+  { type: "Quần", name: "Quần âu slim-fit xám", price: "380.000đ", originalPrice: "520.000đ", platform: "Lazada", rating: 4.7 },
+  { type: "Giày", name: "Sneaker trắng low-top", price: "329.000đ", originalPrice: "450.000đ", platform: "Tiki", rating: 4.9 },
+  { type: "Túi", name: "Túi xách tote canvas beige", price: "135.000đ", originalPrice: "200.000đ", platform: "Shopee", rating: 4.5 },
 ];
 
 const platformColors: Record<string, string> = {
@@ -19,9 +19,9 @@ const platformColors: Record<string, string> = {
 const OutfitGenerator = () => (
   <section className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
-      <p className="editorial-label mb-4">AI Outfit Generator</p>
+      <p className="editorial-label mb-4">AI tạo outfit</p>
       <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
-        Your AI-curated <span className="italic">complete outfit</span>
+        Outfit <span className="italic">hoàn chỉnh</span> từ AI
       </h2>
     </div>
 
@@ -29,20 +29,20 @@ const OutfitGenerator = () => (
       {/* Left — outfit image */}
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
         className="relative mag-img-zoom aspect-square lg:aspect-auto lg:min-h-[600px]">
-        <img src={outfitImg} alt="AI generated outfit flatlay" className="w-full h-full object-cover" />
+        <img src={outfitImg} alt="Outfit do AI tạo" className="w-full h-full object-cover" />
         <div className="absolute top-6 left-6 bg-accent text-accent-foreground px-4 py-2">
-          <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI Generated</p>
+          <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI tạo</p>
         </div>
         <div className="absolute bottom-6 left-6 right-6 flex gap-2">
           <span className="bg-background/90 backdrop-blur-sm px-3 py-1.5 text-[10px] font-body font-medium uppercase tracking-wider text-foreground">Casual Chic</span>
-          <span className="bg-background/90 backdrop-blur-sm px-3 py-1.5 text-[10px] font-body font-medium uppercase tracking-wider text-foreground">Weekend</span>
+          <span className="bg-background/90 backdrop-blur-sm px-3 py-1.5 text-[10px] font-body font-medium uppercase tracking-wider text-foreground">Cuối tuần</span>
         </div>
       </motion.div>
 
       {/* Right — item list */}
       <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-        <p className="editorial-label mb-2">Items in this outfit</p>
-        <p className="text-sm text-muted-foreground font-body mb-8">Total: <span className="font-semibold text-foreground">1.089.000đ</span></p>
+        <p className="editorial-label mb-2">Sản phẩm trong outfit</p>
+        <p className="text-sm text-muted-foreground font-body mb-8">Tổng: <span className="font-semibold text-foreground">1.089.000đ</span></p>
 
         <div className="space-y-0 border-t border-border">
           {items.map((item, i) => (
@@ -75,13 +75,13 @@ const OutfitGenerator = () => (
 
         <div className="flex flex-wrap gap-3 mt-8">
           <Button variant="accent" className="gap-2">
-            <ShoppingCart className="w-3.5 h-3.5" /> Buy All Items
+            <ShoppingCart className="w-3.5 h-3.5" /> Mua tất cả
           </Button>
           <Button variant="outline" className="gap-2">
-            <ArrowLeftRight className="w-3.5 h-3.5" /> Replace Item
+            <ArrowLeftRight className="w-3.5 h-3.5" /> Thay sản phẩm
           </Button>
           <Button variant="outline" className="gap-2">
-            <RefreshCcw className="w-3.5 h-3.5" /> Regenerate
+            <RefreshCcw className="w-3.5 h-3.5" /> Tạo lại
           </Button>
         </div>
       </div>

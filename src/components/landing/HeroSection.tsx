@@ -29,33 +29,33 @@ const HeroSection = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-coral-light mb-8">
               <Sparkles className="w-3.5 h-3.5 text-accent" />
-              <span className="text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-accent">AI-Powered Fashion</span>
+              <span className="text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-accent">Thời trang AI</span>
             </motion.div>
 
             <h1 className="font-heading text-5xl md:text-6xl xl:text-7xl font-semibold leading-[1.05] tracking-[-0.01em] text-foreground mb-8">
               <span className={`block ${revealed ? "blur-text-reveal" : "opacity-0"}`}>
-                Find Your Perfect
+                Tìm Outfit Hoàn Hảo
               </span>
               <span className={`block italic font-medium ${revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"}`}>
-                Outfit with AI
+                Với Trợ Lý AI
               </span>
             </h1>
 
             <p className={`text-muted-foreground text-base leading-relaxed max-w-md font-body mb-10 ${revealed ? "blur-text-reveal blur-text-reveal-delay-2" : "opacity-0"}`}>
-              Describe your style and get instant outfit suggestions with shopping links from Shopee, Lazada, Tiki and more.
+              Mô tả phong cách của bạn và nhận gợi ý outfit ngay lập tức kèm link mua hàng từ Shopee, Lazada, Tiki và nhiều sàn khác.
             </p>
 
             <div className={`flex flex-col sm:flex-row gap-3 mb-14 ${revealed ? "blur-text-reveal blur-text-reveal-delay-3" : "opacity-0"}`}>
               <Button variant="accent" size="lg" className="gap-2">
-                Get AI Outfit Suggestions <ArrowRight className="w-3.5 h-3.5" />
+                Nhận gợi ý outfit AI <ArrowRight className="w-3.5 h-3.5" />
               </Button>
-              <Button variant="hero-outline" size="lg">See how it works</Button>
+              <Button variant="hero-outline" size="lg">Xem cách hoạt động</Button>
             </div>
 
             {/* Mini chat preview */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
               className={`bg-off-white border border-border p-5 max-w-md ${revealed ? "" : "opacity-0"}`}>
-              <p className="editorial-label mb-4">AI Stylist Preview</p>
+              <p className="editorial-label mb-4">Xem trước AI Stylist</p>
               <div className="space-y-3 mb-4">
                 {chatMessages.map((m, i) => (
                   <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -88,7 +88,7 @@ const HeroSection = () => {
               className="relative">
               {/* Main hero image */}
               <div className="mag-img-zoom aspect-[3/4] max-h-[85vh]">
-                <img src={heroImg} alt="Fashion editorial - AI styled outfit" className="w-full h-full object-cover" loading="eager" />
+                <img src={heroImg} alt="Thời trang editorial - Outfit được AI phối" className="w-full h-full object-cover" loading="eager" />
               </div>
 
               {/* Floating outfit card */}
@@ -97,13 +97,13 @@ const HeroSection = () => {
                 className="absolute -left-12 bottom-24 bg-background border border-border p-4 shadow-lg w-56">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 overflow-hidden">
-                    <img src={outfitImg} alt="Outfit suggestion" className="w-full h-full object-cover" />
+                    <img src={outfitImg} alt="Gợi ý outfit" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <p className="text-[10px] font-body font-semibold text-foreground">Casual Chic Set</p>
                     <div className="flex items-center gap-1 mt-0.5">
                       <Star className="w-2.5 h-2.5 fill-accent text-accent" />
-                      <span className="text-[9px] font-body text-muted-foreground">4.8 · AI Match 96%</span>
+                      <span className="text-[9px] font-body text-muted-foreground">4.8 · AI phù hợp 96%</span>
                     </div>
                   </div>
                 </div>
@@ -119,7 +119,7 @@ const HeroSection = () => {
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
                 className="absolute top-8 -left-6 bg-accent text-accent-foreground px-4 py-2">
-                <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI Styled</p>
+                <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI phối đồ</p>
               </motion.div>
             </motion.div>
           </div>
@@ -129,7 +129,7 @@ const HeroSection = () => {
       {/* Partners bar */}
       <div className="border-t border-b border-border">
         <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="editorial-label">Products from top e-commerce platforms</p>
+          <p className="editorial-label">Sản phẩm từ các sàn thương mại điện tử hàng đầu</p>
           <div className="flex items-center gap-8 md:gap-12">
             {[
               { name: "Shopee", color: "text-shopee" },

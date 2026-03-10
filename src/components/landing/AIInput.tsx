@@ -3,16 +3,16 @@ import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 
 const placeholders = [
-  "I need an outfit for a coffee date…",
-  "Suggest a light office outfit…",
-  "Mix streetwear under 500k…",
-  "What should I wear tonight?",
+  "Tôi cần outfit đi cà phê cuối tuần…",
+  "Gợi ý outfit công sở nhẹ nhàng…",
+  "Mix streetwear dưới 500k…",
+  "Tối nay mặc gì đây?",
 ];
 
 const sampleResponses = [
-  { text: "☕ Here are 3 casual chic options for your coffee date!", items: ["White linen shirt", "Beige chinos", "Canvas sneakers"] },
-  { text: "💼 Clean and professional — try these combos!", items: ["Silk blouse", "Tailored pants", "Oxford shoes"] },
-  { text: "🔥 Streetwear under budget? Got you!", items: ["Graphic hoodie", "Cargo pants", "Chunky sneakers"] },
+  { text: "☕ Đây là 3 gợi ý casual chic cho buổi cà phê!", items: ["Áo linen trắng", "Quần chinos be", "Sneaker canvas"] },
+  { text: "💼 Thanh lịch và chuyên nghiệp — thử những bộ này!", items: ["Áo blouse lụa", "Quần âu", "Giày oxford"] },
+  { text: "🔥 Streetwear trong ngân sách? Có ngay!", items: ["Hoodie graphic", "Quần cargo", "Chunky sneaker"] },
 ];
 
 const AIInput = () => {
@@ -46,13 +46,13 @@ const AIInput = () => {
         {/* Left label */}
         <div className="flex items-center justify-center p-12 md:p-16 bg-secondary">
           <div>
-            <p className="editorial-label mb-4">AI Stylist Chat</p>
+            <p className="editorial-label mb-4">Chat với AI Stylist</p>
             <h2 className="font-heading text-3xl font-light text-foreground leading-tight">
-              Ask your<br /><span className="italic">AI Stylist</span>
+              Hỏi<br /><span className="italic">AI Stylist</span>
             </h2>
             <div className="editorial-divider mt-6" />
             <p className="text-sm text-muted-foreground font-body mt-4 max-w-[220px] leading-relaxed">
-              Type any idea — AI suggests the perfect outfit instantly
+              Nhập ý tưởng bất kỳ — AI gợi ý outfit hoàn hảo ngay lập tức
             </p>
           </div>
         </div>
@@ -88,7 +88,7 @@ const AIInput = () => {
 
             {/* Quick tags */}
             <div className="flex flex-wrap gap-2">
-              {["Coffee date ☕", "Date night 💕", "Office look 💼", "Travel ✈️", "Party 🎉"].map(tag => (
+              {["Đi cà phê ☕", "Hẹn hò 💕", "Đi làm 💼", "Du lịch ✈️", "Dự tiệc 🎉"].map(tag => (
                 <button key={tag} onClick={() => setText(tag)}
                   className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground border border-border px-4 py-2 hover:border-accent hover:text-accent transition-all">{tag}</button>
               ))}

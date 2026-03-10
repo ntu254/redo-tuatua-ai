@@ -2,29 +2,29 @@ import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 
 const stats = [
-  { value: "12,400+", label: "Active Users" },
-  { value: "50K+", label: "Outfits Generated" },
-  { value: "5", label: "Shopping Platforms" },
-  { value: "98%", label: "Satisfaction Rate" },
+  { value: "12.400+", label: "Người dùng" },
+  { value: "50K+", label: "Outfit đã tạo" },
+  { value: "5", label: "Sàn TMĐT" },
+  { value: "98%", label: "Hài lòng" },
 ];
 
 const testimonials = [
   {
-    text: "StyleAI completely changed how I shop. I save hours every week and my outfits always get compliments!",
+    text: "StyleAI thay đổi hoàn toàn cách mình mua sắm. Tiết kiệm hàng giờ mỗi tuần và outfit luôn được khen!",
     author: "Minh Anh",
-    role: "Fashion Enthusiast",
+    role: "Tín đồ thời trang",
     rating: 5,
   },
   {
-    text: "The AI suggestions are scarily accurate. It knows my style better than I do. And the shopping links make it so easy.",
+    text: "Gợi ý của AI chính xác đến đáng sợ. Nó hiểu phong cách mình hơn cả chính mình. Link mua hàng cũng rất tiện.",
     author: "Thu Hà",
-    role: "Content Creator",
+    role: "Nhà sáng tạo nội dung",
     rating: 5,
   },
   {
-    text: "As a busy professional, this app is a lifesaver. Perfect office outfits in seconds, all within my budget.",
+    text: "Là người bận rộn, app này cứu mình. Outfit công sở hoàn hảo trong vài giây, đều trong ngân sách.",
     author: "Đức Trung",
-    role: "Marketing Manager",
+    role: "Quản lý Marketing",
     rating: 5,
   },
 ];
@@ -46,9 +46,9 @@ const SocialProof = () => (
     {/* Testimonials */}
     <div className="border-t border-border">
       <div className="px-6 py-16 text-center">
-        <p className="editorial-label mb-4">What Users Say</p>
+        <p className="editorial-label mb-4">Người dùng nói gì</p>
         <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
-          Loved by <span className="italic">fashion enthusiasts</span>
+          Được yêu thích bởi <span className="italic">tín đồ thời trang</span>
         </h2>
       </div>
 

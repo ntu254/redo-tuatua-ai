@@ -8,20 +8,20 @@ import athleisureImg from "@/assets/style-athleisure-new.jpg";
 import dateNightImg from "@/assets/style-datenight-new.jpg";
 
 const styles = [
-  { label: "Casual", image: casualImg, tag: "Everyday" },
-  { label: "Streetwear", image: streetImg, tag: "Urban" },
-  { label: "Minimal", image: minimalImg, tag: "Clean" },
-  { label: "Office", image: officeImg, tag: "Professional" },
-  { label: "Athleisure", image: athleisureImg, tag: "Active" },
-  { label: "Date Night", image: dateNightImg, tag: "Elegant" },
+  { label: "Casual", image: casualImg, tag: "Hàng ngày" },
+  { label: "Streetwear", image: streetImg, tag: "Đường phố" },
+  { label: "Minimal", image: minimalImg, tag: "Tối giản" },
+  { label: "Công sở", image: officeImg, tag: "Chuyên nghiệp" },
+  { label: "Athleisure", image: athleisureImg, tag: "Năng động" },
+  { label: "Hẹn hò", image: dateNightImg, tag: "Thanh lịch" },
 ];
 
 const StyleExplorer = () => (
   <section className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
-      <p className="editorial-label mb-4">Style Explorer</p>
+      <p className="editorial-label mb-4">Khám phá phong cách</p>
       <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
-        Discover your <span className="italic">fashion identity</span>
+        Tìm kiếm <span className="italic">bản sắc thời trang</span>
       </h2>
     </div>
 
@@ -43,7 +43,7 @@ const StyleExplorer = () => (
             <span className="text-[9px] font-body uppercase tracking-[0.3em] text-background/60 mb-1">{s.tag}</span>
             <p className="font-heading text-xl italic text-background mb-3">{s.label}</p>
             <div className="flex items-center gap-1.5 text-background/70 group-hover:text-accent transition-colors">
-              <span className="text-[10px] font-body font-medium uppercase tracking-wider">Explore outfits</span>
+              <span className="text-[10px] font-body font-medium uppercase tracking-wider">Xem outfit</span>
               <ArrowRight className="w-3 h-3" />
             </div>
           </div>

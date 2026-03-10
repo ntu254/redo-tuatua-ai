@@ -1,24 +1,24 @@
 import { Link } from "react-router-dom";
 
 const cols = [
-  { title: "Products", links: [
-    { label: "Outfits", href: "/recommender" },
-    { label: "Style Profile", href: "/style-profile" },
-    { label: "Style Quiz", href: "/quiz" },
-    { label: "Trends", href: "/trends" },
+  { title: "Sản phẩm", links: [
+    { label: "Phối đồ", href: "/recommender" },
+    { label: "Hồ sơ phong cách", href: "/style-profile" },
+    { label: "Quiz phong cách", href: "/quiz" },
+    { label: "Xu hướng", href: "/trends" },
   ]},
-  { title: "Platforms", links: [
+  { title: "Nền tảng", links: [
     { label: "Shopee", href: "#" },
     { label: "Lazada", href: "#" },
     { label: "Tiki", href: "#" },
     { label: "Zalora", href: "#" },
     { label: "TikTok Shop", href: "#" },
   ]},
-  { title: "Support", links: [
-    { label: "How it works", href: "#" },
-    { label: "FAQ", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "Terms", href: "#" },
+  { title: "Hỗ trợ", links: [
+    { label: "Cách hoạt động", href: "#" },
+    { label: "Câu hỏi thường gặp", href: "#" },
+    { label: "Liên hệ", href: "#" },
+    { label: "Điều khoản", href: "#" },
   ]},
 ];
 
@@ -28,7 +28,7 @@ const Footer = () => (
       <div className="p-10 md:p-12">
         <span className="font-heading text-2xl italic text-foreground">StyleAI</span>
         <p className="text-xs text-muted-foreground font-body leading-relaxed mt-4 max-w-[200px]">
-          AI-powered outfit styling — making personal fashion easier than ever.
+          Trợ lý phối đồ AI — giúp thời trang cá nhân trở nên dễ dàng hơn bao giờ hết.
         </p>
       </div>
       {cols.map(c => (
@@ -43,8 +43,8 @@ const Footer = () => (
       ))}
     </div>
     <div className="border-t border-border px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">© 2026 StyleAI. All rights reserved.</p>
-      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">Built with Lovable ❤️</p>
+      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">© 2026 StyleAI. Bảo lưu mọi quyền.</p>
+      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">Xây dựng với Lovable ❤️</p>
     </div>
   </footer>
 );

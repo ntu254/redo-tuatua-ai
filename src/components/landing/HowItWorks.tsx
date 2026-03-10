@@ -4,24 +4,24 @@ import { motion } from "framer-motion";
 const steps = [
   {
     icon: ClipboardList,
-    title: "Take a Style Quiz",
-    desc: "Answer quick questions or upload your wardrobe items. Tell us your vibe, budget, and occasion.",
+    title: "Làm bài quiz phong cách",
+    desc: "Trả lời vài câu hỏi nhanh hoặc tải lên tủ đồ. Cho chúng tôi biết vibe, ngân sách và dịp mặc.",
     accent: "text-accent",
     bg: "bg-coral-light",
     num: "01",
   },
   {
     icon: Wand2,
-    title: "AI Creates Outfits",
-    desc: "Our AI generates complete outfit combinations — top, bottom, shoes, accessories — matched to your style.",
+    title: "AI tạo outfit",
+    desc: "AI tạo bộ outfit hoàn chỉnh — áo, quần, giày, phụ kiện — phù hợp với phong cách của bạn.",
     accent: "text-teal",
     bg: "bg-teal-light",
     num: "02",
   },
   {
     icon: ShoppingBag,
-    title: "Shop Instantly",
-    desc: "Every item links to the best deals on Shopee, Lazada, Tiki, Zalora. Buy with one click.",
+    title: "Mua sắm ngay",
+    desc: "Mỗi sản phẩm đều có link giá tốt nhất trên Shopee, Lazada, Tiki, Zalora. Mua chỉ với một click.",
     accent: "text-foreground",
     bg: "bg-secondary",
     num: "03",
@@ -34,9 +34,9 @@ const HowItWorks = () => (
       {/* Left label */}
       <div className="flex items-center justify-center p-12 md:p-16 bg-off-white">
         <div>
-          <p className="editorial-label mb-4">How It Works</p>
+          <p className="editorial-label mb-4">Cách hoạt động</p>
           <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground leading-tight">
-            Three steps to<br /><span className="italic">your perfect outfit</span>
+            Ba bước để có<br /><span className="italic">outfit hoàn hảo</span>
           </h2>
           <div className="editorial-divider mt-6" />
         </div>
