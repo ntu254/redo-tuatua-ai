@@ -85,7 +85,7 @@ const StylePicker = () => {
               <img src={current.image} alt={current.label} className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-foreground/50 to-transparent">
                 <p className="text-[10px] font-body uppercase tracking-[0.3em] text-background/60">{current.tagline}</p>
-                <p className="font-heading text-4xl italic text-background">{current.label}</p>
+                <p className="font-heading text-4xl font-medium text-background">{current.label}</p>
               </div>
               <div className="absolute top-6 right-6 flex gap-2">
                 {current.swatches.map(c => <span key={c} className="w-5 h-5 border border-background/30" style={{ backgroundColor: c }} />)}

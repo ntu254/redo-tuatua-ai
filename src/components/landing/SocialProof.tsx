@@ -50,7 +50,7 @@ const SocialProof = () => (
           className="editorial-label mb-4">Người dùng nói gì</motion.p>
         <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="font-heading text-3xl md:text-4xl font-medium text-foreground">
-          Được yêu thích bởi <span className="italic">tín đồ thời trang</span>
+          Được yêu thích bởi <span className="font-semibold">tín đồ thời trang</span>
         </motion.h2>
       </div>
 
