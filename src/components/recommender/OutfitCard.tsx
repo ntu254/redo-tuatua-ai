@@ -123,17 +123,10 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
           </div>
 
           {/* Title */}
-          <div className="flex items-start justify-between mb-3">
+          <div className="mb-3">
             <h3 className="font-heading text-xl font-semibold text-foreground leading-tight">
               {outfit.title} {outfit.emoji}
             </h3>
-            <motion.button
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.4 }}
-              className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors shrink-0"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </motion.button>
           </div>
 
           {/* AI comment */}
