@@ -222,22 +222,13 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-[11px] rounded-xl px-3.5 h-9 gap-1.5 whitespace-nowrap hover:shadow-sm active:scale-95 transition-all flex-1 sm:flex-none"
-              >
-                <RefreshCw className="w-3 h-3" /> Replace
-              </Button>
-              <Button
-                variant="accent"
-                size="sm"
-                className="text-[11px] rounded-xl px-4 h-9 gap-1.5 whitespace-nowrap shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all flex-1 sm:flex-none"
-              >
-                <ShoppingCart className="w-3 h-3" /> Buy Outfit
-              </Button>
-            </div>
+            <Button
+              variant="accent"
+              size="sm"
+              className="text-[11px] rounded-xl px-5 h-9 gap-1.5 whitespace-nowrap shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all"
+            >
+              <ShoppingCart className="w-3 h-3" /> Buy Outfit
+            </Button>
           </div>
         </div>
       </div>

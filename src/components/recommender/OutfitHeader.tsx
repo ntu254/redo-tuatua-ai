@@ -38,9 +38,14 @@ const OutfitHeader = ({ activeFilter, onFilterChange }: OutfitHeaderProps) => {
           <Button variant="outline" size="sm" className="gap-2 text-xs rounded-full h-9 px-4 hover:shadow-sm active:scale-95 transition-all">
             <SlidersHorizontal className="w-3.5 h-3.5" /> Filters
           </Button>
-          <Button variant="accent" size="sm" className="gap-2 text-xs rounded-full h-9 px-5 shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all">
-            <RefreshCw className="w-3.5 h-3.5" /> Regenerate
-          </Button>
+          <motion.button
+            whileHover={{ rotate: 180, scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.4 }}
+            className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center shadow-md shadow-accent/25 hover:shadow-lg hover:shadow-accent/30 transition-shadow"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </motion.button>
         </div>
       </div>
 
