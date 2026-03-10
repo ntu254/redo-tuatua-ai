@@ -21,7 +21,13 @@ const Trends = () => {
       {/* Hero */}
       <div className="pt-16">
         <section className="relative overflow-hidden">
-          <div className="px-6 py-20 md:py-28">
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <img src={trendsHeroBg} alt="" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px]" />
+          </div>
+
+          <div className="relative px-6 py-24 md:py-36">
             <div className="container mx-auto max-w-5xl text-center">
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
