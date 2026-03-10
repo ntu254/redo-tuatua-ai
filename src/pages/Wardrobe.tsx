@@ -185,22 +185,14 @@ const Wardrobe = () => {
               </motion.div>
 
               {filtered.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-16"
-                >
-                  <p className="text-sm text-muted-foreground font-body">
-                    No items match your filters.
-                  </p>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+                  <p className="text-sm text-muted-foreground font-body">Không tìm thấy món đồ nào phù hợp.</p>
                   <button
-                    onClick={() => {
-                      setFilters({ category: [], style: [], color: [], season: [] });
-                      setSearch("");
-                    }}
-                    className="text-xs text-accent font-body mt-2 underline underline-offset-2 hover:text-accent/80 transition-colors"
-                  >
-                    Clear all filters
+                    onClick={() => { setFilters({ category: [], style: [], color: [], season: [] }); setSearch(""); }}
+                    className="text-xs text-accent font-body mt-2 underline underline-offset-2 hover:text-accent/80 transition-colors">
+                    Xóa tất cả bộ lọc
+                  </button>
+                </motion.div>
                   </button>
                 </motion.div>
               )}
