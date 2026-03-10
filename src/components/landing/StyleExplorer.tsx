@@ -23,7 +23,7 @@ const StyleExplorer = () => (
         className="editorial-label mb-4">Khám phá phong cách</motion.p>
       <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         className="font-heading text-3xl md:text-4xl font-medium text-foreground">
-        Tìm kiếm <span className="italic">bản sắc thời trang</span>
+        Tìm kiếm <span className="font-semibold">bản sắc thời trang</span>
       </motion.h2>
     </div>
 
