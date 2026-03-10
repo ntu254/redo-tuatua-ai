@@ -5,7 +5,7 @@ import StyleExplorer from "@/components/landing/StyleExplorer";
 import OutfitGenerator from "@/components/landing/OutfitGenerator";
 import AIInput from "@/components/landing/AIInput";
 import SocialProof from "@/components/landing/SocialProof";
-import TrendingLookbook from "@/components/landing/TrendingLookbook";
+import StyleProfilePreview from "@/components/landing/StyleProfilePreview";
 import CTABanner from "@/components/landing/CTABanner";
 import Footer from "@/components/landing/Footer";
 
