@@ -131,8 +131,14 @@ const HeroSection = () => {
         <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="editorial-label">Products from top e-commerce platforms</p>
           <div className="flex items-center gap-8 md:gap-12">
-            {["Shopee", "Lazada", "Tiki", "Zalora", "TikTok Shop"].map(n => (
-              <span key={n} className="text-xs font-body font-medium text-muted-foreground/40 hover:text-muted-foreground transition-colors cursor-default uppercase tracking-wider">{n}</span>
+            {[
+              { name: "Shopee", color: "text-shopee" },
+              { name: "Lazada", color: "text-lazada" },
+              { name: "Tiki", color: "text-tiki" },
+              { name: "Zalora", color: "text-zalora" },
+              { name: "TikTok Shop", color: "text-tiktok" },
+            ].map(p => (
+              <span key={p.name} className={`text-xs font-body font-semibold ${p.color} opacity-60 hover:opacity-100 transition-opacity cursor-default uppercase tracking-wider`}>{p.name}</span>
             ))}
           </div>
         </div>

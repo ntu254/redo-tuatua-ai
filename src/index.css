@@ -100,7 +100,7 @@
 
 /* ---- Editorial Typography ---- */
 .editorial-label {
-  @apply text-[10px] font-body font-medium uppercase tracking-[0.35em] text-muted-foreground;
+  @apply text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-muted-foreground;
 }
 
 .editorial-divider {
