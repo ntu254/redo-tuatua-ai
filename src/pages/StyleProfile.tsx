@@ -223,36 +223,125 @@ const StyleProfile = () => (
       </div>
     </Fade>
 
-    {/* ── Style Evolution (compact) ── */}
+    {/* ── Style Evolution ── */}
     <Fade>
       <div className="border-b border-border">
-        <div className="px-6 py-6 border-b border-border flex items-center justify-between">
-          <p className="editorial-label">Style Evolution</p>
-          <div className="flex gap-4">
-            {[
-              { label: "Minimal", color: "hsl(0 100% 70%)" },
-              { label: "Casual", color: "hsl(0 0% 65%)" },
-              { label: "Office", color: "hsl(0 0% 40%)" },
-            ].map((l) => (
-              <div key={l.label} className="flex items-center gap-1.5">
-                <span className="w-2 h-2" style={{ backgroundColor: l.color }} />
-                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">{l.label}</span>
-              </div>
-            ))}
-          </div>
+        {/* Header */}
+        <div className="px-6 py-6 border-b border-border">
+          <p className="editorial-label mb-1">Style Evolution</p>
+          <p className="text-xs text-muted-foreground font-body">
+            Xem phong cách thời trang của bạn thay đổi theo thời gian dựa trên outfit và tủ đồ.
+          </p>
         </div>
-        <div className="px-6 py-8 max-w-3xl mx-auto">
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={evolution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 92%)" />
-              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(0 0% 45%)" }} />
-              <YAxis tick={{ fontSize: 10, fill: "hsl(0 0% 45%)" }} width={30} />
-              <Tooltip contentStyle={{ background: "hsl(0 0% 100%)", border: "1px solid hsl(0 0% 92%)", fontSize: 11 }} />
-              <Area type="monotone" dataKey="Minimal" stackId="1" stroke="hsl(0 100% 70%)" fill="hsl(0 100% 70%)" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="Casual" stackId="1" stroke="hsl(0 0% 65%)" fill="hsl(0 0% 65%)" fillOpacity={0.15} />
-              <Area type="monotone" dataKey="Office" stackId="1" stroke="hsl(0 0% 40%)" fill="hsl(0 0% 40%)" fillOpacity={0.1} />
-            </AreaChart>
-          </ResponsiveContainer>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px]">
+          {/* Chart area */}
+          <div className="p-6 lg:border-r border-border">
+            {/* Insight headline */}
+            <div className="mb-6 flex items-start gap-3">
+              <TrendingUp className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+              <div>
+                <p className="font-heading text-lg md:text-xl text-foreground italic">
+                  Phong cách của bạn đang trở nên <span className="text-accent">Minimal</span> hơn.
+                </p>
+                <p className="text-[11px] text-muted-foreground font-body mt-1">
+                  Minimal tăng từ 30% → 70% trong 6 tháng qua.
+                </p>
+              </div>
+            </div>
+
+            {/* Chart */}
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={evolution}>
+                <defs>
+                  <linearGradient id="gradMinimal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(0 100% 70%)" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="hsl(0 100% 70%)" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 94%)" vertical={false} />
+                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(0 0% 50%)" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "hsl(0 0% 50%)" }} width={28} axisLine={false} tickLine={false} domain={[0, 80]} />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(0 0% 100%)",
+                    border: "1px solid hsl(0 0% 90%)",
+                    fontSize: 11,
+                    fontFamily: "'DM Sans'",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                  }}
+                  formatter={(value: number, name: string) => [`${value}%`, name]}
+                />
+                <Area type="monotone" dataKey="Minimal" stroke="hsl(0 100% 70%)" strokeWidth={2.5} fill="url(#gradMinimal)" />
+                <Area type="monotone" dataKey="Casual" stroke="hsl(0 0% 78%)" strokeWidth={1.5} fill="transparent" strokeDasharray="4 3" />
+                <Area type="monotone" dataKey="Office" stroke="hsl(0 0% 55%)" strokeWidth={1.5} fill="transparent" strokeDasharray="2 2" />
+              </AreaChart>
+            </ResponsiveContainer>
+
+            {/* Legend */}
+            <div className="flex items-center gap-5 mt-4">
+              <div className="flex items-center gap-1.5">
+                <span className="w-5 h-[2.5px] bg-accent" />
+                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">Minimal</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-5 h-[1.5px] bg-muted-foreground/40" style={{ borderTop: "1.5px dashed hsl(0 0% 78%)" }} />
+                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">Casual</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-5 h-[1.5px]" style={{ borderTop: "1.5px dotted hsl(0 0% 55%)" }} />
+                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">Office</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary sidebar */}
+          <div className="p-6 space-y-5">
+            <div>
+              <p className="editorial-label mb-3">Trend Summary</p>
+              <div className="space-y-3">
+                {[
+                  { label: "Minimal", change: "+40%", positive: true },
+                  { label: "Casual", change: "−40%", positive: false },
+                  { label: "Office", change: "Ổn định", positive: null },
+                ].map((s) => (
+                  <div key={s.label} className="flex items-center justify-between">
+                    <span className="text-sm font-body text-foreground">{s.label}</span>
+                    <span className={`text-sm font-body font-medium ${
+                      s.positive === true ? "text-accent" : s.positive === false ? "text-muted-foreground" : "text-foreground/60"
+                    }`}>{s.change}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <p className="editorial-label mb-2">Key Moments</p>
+              <div className="space-y-2.5">
+                <div className="flex gap-2">
+                  <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
+                  <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
+                    <span className="text-foreground font-medium">Tháng 3</span> — Minimal bắt đầu tăng mạnh
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
+                  <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
+                    <span className="text-foreground font-medium">Tháng 6</span> — Minimal trở thành phong cách chủ đạo
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
+                <p className="text-[11px] text-muted-foreground font-body italic leading-relaxed">
+                  "Hoạt động tủ đồ cho thấy sự chuyển dịch dần sang outfit tối giản."
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Fade>
