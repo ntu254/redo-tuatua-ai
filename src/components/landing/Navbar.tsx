@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
@@ -26,22 +26,24 @@ const Navbar = () => {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       scrolled ? "bg-background/95 backdrop-blur-sm border-b border-border" : "bg-transparent"
     }`}>
-      <div className="container mx-auto flex items-center justify-between h-16 px-6">
+      <div className="container mx-auto flex items-center justify-between h-[72px] px-8">
         <Link to="/" className="flex items-center gap-2">
           <span className="font-heading text-2xl font-semibold italic text-foreground tracking-tight">StyleAI</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden md:flex items-center gap-12">
           {navLinks.map(l => (
             <Link key={l.href} to={l.href}
-              className={`text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-colors ${
-                location.pathname === l.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              className={`text-[13px] font-body font-medium tracking-[0.15em] uppercase transition-opacity duration-300 ${
+                location.pathname === l.href ? "text-foreground opacity-100" : "text-foreground opacity-50 hover:opacity-100"
               }`}>{l.label}</Link>
           ))}
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="accent" size="sm">Thử miễn phí</Button>
+          <Button className="bg-foreground text-background hover:bg-foreground/90 px-6 py-2.5 h-auto text-xs font-body font-medium tracking-wider uppercase rounded-none">
+            Thử miễn phí
+          </Button>
         </div>
 
         <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -50,12 +52,14 @@ const Navbar = () => {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-background border-b border-border px-6 py-5 space-y-3">
+        <div className="md:hidden bg-background border-b border-border px-8 py-6 space-y-4">
           {navLinks.map(l => (
             <Link key={l.href} to={l.href} onClick={() => setMobileOpen(false)}
-              className="block text-sm text-muted-foreground hover:text-foreground font-body py-1.5">{l.label}</Link>
+              className="block text-sm text-muted-foreground hover:text-foreground font-body py-2 tracking-wide">{l.label}</Link>
           ))}
-          <Button variant="accent" size="sm" className="w-full mt-2">Thử miễn phí</Button>
+          <Button className="bg-foreground text-background hover:bg-foreground/90 w-full mt-3 rounded-none text-xs tracking-wider uppercase">
+            Thử miễn phí
+          </Button>
         </div>
       )}
     </nav>
