@@ -148,9 +148,9 @@ const Wardrobe = () => {
                     <span className="text-xs font-body text-accent font-medium">
                       {selectedIds.length} món đồ đã chọn
                     </span>
-                    <button
-                      onClick={() => setSelectedIds([])}
-                      className="text-[10px] font-body text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                    <button onClick={() => setSelectedIds([])}
+                      className="text-[10px] font-body text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors">
+                      Bỏ chọn
                     >
                       Clear
                     </button>
