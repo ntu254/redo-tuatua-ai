@@ -108,7 +108,7 @@ const StyleProfile = () => (
     <div className="pt-16">
       <div className="border-b border-border px-6 py-12 md:py-16 text-center">
         <p className="editorial-label mb-3">AI-Powered Analytics</p>
-        <h1 className="font-heading text-3xl md:text-5xl font-light text-foreground blur-text-reveal">
+        <h1 className="font-heading text-3xl md:text-5xl font-medium text-foreground blur-text-reveal">
           Your <span className="italic">Style Profile</span>
         </h1>
         <p className="text-muted-foreground font-body mt-3 text-sm max-w-md mx-auto blur-text-reveal blur-text-reveal-delay-1">
