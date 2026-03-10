@@ -12,17 +12,14 @@ const EmptyState = () => {
         <Sparkles className="w-8 h-8 text-accent" />
       </div>
       <h3 className="font-heading text-2xl font-semibold text-foreground mb-2">
-        Tell StyleAI what you want to wear today
+        Cho StyleAI biết bạn muốn mặc gì hôm nay
       </h3>
       <p className="text-sm font-body text-muted-foreground max-w-md mb-6">
-        Describe your style, occasion, or mood — and our AI will curate the perfect outfit for you with shopping links.
+        Mô tả phong cách, dịp hoặc tâm trạng — AI sẽ phối outfit hoàn hảo kèm link mua hàng cho bạn.
       </p>
       <div className="flex flex-wrap justify-center gap-2">
-        {["Coffee date outfit ☕", "Streetwear weekend 🔥", "Office under 1M 💼"].map((prompt) => (
-          <span
-            key={prompt}
-            className="text-xs font-body px-4 py-2 rounded-full border border-border text-muted-foreground"
-          >
+        {["Outfit đi cà phê ☕", "Streetwear cuối tuần 🔥", "Công sở dưới 1tr 💼"].map((prompt) => (
+          <span key={prompt} className="text-xs font-body px-4 py-2 rounded-full border border-border text-muted-foreground">
             {prompt}
           </span>
         ))}

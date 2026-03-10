@@ -8,13 +8,13 @@ interface ChatMsg {
 }
 
 const quickPrompts = [
-  { icon: "🔄", label: "Replace an item" },
-  { icon: "☕", label: "Coffee date outfit" },
-  { icon: "💼", label: "Office under 1M" },
-  { icon: "🔥", label: "Weekend streetwear" },
-  { icon: "✈️", label: "Travel outfit" },
-  { icon: "🇰🇷", label: "K-Fashion look" },
-  { icon: "🌙", label: "Night out glam" },
+  { icon: "🔄", label: "Thay sản phẩm" },
+  { icon: "☕", label: "Outfit đi cà phê" },
+  { icon: "💼", label: "Công sở dưới 1tr" },
+  { icon: "🔥", label: "Streetwear cuối tuần" },
+  { icon: "✈️", label: "Outfit du lịch" },
+  { icon: "🇰🇷", label: "K-Fashion" },
+  { icon: "🌙", label: "Dạ tiệc" },
 ];
 
 interface ChatSidebarProps {
@@ -93,7 +93,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
                 </h2>
                 <span className="flex items-center gap-1.5 text-[11px] font-body text-teal font-medium mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal inline-block animate-pulse" />
-                  AI Stylist · Online
+                  AI Stylist · Trực tuyến
                 </span>
               </div>
             </div>
@@ -152,7 +152,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
           {/* Quick prompts */}
           <div className="px-4 pb-3">
             <p className="text-[10px] font-body text-muted-foreground mb-2.5 uppercase tracking-[0.2em] font-medium">
-              Quick prompts
+              Gợi ý nhanh
             </p>
             <div className="flex flex-wrap gap-1.5">
               {quickPrompts.map((s) => (
@@ -175,7 +175,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMsg()}
-                placeholder="Describe what you want to wear today..."
+                placeholder="Mô tả outfit bạn muốn mặc hôm nay..."
                 className="w-full bg-secondary/60 border border-border px-4 py-3.5 pr-12 text-sm font-body rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all placeholder:text-muted-foreground/60"
               />
               <button
