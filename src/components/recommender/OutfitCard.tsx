@@ -106,27 +106,17 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
             </motion.button>
           </motion.div>
 
-          {/* Top badges */}
-          <div className="absolute top-3.5 left-3.5 flex flex-col gap-2">
-            <span className="bg-foreground/75 text-background text-[10px] font-body font-medium px-3 py-1 rounded-lg backdrop-blur-md">
+          {/* Bottom badges — positioned at bottom-left so they don't cover the image */}
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+            <span className="bg-foreground/75 text-background text-[10px] font-body font-medium px-2.5 py-1 rounded-lg backdrop-blur-md">
               {outfit.style}
             </span>
             {outfit.aiMatch && (
-              <span className="bg-accent text-accent-foreground text-[10px] font-body font-semibold px-3 py-1 rounded-lg flex items-center gap-1 shadow-sm shadow-accent/30">
+              <span className="bg-accent text-accent-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm shadow-accent/30">
                 <Sparkles className="w-3 h-3" /> Best Match
               </span>
             )}
           </div>
-
-          {/* Save icon */}
-          <button
-            onClick={() => setSaved(!saved)}
-            className={`absolute top-3.5 right-3.5 p-2 rounded-xl bg-background/80 backdrop-blur-md transition-all hover:scale-110 ${
-              saved ? "text-accent shadow-sm" : "text-muted-foreground"
-            }`}
-          >
-            <Bookmark className="w-4 h-4" fill={saved ? "currentColor" : "none"} />
-          </button>
         </div>
 
         {/* Right: content */}
