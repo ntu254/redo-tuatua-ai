@@ -106,17 +106,6 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
             </motion.button>
           </motion.div>
 
-          {/* Bottom badges — positioned at bottom-left so they don't cover the image */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
-            <span className="bg-foreground/75 text-background text-[10px] font-body font-medium px-2.5 py-1 rounded-lg backdrop-blur-md">
-              {outfit.style}
-            </span>
-            {outfit.aiMatch && (
-              <span className="bg-accent text-accent-foreground text-[10px] font-body font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm shadow-accent/30">
-                <Sparkles className="w-3 h-3" /> Best Match
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Right: content */}
