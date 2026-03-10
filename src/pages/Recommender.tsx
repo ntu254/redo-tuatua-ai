@@ -254,7 +254,7 @@ const Recommender = () => {
                             </div>
                             <p className="text-[13px] font-body font-medium text-foreground truncate">{p.name}</p>
                             <div className="flex items-center gap-2 mt-0.5">
-                              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                              <Star className="w-3 h-3 text-accent fill-accent" />
                               <span className="text-[11px] font-body text-foreground">{p.rating}</span>
                               <span className="text-[11px] font-body text-muted-foreground">· {p.sold} đã bán</span>
                             </div>
