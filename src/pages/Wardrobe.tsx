@@ -86,7 +86,7 @@ const Wardrobe = () => {
         ) : (
           <div className="flex gap-6">
             {/* Left Sidebar — AI Generator on top, then Filters */}
-            <div className="hidden lg:flex lg:flex-col w-[250px] shrink-0 sticky top-24 self-start gap-4 max-h-[calc(100vh-7rem)] overflow-y-auto pb-4">
+            <div className="hidden lg:flex lg:flex-col w-[250px] shrink-0 gap-4">
               <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
               <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
             </div>
