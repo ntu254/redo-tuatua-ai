@@ -27,7 +27,7 @@ const App = () => (
           <Route path="/wardrobe" element={<Wardrobe />} />
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/trends" element={<Trends />} />
-          <Route path="/lookbook" element={<Lookbook />} />
+          <Route path="/style-profile" element={<StyleProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

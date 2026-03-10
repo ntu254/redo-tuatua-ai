@@ -18,7 +18,7 @@ const Index = () => (
     <OutfitGenerator />
     <AIInput />
     <SocialProof />
-    <TrendingLookbook />
+    <StyleProfilePreview />
     <CTABanner />
     <Footer />
   </div>
