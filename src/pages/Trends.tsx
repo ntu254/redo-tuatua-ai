@@ -3,6 +3,7 @@ import { Wand2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
+import trendsHeroBg from "@/assets/trends-hero-bg.jpg";
 import TrendingSearches from "@/components/trends/TrendingSearches";
 import TrendingColors from "@/components/trends/TrendingColors";
 import TrendingItems from "@/components/trends/TrendingItems";
@@ -20,7 +21,13 @@ const Trends = () => {
       {/* Hero */}
       <div className="pt-16">
         <section className="relative overflow-hidden">
-          <div className="px-6 py-20 md:py-28">
+          {/* Background image */}
+          <div className="absolute inset-0">
+            <img src={trendsHeroBg} alt="" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px]" />
+          </div>
+
+          <div className="relative px-6 py-24 md:py-36">
             <div className="container mx-auto max-w-5xl text-center">
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
@@ -73,25 +80,6 @@ const Trends = () => {
         <AITrendInsights />
         <TrendInspirationGrid />
 
-        {/* CTA */}
-        <section className="border-t border-border">
-          <div className="container mx-auto max-w-3xl px-6 py-20 text-center">
-            <p className="editorial-label mb-4">AI-Powered Styling</p>
-            <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground mb-4">
-              Create outfits inspired by <span className="italic">trends</span>
-            </h2>
-            <p className="font-body text-sm text-muted-foreground mb-8 max-w-md mx-auto">
-              Let StyleAI generate personalized outfits based on the trends you love.
-            </p>
-            <button
-              onClick={() => navigate("/recommender")}
-              className="inline-flex items-center gap-2 bg-foreground text-background px-8 py-3.5 text-[10px] font-body font-medium uppercase tracking-[0.2em] hover:bg-foreground/85 transition-colors"
-            >
-              <Wand2 className="w-3.5 h-3.5" />
-              Generate Outfit from Trends
-            </button>
-          </div>
-        </section>
       </div>
 
       <Footer />
