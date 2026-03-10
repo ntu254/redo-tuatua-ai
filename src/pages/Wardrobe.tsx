@@ -151,8 +151,6 @@ const Wardrobe = () => {
                     <button onClick={() => setSelectedIds([])}
                       className="text-[10px] font-body text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors">
                       Bỏ chọn
-                    >
-                    </button>
                     </button>
                   </motion.div>
                 )}
