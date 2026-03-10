@@ -37,7 +37,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.35 }}
-      className="relative overflow-hidden rounded-2xl border border-teal/20 bg-gradient-to-br from-teal-light via-card to-card p-5 shadow-sm"
+      className="relative overflow-hidden rounded-xl border border-teal/20 bg-gradient-to-br from-teal-light via-card to-card p-4 shadow-sm"
     >
       {/* Decorative glow */}
       <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-teal/8 blur-2xl pointer-events-none" />
