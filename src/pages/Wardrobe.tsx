@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Search, X } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import WardrobeHeader from "@/components/wardrobe/WardrobeHeader";
-import WardrobeFilters from "@/components/wardrobe/WardrobeFilters";
+import WardrobeFilterSidebar, { type ActiveFilters } from "@/components/wardrobe/WardrobeFilterSidebar";
 import WardrobeUploadArea from "@/components/wardrobe/WardrobeUploadArea";
 import WardrobeItemCard, { type WardrobeItem } from "@/components/wardrobe/WardrobeItemCard";
 import AIOutfitGenerator from "@/components/wardrobe/AIOutfitGenerator";
@@ -24,16 +25,38 @@ const wardrobeItems: WardrobeItem[] = [
 ];
 
 const Wardrobe = () => {
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [filters, setFilters] = useState<ActiveFilters>({
+    category: [],
+    style: [],
+    color: [],
+    season: [],
+  });
+  const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const filtered = useMemo(
-    () =>
-      activeFilter === "All"
-        ? wardrobeItems
-        : wardrobeItems.filter((item) => item.category === activeFilter),
-    [activeFilter]
-  );
+  const filtered = useMemo(() => {
+    let items = wardrobeItems;
+
+    if (filters.category.length > 0) {
+      items = items.filter((item) => filters.category.includes(item.category));
+    }
+    if (filters.style.length > 0) {
+      items = items.filter((item) =>
+        item.tags.some((tag) => filters.style.includes(tag))
+      );
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      items = items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          item.category.toLowerCase().includes(q) ||
+          item.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+
+    return items;
+  }, [filters, search]);
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) =>
@@ -53,30 +76,59 @@ const Wardrobe = () => {
         aiSuggestions={18}
       />
 
-      <div className="container mx-auto max-w-6xl px-6 pb-20">
+      <div className="container mx-auto max-w-7xl px-6 pb-20">
         {isEmpty ? (
           <WardrobeEmptyState />
         ) : (
-          <div className="space-y-6">
-            {/* Action row: Upload + AI Generator side by side */}
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-4">
-              <WardrobeUploadArea />
-              <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
+          <div className="flex gap-6">
+            {/* Left Sidebar — Filters */}
+            <div className="hidden md:block w-[220px] shrink-0 sticky top-24 self-start">
+              <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
+
+              {/* AI Generator below filters */}
+              <div className="mt-5">
+                <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
+              </div>
             </div>
 
-            {/* Filter bar + selection info */}
-            <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
-              <WardrobeFilters active={activeFilter} onChange={setActiveFilter} />
+            {/* Main Content */}
+            <div className="flex-1 min-w-0 space-y-5">
+              {/* Search + Upload row */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search clothing..."
+                    className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-border bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-all shadow-sm"
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+                <div className="sm:w-auto">
+                  <WardrobeUploadArea />
+                </div>
+              </div>
+
+              {/* Selection info */}
               <AnimatePresence>
                 {selectedIds.length > 0 && (
                   <motion.div
-                    initial={{ opacity: 0, x: 8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 8 }}
-                    className="flex items-center gap-2"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-accent/5 border border-accent/15"
                   >
                     <span className="text-xs font-body text-accent font-medium">
-                      {selectedIds.length} selected
+                      {selectedIds.length} item{selectedIds.length > 1 ? "s" : ""} selected
                     </span>
                     <button
                       onClick={() => setSelectedIds([])}
@@ -87,25 +139,61 @@ const Wardrobe = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
 
-            {/* Wardrobe grid */}
-            <motion.div
-              layout
-              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
-            >
-              <AnimatePresence mode="popLayout">
-                {filtered.map((item, i) => (
-                  <WardrobeItemCard
-                    key={item.id}
-                    item={item}
-                    index={i}
-                    selected={selectedIds.includes(item.id)}
-                    onToggleSelect={toggleSelect}
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
+              {/* Results count */}
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-body text-muted-foreground">
+                  {filtered.length} item{filtered.length !== 1 ? "s" : ""}
+                  {(filters.category.length > 0 || filters.style.length > 0 || search) && " found"}
+                </p>
+
+                {/* Mobile filter toggle — future enhancement */}
+              </div>
+
+              {/* Wardrobe grid */}
+              <motion.div
+                layout
+                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+              >
+                <AnimatePresence mode="popLayout">
+                  {filtered.map((item, i) => (
+                    <WardrobeItemCard
+                      key={item.id}
+                      item={item}
+                      index={i}
+                      selected={selectedIds.includes(item.id)}
+                      onToggleSelect={toggleSelect}
+                    />
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+
+              {filtered.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-16"
+                >
+                  <p className="text-sm text-muted-foreground font-body">
+                    No items match your filters.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setFilters({ category: [], style: [], color: [], season: [] });
+                      setSearch("");
+                    }}
+                    className="text-xs text-accent font-body mt-2 underline underline-offset-2 hover:text-accent/80 transition-colors"
+                  >
+                    Clear all filters
+                  </button>
+                </motion.div>
+              )}
+
+              {/* Mobile AI Generator */}
+              <div className="md:hidden">
+                <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
+              </div>
+            </div>
           </div>
         )}
       </div>
