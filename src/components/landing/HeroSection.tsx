@@ -32,11 +32,11 @@ const HeroSection = () => {
               <span className="text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-accent">AI-Powered Fashion</span>
             </motion.div>
 
-            <h1 className="font-heading text-5xl md:text-6xl xl:text-7xl font-light leading-[1.05] tracking-tight text-foreground mb-8">
+            <h1 className="font-heading text-5xl md:text-6xl xl:text-7xl font-semibold leading-[1.05] tracking-[-0.01em] text-foreground mb-8">
               <span className={`block ${revealed ? "blur-text-reveal" : "opacity-0"}`}>
                 Find Your Perfect
               </span>
-              <span className={`block italic font-normal ${revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"}`}>
+              <span className={`block italic font-medium ${revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"}`}>
                 Outfit with AI
               </span>
             </h1>
