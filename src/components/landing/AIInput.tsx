@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Send } from "lucide-react";
-import { motion } from "framer-motion";
+import { Send, Sparkles, Wand2, MessageCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const placeholders = [
   "Tôi cần outfit đi cà phê cuối tuần…",
@@ -41,57 +41,169 @@ const AIInput = () => {
   };
 
   return (
-    <section className="bg-background">
-      <div className="mag-grid grid-cols-1 md:grid-cols-[1fr_2fr]">
+    <section className="relative overflow-hidden">
+      {/* Gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-coral-light via-background to-teal-light" />
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: "radial-gradient(circle, hsl(var(--foreground)) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+      }} />
+
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_1.8fr] min-h-[520px]">
         {/* Left label */}
-        <div className="flex items-center justify-center p-12 md:p-16 bg-secondary">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="flex items-center justify-center p-12 md:p-16 lg:p-20"
+        >
           <div>
+            <motion.div
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ type: "spring", delay: 0.2 }}
+              className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6"
+            >
+              <Wand2 className="w-7 h-7 text-accent" />
+            </motion.div>
             <p className="editorial-label mb-4">Chat với AI Stylist</p>
-            <h2 className="font-heading text-3xl font-light text-foreground leading-tight">
-              Hỏi<br /><span className="italic">AI Stylist</span>
+            <h2 className="font-heading text-4xl md:text-5xl font-semibold text-foreground leading-tight">
+              Hỏi<br />
+              <span className="italic font-medium text-accent">AI Stylist</span>
             </h2>
             <div className="editorial-divider mt-6" />
-            <p className="text-sm text-muted-foreground font-body mt-4 max-w-[220px] leading-relaxed">
-              Nhập ý tưởng bất kỳ — AI gợi ý outfit hoàn hảo ngay lập tức
+            <p className="text-sm text-muted-foreground font-body mt-5 max-w-[260px] leading-relaxed">
+              Nhập ý tưởng bất kỳ — AI gợi ý outfit hoàn hảo ngay lập tức. Giống như có một stylist riêng 24/7.
             </p>
+            <div className="flex items-center gap-2 mt-6">
+              <span className="w-2 h-2 rounded-full bg-teal animate-pulse" />
+              <span className="text-xs font-body text-teal font-medium">AI đang trực tuyến</span>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Right — chat interface */}
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          className="flex flex-col justify-center p-12 md:p-16">
-          <div className="max-w-lg">
-            {/* Chat area */}
-            {showResponse && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-5 bg-off-white border border-border">
-                <p className="text-sm font-body text-foreground mb-3">{sampleResponses[responseIdx].text}</p>
-                <div className="flex flex-wrap gap-2">
-                  {sampleResponses[responseIdx].items.map(item => (
-                    <span key={item} className="text-[10px] font-body font-medium px-3 py-1.5 bg-secondary text-foreground uppercase tracking-wider">{item}</span>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex flex-col justify-center p-8 md:p-12 lg:p-16"
+        >
+          <div className="max-w-lg mx-auto lg:mx-0 w-full">
+            {/* Mock chat window */}
+            <div className="bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl shadow-foreground/5 overflow-hidden">
+              {/* Chat header */}
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-border bg-background/60">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-coral flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-accent-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm font-body font-semibold text-foreground">StyleAI</p>
+                  <p className="text-[10px] font-body text-teal flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal inline-block animate-pulse" />
+                    Đang hoạt động
+                  </p>
+                </div>
+                <MessageCircle className="w-4 h-4 text-muted-foreground ml-auto" />
+              </div>
+
+              {/* Chat area */}
+              <div className="px-5 py-5 min-h-[160px]">
+                <AnimatePresence mode="wait">
+                  {showResponse ? (
+                    <motion.div
+                      key="response"
+                      initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ type: "spring", damping: 20 }}
+                    >
+                      {/* User message */}
+                      <div className="flex justify-end mb-3">
+                        <div className="bg-accent text-accent-foreground px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[80%]">
+                          <p className="text-sm font-body">{text || "Gợi ý outfit"}</p>
+                        </div>
+                      </div>
+                      {/* AI response */}
+                      <div className="flex gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center mt-1 shrink-0">
+                          <Sparkles className="w-3.5 h-3.5 text-accent" />
+                        </div>
+                        <div className="bg-secondary/80 rounded-2xl rounded-bl-sm px-4 py-3">
+                          <p className="text-sm font-body text-foreground mb-2">{sampleResponses[responseIdx].text}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {sampleResponses[responseIdx].items.map((item, i) => (
+                              <motion.span
+                                key={item}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.3 + i * 0.1 }}
+                                className="text-[10px] font-body font-medium px-3 py-1.5 bg-background border border-border rounded-full text-foreground"
+                              >
+                                {item}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="empty"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex flex-col items-center justify-center h-[120px] text-center"
+                    >
+                      <Wand2 className="w-6 h-6 text-muted-foreground/30 mb-2" />
+                      <p className="text-xs text-muted-foreground/50 font-body">Nhập câu hỏi hoặc chọn gợi ý bên dưới</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Input */}
+              <div className="px-5 pb-4">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleSend()}
+                    placeholder={typed}
+                    className="w-full bg-secondary/50 border border-border rounded-xl px-4 py-3.5 pr-12 text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all"
+                  />
+                  <button
+                    onClick={handleSend}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-2.5 rounded-xl hover:shadow-lg hover:shadow-accent/20 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick tags */}
+              <div className="px-5 pb-5">
+                <div className="flex flex-wrap gap-1.5">
+                  {["Đi cà phê ☕", "Hẹn hò 💕", "Đi làm 💼", "Du lịch ✈️", "Dự tiệc 🎉"].map((tag, i) => (
+                    <motion.button
+                      key={tag}
+                      initial={{ opacity: 0, y: 8 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.4 + i * 0.05 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setText(tag)}
+                      className="text-[11px] font-body font-medium text-muted-foreground border border-border px-3.5 py-2 rounded-full hover:border-accent hover:text-accent hover:bg-accent/5 transition-all"
+                    >
+                      {tag}
+                    </motion.button>
                   ))}
                 </div>
-              </motion.div>
-            )}
-
-            {/* Input */}
-            <div className="relative mb-6">
-              <input type="text" value={text} onChange={e => setText(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && handleSend()}
-                placeholder={typed}
-                className="w-full bg-transparent border-b-2 border-foreground/10 px-0 py-4 text-lg font-heading italic text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-accent transition-colors" />
-              <button onClick={handleSend}
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-3 hover:bg-accent/85 transition-colors">
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Quick tags */}
-            <div className="flex flex-wrap gap-2">
-              {["Đi cà phê ☕", "Hẹn hò 💕", "Đi làm 💼", "Du lịch ✈️", "Dự tiệc 🎉"].map(tag => (
-                <button key={tag} onClick={() => setText(tag)}
-                  className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground border border-border px-4 py-2 hover:border-accent hover:text-accent transition-all">{tag}</button>
-              ))}
+              </div>
             </div>
           </div>
         </motion.div>
