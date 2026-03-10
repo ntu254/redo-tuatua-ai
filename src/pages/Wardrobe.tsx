@@ -146,7 +146,7 @@ const Wardrobe = () => {
                     className="flex items-center gap-3 px-4 py-2 rounded-xl bg-accent/5 border border-accent/15"
                   >
                     <span className="text-xs font-body text-accent font-medium">
-                      {selectedIds.length} item{selectedIds.length > 1 ? "s" : ""} selected
+                      {selectedIds.length} món đồ đã chọn
                     </span>
                     <button
                       onClick={() => setSelectedIds([])}
