@@ -19,32 +19,34 @@ const styles = [
 const StyleExplorer = () => (
   <section className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
-      <p className="editorial-label mb-4">Khám phá phong cách</p>
-      <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
+      <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+        className="editorial-label mb-4">Khám phá phong cách</motion.p>
+      <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        className="font-heading text-3xl md:text-4xl font-medium text-foreground">
         Tìm kiếm <span className="italic">bản sắc thời trang</span>
-      </h2>
+      </motion.h2>
     </div>
 
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
       {styles.map((s, i) => (
         <motion.div
           key={s.label}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: i * 0.06 }}
+          transition={{ delay: i * 0.08, type: "spring", damping: 20 }}
           className="group relative cursor-pointer overflow-hidden"
         >
           <div className="aspect-[3/4]">
-            <img src={s.image} alt={s.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img src={s.image} alt={s.label} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           </div>
           {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent flex flex-col justify-end p-5">
+          <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent flex flex-col justify-end p-5 group-hover:from-foreground/80 transition-all duration-500">
             <span className="text-[9px] font-body uppercase tracking-[0.3em] text-background/60 mb-1">{s.tag}</span>
-            <p className="font-heading text-xl italic text-background mb-3">{s.label}</p>
+            <p className="font-heading text-xl italic text-background mb-3 group-hover:translate-y-0 translate-y-1 transition-transform duration-300">{s.label}</p>
             <div className="flex items-center gap-1.5 text-background/70 group-hover:text-accent transition-colors">
               <span className="text-[10px] font-body font-medium uppercase tracking-wider">Xem outfit</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
         </motion.div>
