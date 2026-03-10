@@ -3,10 +3,10 @@ import Navbar from "@/components/landing/Navbar";
 import ChatSidebar from "@/components/recommender/ChatSidebar";
 import OutfitHeader from "@/components/recommender/OutfitHeader";
 import OutfitCard from "@/components/recommender/OutfitCard";
-import casualImg from "@/assets/style-casual.jpg";
-import officeImg from "@/assets/style-office.jpg";
-import partyImg from "@/assets/style-party.jpg";
-import streetImg from "@/assets/style-streetwear.jpg";
+import casualImg from "@/assets/style-casual-new.jpg";
+import officeImg from "@/assets/style-office-new.jpg";
+import partyImg from "@/assets/style-party-new.jpg";
+import streetImg from "@/assets/style-streetwear-new.jpg";
 
 const sampleOutfits = [
   {

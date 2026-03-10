@@ -1,19 +1,19 @@
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import casualImg from "@/assets/style-casual.jpg";
-import streetImg from "@/assets/style-streetwear.jpg";
-import officeImg from "@/assets/style-office.jpg";
-import athleisureImg from "@/assets/style-athleisure.jpg";
-import partyImg from "@/assets/style-party.jpg";
-import heroImg from "@/assets/hero-fashion-1.jpg";
+import casualImg from "@/assets/style-casual-new.jpg";
+import streetImg from "@/assets/style-streetwear-new.jpg";
+import minimalImg from "@/assets/style-minimal-new.jpg";
+import officeImg from "@/assets/style-office-new.jpg";
+import athleisureImg from "@/assets/style-athleisure-new.jpg";
+import dateNightImg from "@/assets/style-datenight-new.jpg";
 
 const styles = [
   { label: "Casual", image: casualImg, tag: "Everyday" },
   { label: "Streetwear", image: streetImg, tag: "Urban" },
-  { label: "Minimal", image: heroImg, tag: "Clean" },
+  { label: "Minimal", image: minimalImg, tag: "Clean" },
   { label: "Office", image: officeImg, tag: "Professional" },
   { label: "Athleisure", image: athleisureImg, tag: "Active" },
-  { label: "Date Night", image: partyImg, tag: "Elegant" },
+  { label: "Date Night", image: dateNightImg, tag: "Elegant" },
 ];
 
 const StyleExplorer = () => (

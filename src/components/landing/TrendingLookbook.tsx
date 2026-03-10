@@ -1,20 +1,20 @@
 import { Heart, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import lookbook1 from "@/assets/lookbook-1.jpg";
-import lookbook2 from "@/assets/lookbook-2.jpg";
-import lookbook3 from "@/assets/lookbook-3.jpg";
-import lookbook4 from "@/assets/lookbook-4.jpg";
-import casualImg from "@/assets/style-casual.jpg";
-import streetImg from "@/assets/style-streetwear.jpg";
+import dateNightImg from "@/assets/style-datenight-new.jpg";
+import streetImg from "@/assets/style-streetwear-new.jpg";
+import officeImg from "@/assets/style-office-new.jpg";
+import athleisureImg from "@/assets/style-athleisure-new.jpg";
+import casualImg from "@/assets/style-casual-new.jpg";
+import kfashionImg from "@/assets/lookbook-kfashion.jpg";
 
 const looks = [
-  { image: lookbook1, tag: "Date Night", saved: 342 },
-  { image: lookbook2, tag: "Streetwear", saved: 528 },
-  { image: lookbook3, tag: "Office Chic", saved: 415 },
-  { image: lookbook4, tag: "Athleisure", saved: 289 },
+  { image: dateNightImg, tag: "Date Night", saved: 342 },
+  { image: streetImg, tag: "Streetwear", saved: 528 },
+  { image: officeImg, tag: "Office Chic", saved: 415 },
+  { image: athleisureImg, tag: "Athleisure", saved: 289 },
   { image: casualImg, tag: "Casual", saved: 631 },
-  { image: streetImg, tag: "K-Fashion", saved: 487 },
+  { image: kfashionImg, tag: "K-Fashion", saved: 487 },
 ];
 
 const TrendingLookbook = () => {
