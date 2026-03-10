@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,89 +6,83 @@
 
 @layer base {
   :root {
-    --background: 30 25% 97%;
-    --foreground: 20 10% 12%;
+    /* Soft Editorial — modern fashion app */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 20 10% 12%;
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 20 10% 12%;
+    --popover-foreground: 0 0% 12%;
 
-    --primary: 20 10% 12%;
-    --primary-foreground: 30 25% 97%;
+    --primary: 0 0% 12%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 30 20% 94%;
-    --secondary-foreground: 20 10% 12%;
+    --secondary: 0 0% 93.7%;
+    --secondary-foreground: 0 0% 12%;
 
-    --muted: 25 15% 93%;
-    --muted-foreground: 20 5% 50%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 16 90% 55%;
+    --accent: 0 100% 70%;
     --accent-foreground: 0 0% 100%;
+
+    --teal: 166 65% 50%;
+    --teal-foreground: 0 0% 100%;
+    --teal-light: 166 50% 95%;
 
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 25 15% 90%;
-    --input: 25 15% 90%;
-    --ring: 16 90% 55%;
+    --border: 0 0% 92%;
+    --input: 0 0% 92%;
+    --ring: 0 100% 70%;
 
-    --radius: 1rem;
+    --radius: 0px;
 
-    /* Editorial palette */
-    --rose: 350 70% 65%;
-    --rose-light: 350 80% 95%;
-    --sage: 150 25% 55%;
-    --sage-light: 150 30% 94%;
-    --lavender: 260 40% 68%;
-    --lavender-light: 260 50% 95%;
-    --peach: 20 85% 70%;
-    --peach-light: 20 90% 95%;
-    --sky: 200 70% 60%;
-    --sky-light: 200 75% 95%;
-    --cream: 35 40% 95%;
-    --cream-dark: 30 20% 90%;
-    --warm-gray: 20 8% 70%;
+    /* Extended editorial tokens */
+    --coral: 0 100% 70%;
+    --coral-light: 0 100% 96%;
+    --mint: 166 65% 50%;
+    --mint-light: 166 50% 95%;
+    --charcoal: 0 0% 12%;
+    --off-white: 0 0% 98%;
+    --silver: 0 0% 93.7%;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-foreground: 0 0% 25%;
+    --sidebar-primary: 0 0% 12%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 16 90% 55%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 12%;
+    --sidebar-border: 0 0% 92%;
+    --sidebar-ring: 0 100% 70%;
   }
 
   .dark {
-    --background: 20 10% 6%;
-    --foreground: 30 25% 95%;
-    --card: 20 10% 9%;
-    --card-foreground: 30 25% 95%;
-    --popover: 20 10% 9%;
-    --popover-foreground: 30 25% 95%;
-    --primary: 30 25% 95%;
-    --primary-foreground: 20 10% 6%;
-    --secondary: 20 8% 14%;
-    --secondary-foreground: 30 25% 95%;
-    --muted: 20 8% 14%;
-    --muted-foreground: 20 5% 60%;
-    --accent: 16 90% 55%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 0 0% 95%;
+    --primary-foreground: 0 0% 6%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 100% 70%;
     --accent-foreground: 0 0% 100%;
+    --teal: 166 65% 50%;
+    --teal-foreground: 0 0% 100%;
+    --teal-light: 166 30% 15%;
     --destructive: 0 62% 30%;
-    --destructive-foreground: 30 25% 95%;
-    --border: 20 8% 16%;
-    --input: 20 8% 16%;
-    --ring: 16 90% 55%;
-    --sidebar-background: 20 10% 8%;
-    --sidebar-foreground: 30 25% 90%;
-    --sidebar-primary: 16 90% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 20 8% 12%;
-    --sidebar-accent-foreground: 30 25% 90%;
-    --sidebar-border: 20 8% 14%;
-    --sidebar-ring: 16 90% 55%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 100% 70%;
   }
 }
 
@@ -104,32 +98,57 @@
   }
 }
 
-/* Blur text animation */
-@keyframes blur-reveal {
-  0% { filter: blur(12px); opacity: 0; transform: translateY(8px); }
-  100% { filter: blur(0); opacity: 1; transform: translateY(0); }
+/* ---- Editorial Typography ---- */
+.editorial-label {
+  @apply text-[10px] font-body font-medium uppercase tracking-[0.35em] text-muted-foreground;
 }
-.blur-text-reveal { animation: blur-reveal 0.8s ease-out forwards; }
-.blur-text-reveal-delay-1 { animation-delay: 0.15s; opacity: 0; }
-.blur-text-reveal-delay-2 { animation-delay: 0.3s; opacity: 0; }
-.blur-text-reveal-delay-3 { animation-delay: 0.45s; opacity: 0; }
-.blur-text-reveal-delay-4 { animation-delay: 0.6s; opacity: 0; }
 
-/* Typing cursor */
-@keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
-.typing-cursor::after { content:'|'; animation: blink 1s infinite; color: hsl(var(--accent)); }
-
-/* Editorial divider */
 .editorial-divider {
-  width: 40px;
-  height: 2px;
+  width: 32px;
+  height: 1px;
   background: hsl(var(--accent));
 }
 
-/* Soft card hover */
+/* ---- Magazine Grid ---- */
+.mag-grid {
+  display: grid;
+  gap: 1px;
+  background: hsl(var(--border));
+}
+.mag-grid > * {
+  background: hsl(var(--background));
+}
+
+/* ---- Blur text animation ---- */
+@keyframes blur-reveal {
+  0% { filter: blur(10px); opacity: 0; transform: translateY(6px); }
+  100% { filter: blur(0); opacity: 1; transform: translateY(0); }
+}
+.blur-text-reveal { animation: blur-reveal 0.7s ease-out forwards; }
+.blur-text-reveal-delay-1 { animation-delay: 0.12s; opacity: 0; }
+.blur-text-reveal-delay-2 { animation-delay: 0.24s; opacity: 0; }
+.blur-text-reveal-delay-3 { animation-delay: 0.36s; opacity: 0; }
+.blur-text-reveal-delay-4 { animation-delay: 0.48s; opacity: 0; }
+
+/* ---- Typing cursor ---- */
+@keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+.typing-cursor::after { content:'|'; animation: blink 1s infinite; color: hsl(var(--accent)); }
+
+/* ---- Editorial card hover ---- */
 .editorial-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
 }
 .editorial-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+}
+
+/* ---- Magazine image zoom ---- */
+.mag-img-zoom {
+  overflow: hidden;
+}
+.mag-img-zoom img {
+  transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.mag-img-zoom:hover img {
+  transform: scale(1.04);
 }

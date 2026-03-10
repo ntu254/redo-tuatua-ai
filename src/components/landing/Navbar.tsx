@@ -23,26 +23,25 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-card/90 backdrop-blur-xl border-b border-border/40" : "bg-transparent"}`}>
-      <div className="container mx-auto flex items-center justify-between h-[72px] px-6">
-        <Link to="/" className="flex items-center gap-2.5">
-          <Sparkles className="w-5 h-5 text-accent" />
-          <span className="font-heading text-xl font-semibold tracking-tight text-foreground italic">StyleAI</span>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      scrolled ? "bg-background/95 backdrop-blur-sm border-b border-border" : "bg-transparent"
+    }`}>
+      <div className="container mx-auto flex items-center justify-between h-16 px-6">
+        <Link to="/" className="flex items-center gap-2">
+          <span className="font-heading text-2xl font-semibold italic text-foreground tracking-tight">StyleAI</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((l) => (
+        <div className="hidden md:flex items-center gap-10">
+          {navLinks.map(l => (
             <Link key={l.href} to={l.href}
-              className={`text-[13px] font-body font-medium tracking-wide uppercase transition-colors ${location.pathname === l.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-              {l.label}
-            </Link>
+              className={`text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-colors ${
+                location.pathname === l.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}>{l.label}</Link>
           ))}
         </div>
 
-        <div className="hidden md:block">
-          <Button variant="accent" size="sm" className="rounded-full px-6 gap-2 font-body text-xs uppercase tracking-wider">
-            Thử miễn phí <Sparkles className="w-3 h-3" />
-          </Button>
+        <div className="hidden md:flex items-center gap-3">
+          <Button variant="accent" size="sm">Thử miễn phí</Button>
         </div>
 
         <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -51,14 +50,12 @@ const Navbar = () => {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-card/98 backdrop-blur-xl border-b border-border px-6 py-5 space-y-3">
-          {navLinks.map((l) => (
+        <div className="md:hidden bg-background border-b border-border px-6 py-5 space-y-3">
+          {navLinks.map(l => (
             <Link key={l.href} to={l.href} onClick={() => setMobileOpen(false)}
               className="block text-sm text-muted-foreground hover:text-foreground font-body py-1.5">{l.label}</Link>
           ))}
-          <Button variant="accent" size="sm" className="w-full rounded-full gap-2 mt-2">
-            Thử miễn phí <Sparkles className="w-3 h-3" />
-          </Button>
+          <Button variant="accent" size="sm" className="w-full mt-2">Thử miễn phí</Button>
         </div>
       )}
     </nav>
