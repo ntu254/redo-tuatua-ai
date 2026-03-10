@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Send, Sparkles } from "lucide-react";
+import { Send } from "lucide-react";
 import { motion } from "framer-motion";
 
 const placeholders = [
@@ -26,30 +26,40 @@ const AIInput = () => {
   }, [pIdx]);
 
   return (
-    <section className="py-24 bg-cream/50">
-      <div className="container mx-auto px-6 max-w-2xl text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <Sparkles className="w-7 h-7 text-accent mx-auto mb-5" strokeWidth={1.5} />
-          <h2 className="font-heading text-2xl md:text-3xl font-semibold text-foreground italic mb-2">
-            Hỏi AI Stylist của bạn
-          </h2>
-          <p className="text-muted-foreground text-sm font-body mb-10">
-            Nhập bất kỳ ý tưởng nào — AI sẽ gợi ý outfit phù hợp
-          </p>
-
-          <div className="relative">
-            <input type="text" value={text} onChange={e => setText(e.target.value)} placeholder={typed}
-              className="w-full bg-card border border-border rounded-2xl px-6 py-5 pr-14 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/40 font-body text-sm transition-all" />
-            <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-3 rounded-xl hover:bg-accent/90 transition-colors">
-              <Send className="w-4 h-4" />
-            </button>
+    <section className="bg-background">
+      <div className="mag-grid grid-cols-1 md:grid-cols-[1fr_2fr]">
+        {/* Left label */}
+        <div className="flex items-center justify-center p-12 md:p-16 bg-secondary">
+          <div>
+            <p className="editorial-label mb-4">AI Stylist</p>
+            <h2 className="font-heading text-3xl font-light text-foreground leading-tight">
+              Hỏi AI<br /><span className="italic">Stylist của bạn</span>
+            </h2>
+            <div className="editorial-divider mt-6" />
+            <p className="text-xs text-muted-foreground font-body mt-4 max-w-[200px] leading-relaxed">
+              Nhập bất kỳ ý tưởng nào — AI sẽ gợi ý outfit phù hợp
+            </p>
           </div>
+        </div>
 
-          <div className="flex flex-wrap justify-center gap-2 mt-5">
-            {["Đi học 🎒","Hẹn hò 💕","Công sở 💼","Du lịch ✈️"].map(tag => (
-              <button key={tag} onClick={() => setText(tag)}
-                className="text-xs bg-card border border-border text-muted-foreground px-4 py-2 rounded-full hover:border-accent/40 hover:text-foreground transition-all font-body">{tag}</button>
-            ))}
+        {/* Right input */}
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+          className="flex flex-col justify-center p-12 md:p-16">
+          <div className="max-w-lg">
+            <div className="relative mb-6">
+              <input type="text" value={text} onChange={e => setText(e.target.value)} placeholder={typed}
+                className="w-full bg-transparent border-b-2 border-foreground/10 px-0 py-4 text-lg font-heading italic text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-accent transition-colors" />
+              <button className="absolute right-0 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-3 hover:bg-accent/85 transition-colors">
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {["Đi học 🎒","Hẹn hò 💕","Công sở 💼","Du lịch ✈️"].map(tag => (
+                <button key={tag} onClick={() => setText(tag)}
+                  className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground border border-border px-4 py-2 hover:border-accent hover:text-accent transition-all">{tag}</button>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
