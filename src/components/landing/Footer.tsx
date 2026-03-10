@@ -1,17 +1,24 @@
 import { Link } from "react-router-dom";
 
 const cols = [
-  { title: "Sản phẩm", links: [
-    { label: "Phối đồ", href: "/recommender" },{ label: "Xu hướng", href: "/trends" },
-    { label: "Lookbook", href: "/lookbook" },{ label: "Quiz", href: "/quiz" },
+  { title: "Products", links: [
+    { label: "Outfits", href: "/recommender" },
+    { label: "Lookbook", href: "/lookbook" },
+    { label: "Style Quiz", href: "/quiz" },
+    { label: "Trends", href: "/trends" },
   ]},
-  { title: "Sàn TMĐT", links: [
-    { label: "Shopee", href: "#" },{ label: "Lazada", href: "#" },{ label: "Tiki", href: "#" },
-    { label: "Zalora", href: "#" },{ label: "TikTok Shop", href: "#" },
+  { title: "Platforms", links: [
+    { label: "Shopee", href: "#" },
+    { label: "Lazada", href: "#" },
+    { label: "Tiki", href: "#" },
+    { label: "Zalora", href: "#" },
+    { label: "TikTok Shop", href: "#" },
   ]},
-  { title: "Hỗ trợ", links: [
-    { label: "Hướng dẫn", href: "#" },{ label: "FAQ", href: "#" },
-    { label: "Liên hệ", href: "#" },{ label: "Điều khoản", href: "#" },
+  { title: "Support", links: [
+    { label: "How it works", href: "#" },
+    { label: "FAQ", href: "#" },
+    { label: "Contact", href: "#" },
+    { label: "Terms", href: "#" },
   ]},
 ];
 
@@ -21,7 +28,7 @@ const Footer = () => (
       <div className="p-10 md:p-12">
         <span className="font-heading text-2xl italic text-foreground">StyleAI</span>
         <p className="text-xs text-muted-foreground font-body leading-relaxed mt-4 max-w-[200px]">
-          Trợ lý phối đồ AI — giúp phong cách cá nhân hóa dễ dàng hơn bao giờ hết.
+          AI-powered outfit styling — making personal fashion easier than ever.
         </p>
       </div>
       {cols.map(c => (
@@ -36,7 +43,7 @@ const Footer = () => (
       ))}
     </div>
     <div className="border-t border-border px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">© 2026 StyleAI. Tất cả quyền được bảo lưu.</p>
+      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">© 2026 StyleAI. All rights reserved.</p>
       <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">Built with Lovable ❤️</p>
     </div>
   </footer>

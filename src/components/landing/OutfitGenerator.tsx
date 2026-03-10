@@ -1,0 +1,92 @@
+import { RefreshCcw, ShoppingCart, ArrowLeftRight, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import outfitImg from "@/assets/outfit-flatlay.jpg";
+
+const items = [
+  { type: "Shirt", name: "Áo sơ mi denim xanh nhạt", price: "245.000đ", originalPrice: "350.000đ", platform: "Shopee", rating: 4.8 },
+  { type: "Pants", name: "Quần âu slim-fit xám", price: "380.000đ", originalPrice: "520.000đ", platform: "Lazada", rating: 4.7 },
+  { type: "Shoes", name: "Sneaker trắng low-top", price: "329.000đ", originalPrice: "450.000đ", platform: "Tiki", rating: 4.9 },
+  { type: "Bag", name: "Túi xách tote canvas beige", price: "135.000đ", originalPrice: "200.000đ", platform: "Shopee", rating: 4.5 },
+];
+
+const platformColors: Record<string, string> = {
+  Shopee: "bg-shopee",
+  Lazada: "bg-lazada",
+  Tiki: "bg-tiki",
+};
+
+const OutfitGenerator = () => (
+  <section className="bg-background">
+    <div className="border-b border-border px-6 py-16 text-center">
+      <p className="editorial-label mb-4">AI Outfit Generator</p>
+      <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
+        Your AI-curated <span className="italic">complete outfit</span>
+      </h2>
+    </div>
+
+    <div className="mag-grid grid-cols-1 lg:grid-cols-2">
+      {/* Left — outfit image */}
+      <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+        className="relative mag-img-zoom aspect-square lg:aspect-auto lg:min-h-[600px]">
+        <img src={outfitImg} alt="AI generated outfit flatlay" className="w-full h-full object-cover" />
+        <div className="absolute top-6 left-6 bg-accent text-accent-foreground px-4 py-2">
+          <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI Generated</p>
+        </div>
+        <div className="absolute bottom-6 left-6 right-6 flex gap-2">
+          <span className="bg-background/90 backdrop-blur-sm px-3 py-1.5 text-[10px] font-body font-medium uppercase tracking-wider text-foreground">Casual Chic</span>
+          <span className="bg-background/90 backdrop-blur-sm px-3 py-1.5 text-[10px] font-body font-medium uppercase tracking-wider text-foreground">Weekend</span>
+        </div>
+      </motion.div>
+
+      {/* Right — item list */}
+      <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+        <p className="editorial-label mb-2">Items in this outfit</p>
+        <p className="text-sm text-muted-foreground font-body mb-8">Total: <span className="font-semibold text-foreground">1.089.000đ</span></p>
+
+        <div className="space-y-0 border-t border-border">
+          {items.map((item, i) => (
+            <motion.div key={item.name} initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+              className="flex items-center gap-4 py-5 border-b border-border group">
+              <div className="w-14 h-14 bg-secondary flex-shrink-0 flex items-center justify-center">
+                <span className="text-[9px] font-body font-bold uppercase tracking-wider text-muted-foreground">{item.type}</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-body font-medium text-foreground truncate group-hover:text-accent transition-colors">{item.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm text-accent font-body font-semibold">{item.price}</span>
+                  <span className="text-xs text-muted-foreground font-body line-through">{item.originalPrice}</span>
+                  <div className="flex items-center gap-0.5 ml-2">
+                    <Star className="w-3 h-3 fill-accent text-accent" />
+                    <span className="text-[10px] font-body text-muted-foreground">{item.rating}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <span className={`${platformColors[item.platform]} text-accent-foreground text-[9px] font-body font-semibold px-2.5 py-1 uppercase tracking-wider`}>
+                  {item.platform}
+                </span>
+                <ArrowLeftRight className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-3 mt-8">
+          <Button variant="accent" className="gap-2">
+            <ShoppingCart className="w-3.5 h-3.5" /> Buy All Items
+          </Button>
+          <Button variant="outline" className="gap-2">
+            <ArrowLeftRight className="w-3.5 h-3.5" /> Replace Item
+          </Button>
+          <Button variant="outline" className="gap-2">
+            <RefreshCcw className="w-3.5 h-3.5" /> Regenerate
+          </Button>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+export default OutfitGenerator;
