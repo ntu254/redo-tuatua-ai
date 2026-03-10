@@ -23,7 +23,7 @@ const StyleExplorer = () => (
         className="editorial-label mb-4">Khám phá phong cách</motion.p>
       <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
         className="font-heading text-3xl md:text-4xl font-medium text-foreground">
-        Tìm kiếm <span className="italic">bản sắc thời trang</span>
+        Tìm kiếm <span className="font-semibold">bản sắc thời trang</span>
       </motion.h2>
     </div>
 
@@ -43,7 +43,7 @@ const StyleExplorer = () => (
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent flex flex-col justify-end p-5 group-hover:from-foreground/80 transition-all duration-500">
             <span className="text-[9px] font-body uppercase tracking-[0.3em] text-background/60 mb-1">{s.tag}</span>
-            <p className="font-heading text-xl italic text-background mb-3 group-hover:translate-y-0 translate-y-1 transition-transform duration-300">{s.label}</p>
+            <p className="font-heading text-xl font-medium text-background mb-3 group-hover:translate-y-0 translate-y-1 transition-transform duration-300">{s.label}</p>
             <div className="flex items-center gap-1.5 text-background/70 group-hover:text-accent transition-colors">
               <span className="text-[10px] font-body font-medium uppercase tracking-wider">Xem outfit</span>
               <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />

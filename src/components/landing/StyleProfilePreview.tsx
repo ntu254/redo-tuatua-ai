@@ -13,7 +13,7 @@ const StyleProfilePreview = () => (
     <div className="border-b border-border px-6 py-16 text-center">
       <p className="editorial-label mb-4">Phân tích AI</p>
       <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground">
-        Hồ sơ <span className="italic">Phong cách</span>
+        Hồ sơ <span className="font-semibold">Phong cách</span>
       </h2>
     </div>
 

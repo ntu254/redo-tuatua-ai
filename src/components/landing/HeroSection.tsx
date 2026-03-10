@@ -36,7 +36,7 @@ const HeroSection = () => {
               <span className={`block ${revealed ? "blur-text-reveal" : "opacity-0"}`}>
                 Tìm Outfit Hoàn Hảo
               </span>
-              <span className={`block italic font-medium ${revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"}`}>
+              <span className={`block font-medium ${revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"}`}>
                 Với Trợ Lý AI
               </span>
             </h1>
