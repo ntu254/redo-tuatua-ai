@@ -114,7 +114,7 @@ const Wardrobe = () => {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search clothing..."
+                    placeholder="Tìm kiếm quần áo..."
                     className="w-full h-10 pl-10 pr-9 rounded-xl border border-border bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all"
                   />
                   {search && (
