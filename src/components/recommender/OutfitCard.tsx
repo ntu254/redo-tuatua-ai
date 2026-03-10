@@ -123,17 +123,10 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
           </div>
 
           {/* Title */}
-          <div className="flex items-start justify-between mb-3">
+          <div className="mb-3">
             <h3 className="font-heading text-xl font-semibold text-foreground leading-tight">
               {outfit.title} {outfit.emoji}
             </h3>
-            <motion.button
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.4 }}
-              className="p-2 rounded-xl hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors shrink-0"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </motion.button>
           </div>
 
           {/* AI comment */}
@@ -229,22 +222,13 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
               </p>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-[11px] rounded-xl px-3.5 h-9 gap-1.5 whitespace-nowrap hover:shadow-sm active:scale-95 transition-all flex-1 sm:flex-none"
-              >
-                <RefreshCw className="w-3 h-3" /> Replace
-              </Button>
-              <Button
-                variant="accent"
-                size="sm"
-                className="text-[11px] rounded-xl px-4 h-9 gap-1.5 whitespace-nowrap shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all flex-1 sm:flex-none"
-              >
-                <ShoppingCart className="w-3 h-3" /> Buy Outfit
-              </Button>
-            </div>
+            <Button
+              variant="accent"
+              size="sm"
+              className="text-[11px] rounded-xl px-5 h-9 gap-1.5 whitespace-nowrap shadow-sm shadow-accent/20 hover:shadow-md hover:shadow-accent/30 active:scale-95 transition-all"
+            >
+              <ShoppingCart className="w-3 h-3" /> Buy Outfit
+            </Button>
           </div>
         </div>
       </div>

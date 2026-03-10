@@ -8,6 +8,7 @@ interface ChatMsg {
 }
 
 const quickPrompts = [
+  { icon: "🔄", label: "Replace an item" },
   { icon: "☕", label: "Coffee date outfit" },
   { icon: "💼", label: "Office under 1M" },
   { icon: "🔥", label: "Weekend streetwear" },
