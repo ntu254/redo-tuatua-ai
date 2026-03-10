@@ -3,17 +3,17 @@ import { BarChart3, Palette, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const stats = [
-  { icon: BarChart3, label: "Style DNA", value: "Minimal 70%", bg: "bg-coral-light", iconBg: "bg-accent/10", iconColor: "text-accent" },
-  { icon: Palette, label: "Top Color", value: "White · 35%", bg: "bg-[hsl(40_30%_95%)]", iconBg: "bg-[hsl(40_40%_88%)]", iconColor: "text-[hsl(40_40%_40%)]" },
-  { icon: User, label: "Outfit Type", value: "Casual · 42%", bg: "bg-teal-light", iconBg: "bg-teal/10", iconColor: "text-teal" },
+  { icon: BarChart3, label: "DNA Phong cách", value: "Minimal 70%", bg: "bg-coral-light", iconBg: "bg-accent/10", iconColor: "text-accent" },
+  { icon: Palette, label: "Màu yêu thích", value: "Trắng · 35%", bg: "bg-[hsl(40_30%_95%)]", iconBg: "bg-[hsl(40_40%_88%)]", iconColor: "text-[hsl(40_40%_40%)]" },
+  { icon: User, label: "Loại outfit", value: "Casual · 42%", bg: "bg-teal-light", iconBg: "bg-teal/10", iconColor: "text-teal" },
 ];
 
 const StyleProfilePreview = () => (
   <section className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
-      <p className="editorial-label mb-4">AI Analytics</p>
+      <p className="editorial-label mb-4">Phân tích AI</p>
       <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground">
-        Your <span className="italic">Style Profile</span>
+        Hồ sơ <span className="italic">Phong cách</span>
       </h2>
     </div>
 
@@ -41,7 +41,7 @@ const StyleProfilePreview = () => (
         to="/style-profile"
         className="inline-block text-[11px] font-body font-semibold uppercase tracking-[0.2em] text-accent hover:text-accent/80 transition-colors"
       >
-        Khám phá Style Profile của bạn →
+        Khám phá hồ sơ phong cách của bạn →
       </Link>
     </div>
   </section>
