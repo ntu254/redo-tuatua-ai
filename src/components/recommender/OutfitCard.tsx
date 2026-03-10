@@ -150,7 +150,7 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
               >
                 <div className="w-11 h-11 rounded-xl bg-secondary shrink-0 overflow-hidden ring-1 ring-border/50">
                   <img
-                    src={outfit.image}
+                    src={p.image || outfit.image}
                     alt={p.name}
                     className="w-full h-full object-cover opacity-75 group-hover/item:opacity-100 transition-opacity"
                   />
