@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Send, Star } from "lucide-react";
 import { motion } from "framer-motion";
-import heroImg from "@/assets/hero-main.jpg";
-import outfitImg from "@/assets/outfit-flatlay.jpg";
+import heroImg from "@/assets/hero-main-new.jpg";
+import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 
 const chatMessages = [
   { role: "user" as const, text: "Tôi cần outfit đi cà phê cuối tuần" },

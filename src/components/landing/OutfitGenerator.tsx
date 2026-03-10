@@ -1,7 +1,7 @@
 import { RefreshCcw, ShoppingCart, ArrowLeftRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import outfitImg from "@/assets/outfit-flatlay.jpg";
+import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 
 const items = [
   { type: "Shirt", name: "Áo sơ mi denim xanh nhạt", price: "245.000đ", originalPrice: "350.000đ", platform: "Shopee", rating: 4.8 },
