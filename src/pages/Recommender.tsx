@@ -191,96 +191,98 @@ const Recommender = () => {
           </div>
 
           {/* Outfit cards - scrollable */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 grid grid-cols-2 gap-6 auto-rows-min content-start">
+          <div className="flex-1 overflow-y-auto px-8 py-5 grid grid-cols-2 gap-5 auto-rows-min content-start">
             {sampleOutfits.map(outfit => (
               <motion.div key={outfit.id}
                 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                 className="bg-background border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                {/* Image on top */}
-                <div className="relative aspect-[4/3]">
-                  <div className="mag-img-zoom h-full">
-                    <img src={outfit.image} alt={outfit.title} className="w-full h-full object-cover" />
-                  </div>
-                  <button onClick={() => setSaved(s => { const n = new Set(s); n.has(outfit.id) ? n.delete(outfit.id) : n.add(outfit.id); return n; })}
-                    className={`absolute top-3 right-3 p-1.5 rounded-md bg-background/80 backdrop-blur-sm ${saved.has(outfit.id) ? "text-accent" : "text-muted-foreground"}`}>
-                    <Bookmark className="w-4 h-4" fill={saved.has(outfit.id) ? "currentColor" : "none"} />
-                  </button>
-                  <div className="absolute bottom-3 left-3">
-                    <span className="bg-foreground/80 text-background text-[9px] font-body font-medium px-2.5 py-1 rounded backdrop-blur-sm">
-                      {outfit.style}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content below */}
-                <div className="p-5">
-                  {/* Title */}
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-heading text-base text-foreground">{outfit.title} {outfit.emoji}</h3>
-                    {outfit.aiMatch && (
-                      <span className="text-[10px] font-body font-medium text-accent flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" /> AI Match
+                <div className="flex">
+                  {/* Image — fixed width left */}
+                  <div className="relative w-[240px] xl:w-[280px] shrink-0">
+                    <div className="mag-img-zoom h-full">
+                      <img src={outfit.image} alt={outfit.title} className="w-full h-full object-cover" />
+                    </div>
+                    <button onClick={() => setSaved(s => { const n = new Set(s); n.has(outfit.id) ? n.delete(outfit.id) : n.add(outfit.id); return n; })}
+                      className={`absolute top-2 right-2 p-1.5 rounded-md bg-background/80 backdrop-blur-sm ${saved.has(outfit.id) ? "text-accent" : "text-muted-foreground"}`}>
+                      <Bookmark className="w-3.5 h-3.5" fill={saved.has(outfit.id) ? "currentColor" : "none"} />
+                    </button>
+                    <div className="absolute bottom-2 left-2">
+                      <span className="bg-foreground/80 text-background text-[8px] font-body font-medium px-2 py-0.5 rounded backdrop-blur-sm">
+                        {outfit.style}
                       </span>
-                    )}
+                    </div>
                   </div>
 
-                  {/* AI comment */}
-                  <div className="bg-accent/5 border border-accent/10 rounded-md px-3 py-2 mb-4">
-                    <p className="text-[11px] font-body text-foreground/80 leading-relaxed line-clamp-2">
-                      <span className="text-accent font-semibold">✨ AI:</span> {outfit.aiComment}
-                    </p>
-                  </div>
+                  {/* Products — right side */}
+                  <div className="flex-1 p-4 flex flex-col min-w-0">
+                    {/* Title */}
+                    <div className="flex items-center justify-between mb-1.5">
+                      <h3 className="font-heading text-sm text-foreground">{outfit.title} {outfit.emoji}</h3>
+                      {outfit.aiMatch && (
+                        <span className="text-[9px] font-body font-medium text-accent flex items-center gap-0.5">
+                          <Sparkles className="w-2.5 h-2.5" /> AI Match
+                        </span>
+                      )}
+                    </div>
 
-                  {/* Product list */}
-                  <div className="space-y-3">
-                    {outfit.products.map(p => (
-                      <div key={p.name} className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-md bg-secondary shrink-0 overflow-hidden">
-                          <img src={outfit.image} alt={p.name} className="w-full h-full object-cover opacity-70" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className={`text-[10px] font-body font-semibold ${platformColors[p.platform]?.text}`}>{p.platform}</span>
-                            {p.badge && (
-                              <span className={`text-[8px] font-body font-semibold px-1.5 py-0.5 rounded ${platformColors[p.platform]?.bg} ${platformColors[p.platform]?.text}`}>
-                                {p.badge}
-                              </span>
+                    {/* AI comment */}
+                    <div className="bg-accent/5 border border-accent/10 rounded px-2.5 py-1.5 mb-2.5">
+                      <p className="text-[10px] font-body text-foreground/80 leading-relaxed line-clamp-2">
+                        <span className="text-accent font-semibold">✨ AI:</span> {outfit.aiComment}
+                      </p>
+                    </div>
+
+                    {/* Product list */}
+                    <div className="space-y-1.5 flex-1">
+                      {outfit.products.map(p => (
+                        <div key={p.name} className="flex items-center gap-2 py-1">
+                          <div className="w-8 h-8 rounded bg-secondary shrink-0 overflow-hidden">
+                            <img src={outfit.image} alt={p.name} className="w-full h-full object-cover opacity-70" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1">
+                              <span className={`text-[9px] font-body font-semibold ${platformColors[p.platform]?.text}`}>{p.platform}</span>
+                              {p.badge && (
+                                <span className={`text-[7px] font-body font-semibold px-1 py-px rounded ${platformColors[p.platform]?.bg} ${platformColors[p.platform]?.text}`}>
+                                  {p.badge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] font-body font-medium text-foreground truncate leading-tight">{p.name}</p>
+                            <div className="flex items-center gap-1">
+                              <Star className="w-2 h-2 text-accent fill-accent" />
+                              <span className="text-[9px] font-body text-foreground">{p.rating}</span>
+                              <span className="text-[9px] font-body text-muted-foreground">· {p.sold} đã bán</span>
+                            </div>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-[11px] font-body font-bold text-accent">{p.price}</span>
+                            {p.oldPrice && (
+                              <span className="text-[9px] font-body text-muted-foreground line-through block">{p.oldPrice}</span>
                             )}
                           </div>
-                          <p className="text-[12px] font-body font-medium text-foreground truncate">{p.name}</p>
-                          <div className="flex items-center gap-1.5 mt-0.5">
-                            <Star className="w-2.5 h-2.5 text-accent fill-accent" />
-                            <span className="text-[10px] font-body text-foreground">{p.rating}</span>
-                            <span className="text-[10px] font-body text-muted-foreground">· {p.sold} đã bán</span>
+                          <div className="flex gap-0.5 shrink-0">
+                            <button onClick={() => setLiked(s => { const n = new Set(s); const key = outfit.id * 100 + outfit.products.indexOf(p); n.has(key) ? n.delete(key) : n.add(key); return n; })}
+                              className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-accent transition-colors">
+                              <Heart className="w-2.5 h-2.5" />
+                            </button>
+                            <button className="p-1 rounded bg-accent text-accent-foreground">
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </button>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <span className="text-[12px] font-body font-bold text-accent">{p.price}</span>
-                          {p.oldPrice && (
-                            <span className="text-[10px] font-body text-muted-foreground line-through block">{p.oldPrice}</span>
-                          )}
-                        </div>
-                        <div className="flex gap-1 shrink-0">
-                          <button onClick={() => setLiked(s => { const n = new Set(s); const key = outfit.id * 100 + outfit.products.indexOf(p); n.has(key) ? n.delete(key) : n.add(key); return n; })}
-                            className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-accent transition-colors">
-                            <Heart className="w-3 h-3" />
-                          </button>
-                          <button className="p-1.5 rounded-md bg-accent text-accent-foreground">
-                            <ExternalLink className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-                    <p className="text-[12px] font-body text-foreground">
-                      Ước tính: <span className="font-bold text-accent">{outfit.totalPrice}</span>
-                    </p>
-                    <Button variant="accent" size="sm" className="gap-1.5 text-[10px] rounded-full px-4 h-7">
-                      Mua cả outfit 🛒
-                    </Button>
+                    {/* Footer */}
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+                      <p className="text-[11px] font-body text-foreground">
+                        Ước tính: <span className="font-bold text-accent">{outfit.totalPrice}</span>
+                      </p>
+                      <Button variant="accent" size="sm" className="gap-1 text-[9px] rounded-full px-3 h-6">
+                        Mua cả outfit 🛒
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
