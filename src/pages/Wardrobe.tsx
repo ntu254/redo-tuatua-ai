@@ -193,7 +193,7 @@ const Wardrobe = () => {
               )}
 
               {/* Mobile AI Generator */}
-              <div className="md:hidden">
+              <div className="lg:hidden">
                 <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
               </div>
             </div>
