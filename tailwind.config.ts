@@ -12,8 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["'Playfair Display'", "Georgia", "serif"],
-        body: ["'Be Vietnam Pro'", "sans-serif"],
+        heading: ["'Cormorant'", "Georgia", "serif"],
+        body: ["'DM Sans'", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
