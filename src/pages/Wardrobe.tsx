@@ -189,10 +189,8 @@ const Wardrobe = () => {
                     onClick={() => { setFilters({ category: [], style: [], color: [], season: [] }); setSearch(""); }}
                     className="text-xs text-accent font-body mt-2 underline underline-offset-2 hover:text-accent/80 transition-colors">
                     Xóa tất cả bộ lọc
-                  </button>
                 </motion.div>
-                  </button>
-                </motion.div>
+              )}
               )}
 
               {/* Mobile AI Generator */}
