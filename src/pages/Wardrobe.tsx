@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/landing/Navbar";
 import WardrobeHeader from "@/components/wardrobe/WardrobeHeader";
 import WardrobeFilters from "@/components/wardrobe/WardrobeFilters";
@@ -22,15 +22,6 @@ const wardrobeItems: WardrobeItem[] = [
   { id: 11, name: "Kính mát tròn", category: "Accessories", color: "#2C2C2C", tags: ["Streetwear"] },
   { id: 12, name: "Áo blazer đen", category: "Outerwear", color: "#1A1A1A", tags: ["Office", "Minimal"] },
 ];
-
-const categoryMap: Record<string, string> = {
-  All: "All",
-  Tops: "Tops",
-  Bottoms: "Bottoms",
-  Shoes: "Shoes",
-  Outerwear: "Outerwear",
-  Accessories: "Accessories",
-};
 
 const Wardrobe = () => {
   const [activeFilter, setActiveFilter] = useState("All");
@@ -66,29 +57,44 @@ const Wardrobe = () => {
         {isEmpty ? (
           <WardrobeEmptyState />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
-            {/* Left — main content */}
-            <div className="space-y-6">
+          <div className="space-y-6">
+            {/* Action row: Upload + AI Generator side by side */}
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-4">
               <WardrobeUploadArea />
+              <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
+            </div>
 
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <WardrobeFilters active={activeFilter} onChange={setActiveFilter} />
+            {/* Filter bar + selection info */}
+            <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
+              <WardrobeFilters active={activeFilter} onChange={setActiveFilter} />
+              <AnimatePresence>
                 {selectedIds.length > 0 && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-xs font-body text-accent font-medium"
+                  <motion.div
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 8 }}
+                    className="flex items-center gap-2"
                   >
-                    {selectedIds.length} selected — use AI panel to create outfit →
-                  </motion.p>
+                    <span className="text-xs font-body text-accent font-medium">
+                      {selectedIds.length} selected
+                    </span>
+                    <button
+                      onClick={() => setSelectedIds([])}
+                      className="text-[10px] font-body text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  </motion.div>
                 )}
-              </div>
+              </AnimatePresence>
+            </div>
 
-              {/* Grid */}
-              <motion.div
-                layout
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-              >
+            {/* Wardrobe grid */}
+            <motion.div
+              layout
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5"
+            >
+              <AnimatePresence mode="popLayout">
                 {filtered.map((item, i) => (
                   <WardrobeItemCard
                     key={item.id}
@@ -98,15 +104,8 @@ const Wardrobe = () => {
                     onToggleSelect={toggleSelect}
                   />
                 ))}
-              </motion.div>
-            </div>
-
-            {/* Right sidebar — AI panel */}
-            <div className="space-y-4">
-              <div className="sticky top-20">
-                <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
-              </div>
-            </div>
+              </AnimatePresence>
+            </motion.div>
           </div>
         )}
       </div>

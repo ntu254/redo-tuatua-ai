@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Shirt, ChevronRight, RefreshCw } from "lucide-react";
+import { Sparkles, Shirt, ChevronRight, RefreshCw, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { WardrobeItem } from "./WardrobeItemCard";
 
@@ -33,76 +33,86 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <div className="flex items-center gap-2.5 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
-          <Sparkles className="w-4 h-4 text-accent" />
-        </div>
-        <div>
-          <p className="text-sm font-body font-semibold text-foreground">AI Outfit Generator</p>
-          <p className="text-[10px] text-muted-foreground font-body">
-            {selectedIds.length > 0
-              ? `${selectedIds.length} items selected — AI will build around them`
-              : "Generate outfits from your wardrobe"}
-          </p>
-        </div>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+      className="relative overflow-hidden rounded-2xl border border-teal/20 bg-gradient-to-br from-teal-light via-card to-card p-5 shadow-sm"
+    >
+      {/* Decorative glow */}
+      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-teal/8 blur-2xl pointer-events-none" />
 
-      {!generated ? (
-        <Button
-          variant="accent"
-          className="w-full gap-2 rounded-xl"
-          onClick={handleGenerate}
-          disabled={spinning}
-        >
-          {spinning ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
-          ) : (
-            <Sparkles className="w-4 h-4" />
-          )}
-          {selectedIds.length > 0 ? "Create Outfit From Selected" : "Generate Outfit From My Wardrobe"}
-        </Button>
-      ) : (
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-3"
+      <div className="relative">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-teal/15 flex items-center justify-center shrink-0">
+            <Wand2 className="w-4.5 h-4.5 text-teal" strokeWidth={1.5} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-body font-semibold text-foreground">AI Outfit Generator</p>
+            <p className="text-[11px] text-muted-foreground font-body leading-snug mt-0.5">
+              {selectedIds.length > 0
+                ? `${selectedIds.length} items selected — AI will build around them`
+                : "Generate outfit combinations from your wardrobe"}
+            </p>
+          </div>
+        </div>
+
+        {!generated ? (
+          <Button
+            variant="teal"
+            className="w-full gap-2 rounded-xl shadow-sm"
+            onClick={handleGenerate}
+            disabled={spinning}
           >
-            <p className="editorial-label">AI Suggestion</p>
-            <div className="space-y-2">
-              {mockOutfit.map((piece, i) => (
-                <motion.div
-                  key={piece.role}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-secondary/60"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center border border-border">
-                    <Shirt className="w-4 h-4 text-muted-foreground/30" strokeWidth={1.5} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-body font-medium text-foreground truncate">{piece.name}</p>
-                    <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">{piece.role}</p>
-                  </div>
-                  <span className="w-4 h-4 rounded-full border border-border shrink-0" style={{ backgroundColor: piece.color }} />
-                </motion.div>
-              ))}
-            </div>
+            {spinning ? (
+              <RefreshCw className="w-4 h-4 animate-spin" />
+            ) : (
+              <Sparkles className="w-4 h-4" />
+            )}
+            {selectedIds.length > 0 ? "Create From Selected" : "Generate Outfit"}
+          </Button>
+        ) : (
+          <AnimatePresence>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-2.5"
+            >
+              <p className="editorial-label">AI Suggestion</p>
+              <div className="space-y-1.5">
+                {mockOutfit.map((piece, i) => (
+                  <motion.div
+                    key={piece.role}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.08 }}
+                    className="flex items-center gap-2.5 p-2.5 rounded-lg bg-background/70 border border-border/50"
+                  >
+                    <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center">
+                      <Shirt className="w-3.5 h-3.5 text-muted-foreground/25" strokeWidth={1.5} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-body font-medium text-foreground truncate">{piece.name}</p>
+                      <p className="text-[9px] text-muted-foreground font-body uppercase tracking-wider">{piece.role}</p>
+                    </div>
+                    <span className="w-3.5 h-3.5 rounded-full border border-border shrink-0" style={{ backgroundColor: piece.color }} />
+                  </motion.div>
+                ))}
+              </div>
 
-            <div className="flex gap-2 pt-2">
-              <Button variant="outline" size="sm" className="flex-1 rounded-xl gap-1.5 text-xs" onClick={handleRegenerate}>
-                <RefreshCw className={`w-3 h-3 ${spinning ? "animate-spin" : ""}`} /> Regenerate
-              </Button>
-              <Button variant="accent" size="sm" className="flex-1 rounded-xl gap-1.5 text-xs">
-                Save Outfit <ChevronRight className="w-3 h-3" />
-              </Button>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      )}
-    </div>
+              <div className="flex gap-2 pt-1">
+                <Button variant="outline" size="sm" className="flex-1 rounded-xl gap-1 text-[11px] h-8" onClick={handleRegenerate}>
+                  <RefreshCw className={`w-3 h-3 ${spinning ? "animate-spin" : ""}`} /> Regenerate
+                </Button>
+                <Button variant="teal" size="sm" className="flex-1 rounded-xl gap-1 text-[11px] h-8">
+                  Save <ChevronRight className="w-3 h-3" />
+                </Button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

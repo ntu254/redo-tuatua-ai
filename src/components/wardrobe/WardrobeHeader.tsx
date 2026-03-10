@@ -1,52 +1,72 @@
 import { motion } from "framer-motion";
-import { Shirt, Heart, Sparkles } from "lucide-react";
+import { Shirt, Heart, Sparkles, Plus, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface WardrobeHeaderProps {
   itemCount: number;
   savedOutfits: number;
   aiSuggestions: number;
+  onAddClick?: () => void;
 }
 
-const WardrobeHeader = ({ itemCount, savedOutfits, aiSuggestions }: WardrobeHeaderProps) => {
+const WardrobeHeader = ({ itemCount, savedOutfits, aiSuggestions, onAddClick }: WardrobeHeaderProps) => {
   const stats = [
-    { icon: Shirt, value: itemCount, label: "Items", color: "text-accent" },
-    { icon: Heart, value: savedOutfits, label: "Saved Outfits", color: "text-teal" },
-    { icon: Sparkles, value: aiSuggestions, label: "AI Suggestions", color: "text-accent" },
+    { icon: Shirt, value: itemCount, label: "Items", accent: "bg-accent/10 text-accent" },
+    { icon: Heart, value: savedOutfits, label: "Saved Outfits", accent: "bg-teal-light text-teal" },
+    { icon: Sparkles, value: aiSuggestions, label: "AI Suggestions", accent: "bg-accent/10 text-accent" },
   ];
 
   return (
-    <div className="px-6 pt-24 pb-10">
+    <div className="px-6 pt-24 pb-8">
       <div className="container mx-auto max-w-6xl">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <p className="editorial-label mb-3">AI-Powered Closet</p>
-          <h1 className="font-heading text-5xl md:text-6xl font-light text-foreground mb-2">
-            My <span className="italic">Wardrobe</span>
-          </h1>
-          <p className="text-muted-foreground font-body text-sm max-w-md">
-            Your personal clothing collection powered by AI.
-          </p>
-        </motion.div>
+        {/* Top row: Title + Actions */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <p className="editorial-label mb-2">AI-Powered Closet</p>
+            <h1 className="font-heading text-4xl md:text-5xl font-light text-foreground leading-tight">
+              My <span className="italic">Wardrobe</span>
+            </h1>
+            <p className="text-muted-foreground font-body text-sm mt-1.5 max-w-sm">
+              Your personal clothing collection powered by AI styling.
+            </p>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
+            className="flex items-center gap-2.5"
+          >
+            <Button variant="outline" size="sm" className="gap-2 rounded-xl text-xs">
+              <Upload className="w-3.5 h-3.5" /> Upload Multiple
+            </Button>
+            <Button variant="accent" size="default" className="gap-2 rounded-xl" onClick={onAddClick}>
+              <Plus className="w-4 h-4" /> Add Clothing Item
+            </Button>
+          </motion.div>
+        </div>
+
+        {/* Stats row */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex gap-6 mt-8"
+          transition={{ delay: 0.2, duration: 0.4 }}
+          className="flex gap-3 flex-wrap"
         >
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 + i * 0.1 }}
-              className="flex items-center gap-3 bg-card rounded-xl border border-border px-5 py-3.5 shadow-sm"
+              transition={{ delay: 0.25 + i * 0.08 }}
+              className="flex items-center gap-3 bg-card rounded-xl border border-border px-4 py-3 shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className={`w-9 h-9 rounded-lg bg-secondary flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="w-4 h-4" strokeWidth={1.5} />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${stat.accent}`}>
+                <stat.icon className="w-3.5 h-3.5" strokeWidth={1.5} />
               </div>
               <div>
-                <p className="text-xl font-heading font-semibold text-foreground">{stat.value}</p>
-                <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                <p className="text-lg font-heading font-semibold text-foreground leading-none">{stat.value}</p>
+                <p className="text-[9px] font-body text-muted-foreground uppercase tracking-wider mt-0.5">{stat.label}</p>
               </div>
             </motion.div>
           ))}
