@@ -17,7 +17,7 @@ const CTABanner = () => (
       <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
         className="text-[10px] font-body font-medium uppercase tracking-[0.4em] text-background/30 mb-6">Sẵn sàng chưa?</motion.p>
       <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-semibold text-background leading-tight mb-6 max-w-2xl mx-auto">
-        Để AI trở thành <span className="italic font-medium">stylist riêng</span> của bạn
+        Để AI trở thành <span className="font-semibold">stylist riêng</span> của bạn
       </h2>
       <p className="text-background/40 text-sm font-body leading-relaxed mb-10 max-w-md mx-auto">
         Làm bài quiz phong cách 2 phút — hoàn toàn miễn phí. AI sẽ phân tích sở thích và gợi ý outfit hoàn hảo cho bạn.

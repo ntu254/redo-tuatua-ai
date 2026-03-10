@@ -42,7 +42,7 @@ const HowItWorks = () => (
         <div>
           <p className="editorial-label mb-4">Cách hoạt động</p>
           <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground leading-tight">
-            Ba bước để có<br /><span className="italic">outfit hoàn hảo</span>
+            Ba bước để có<br /><span className="font-semibold">outfit hoàn hảo</span>
           </h2>
           <div className="editorial-divider mt-6" />
         </div>

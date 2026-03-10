@@ -71,7 +71,7 @@ const AIInput = () => {
             <p className="editorial-label mb-4">Chat với AI Stylist</p>
             <h2 className="font-heading text-4xl md:text-5xl font-semibold text-foreground leading-tight">
               Hỏi<br />
-              <span className="italic font-medium text-accent">AI Stylist</span>
+              <span className="font-semibold text-accent">AI Stylist</span>
             </h2>
             <div className="editorial-divider mt-6" />
             <p className="text-sm text-muted-foreground font-body mt-5 max-w-[260px] leading-relaxed">

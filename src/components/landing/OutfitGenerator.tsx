@@ -20,8 +20,8 @@ const OutfitGenerator = () => (
   <section className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
       <p className="editorial-label mb-4">AI tạo outfit</p>
-      <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
-        Outfit <span className="italic">hoàn chỉnh</span> từ AI
+       <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground">
+        Outfit <span className="font-semibold">hoàn chỉnh</span> từ AI
       </h2>
     </div>
 
