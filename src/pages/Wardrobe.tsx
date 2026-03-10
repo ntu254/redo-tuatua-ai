@@ -161,8 +161,8 @@ const Wardrobe = () => {
               {/* Results count */}
               <div className="flex items-center justify-between">
                 <p className="text-xs font-body text-muted-foreground">
-                  {filtered.length} item{filtered.length !== 1 ? "s" : ""}
-                  {(filters.category.length > 0 || filters.style.length > 0 || search) && " found"}
+                  {filtered.length} món đồ
+                  {(filters.category.length > 0 || filters.style.length > 0 || search) && " được tìm thấy"}
                 </p>
               </div>
 
