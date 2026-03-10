@@ -4,10 +4,12 @@ import { Search, X } from "lucide-react";
 import Navbar from "@/components/landing/Navbar";
 import WardrobeHeader from "@/components/wardrobe/WardrobeHeader";
 import WardrobeFilterSidebar, { type ActiveFilters } from "@/components/wardrobe/WardrobeFilterSidebar";
-import WardrobeUploadArea from "@/components/wardrobe/WardrobeUploadArea";
 import WardrobeItemCard, { type WardrobeItem } from "@/components/wardrobe/WardrobeItemCard";
 import AIOutfitGenerator from "@/components/wardrobe/AIOutfitGenerator";
 import WardrobeEmptyState from "@/components/wardrobe/WardrobeEmptyState";
+import WardrobeUploadModal from "@/components/wardrobe/WardrobeUploadModal";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 const wardrobeItems: WardrobeItem[] = [
   { id: 1, name: "Áo thun trắng basic", category: "Tops", color: "#FFFFFF", tags: ["Casual", "Minimal"] },
@@ -33,6 +35,7 @@ const Wardrobe = () => {
   });
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   const filtered = useMemo(() => {
     let items = wardrobeItems;
@@ -74,6 +77,7 @@ const Wardrobe = () => {
         itemCount={wardrobeItems.length}
         savedOutfits={5}
         aiSuggestions={18}
+        onAddClick={() => setUploadOpen(true)}
       />
 
       <div className="container mx-auto max-w-7xl px-6 pb-20">
@@ -81,28 +85,24 @@ const Wardrobe = () => {
           <WardrobeEmptyState />
         ) : (
           <div className="flex gap-6">
-            {/* Left Sidebar — Filters */}
-            <div className="hidden md:block w-[220px] shrink-0 sticky top-24 self-start">
+            {/* Left Sidebar — AI Generator on top, then Filters */}
+            <div className="hidden md:flex md:flex-col w-[240px] shrink-0 sticky top-24 self-start gap-5 max-h-[calc(100vh-7rem)] overflow-y-auto pb-4 scrollbar-thin">
+              <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
               <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
-
-              {/* AI Generator below filters */}
-              <div className="mt-5">
-                <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
-              </div>
             </div>
 
             {/* Main Content */}
-            <div className="flex-1 min-w-0 space-y-5">
-              {/* Search + Upload row */}
-              <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 min-w-0 space-y-4">
+              {/* Search bar + Add button */}
+              <div className="flex items-center gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search clothing..."
-                    className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-border bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/40 transition-all shadow-sm"
+                    className="w-full h-10 pl-10 pr-9 rounded-xl border border-border bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all"
                   />
                   {search && (
                     <button
@@ -113,9 +113,14 @@ const Wardrobe = () => {
                     </button>
                   )}
                 </div>
-                <div className="sm:w-auto">
-                  <WardrobeUploadArea />
-                </div>
+                <Button
+                  variant="accent"
+                  size="sm"
+                  className="gap-1.5 rounded-xl h-10 px-4 shrink-0"
+                  onClick={() => setUploadOpen(true)}
+                >
+                  <Plus className="w-4 h-4" /> Add Item
+                </Button>
               </div>
 
               {/* Selection info */}
@@ -125,7 +130,7 @@ const Wardrobe = () => {
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-accent/5 border border-accent/15"
+                    className="flex items-center gap-3 px-4 py-2 rounded-xl bg-accent/5 border border-accent/15"
                   >
                     <span className="text-xs font-body text-accent font-medium">
                       {selectedIds.length} item{selectedIds.length > 1 ? "s" : ""} selected
@@ -146,8 +151,6 @@ const Wardrobe = () => {
                   {filtered.length} item{filtered.length !== 1 ? "s" : ""}
                   {(filters.category.length > 0 || filters.style.length > 0 || search) && " found"}
                 </p>
-
-                {/* Mobile filter toggle — future enhancement */}
               </div>
 
               {/* Wardrobe grid */}
@@ -197,6 +200,9 @@ const Wardrobe = () => {
           </div>
         )}
       </div>
+
+      {/* Upload Modal with AI Detection */}
+      <WardrobeUploadModal open={uploadOpen} onClose={() => setUploadOpen(false)} />
     </div>
   );
 };
