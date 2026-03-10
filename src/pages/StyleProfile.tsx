@@ -1,23 +1,11 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, TrendingUp, Shirt, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/landing/Navbar";
 import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  Radar,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
+  RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer,
+  PieChart, Pie, Cell,
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
 } from "recharts";
 
 import whiteTshirt from "@/assets/wardrobe/white-tshirt.jpg";
@@ -90,242 +78,223 @@ const suggestedStyles = [
   { name: "Modern Streetwear", img: styleStreet, desc: "Phá cách, oversized, sneaker game" },
 ];
 
-/* ── Section wrapper ── */
-const Section = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <motion.section
-    initial={{ opacity: 0, y: 24 }}
+/* ── Helpers ── */
+const Fade = ({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-60px" }}
-    transition={{ duration: 0.5 }}
+    viewport={{ once: true, margin: "-40px" }}
+    transition={{ duration: 0.45, delay }}
     className={className}
   >
     {children}
-  </motion.section>
+  </motion.div>
 );
 
-const SectionHeader = ({ label, title }: { label: string; title: React.ReactNode }) => (
-  <div className="border-b border-border px-6 py-10 text-center">
-    <p className="editorial-label mb-3">{label}</p>
-    <h2 className="font-heading text-2xl md:text-3xl font-light text-foreground">{title}</h2>
-  </div>
+const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`border border-border bg-card p-6 ${className}`}>{children}</div>
+);
+
+const CardLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className="editorial-label mb-3">{children}</p>
 );
 
 /* ── Page ── */
-const StyleProfile = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+const StyleProfile = () => (
+  <div className="min-h-screen bg-background">
+    <Navbar />
 
-      {/* ── Hero ── */}
-      <div className="pt-16">
-        <div className="border-b border-border px-6 py-16 md:py-24 text-center">
-          <p className="editorial-label mb-4">AI-Powered Analytics</p>
-          <h1 className="font-heading text-4xl md:text-6xl font-light text-foreground blur-text-reveal">
-            Your <span className="italic">Style Profile</span>
-          </h1>
-          <p className="text-muted-foreground font-body mt-4 text-sm max-w-lg mx-auto blur-text-reveal blur-text-reveal-delay-1">
-            Khám phá xu hướng thời trang cá nhân được phân tích bởi StyleAI
-          </p>
-          <p className="text-muted-foreground/60 font-body mt-2 text-xs max-w-md mx-auto blur-text-reveal blur-text-reveal-delay-2">
-            Tủ đồ và lựa chọn outfit của bạn tiết lộ những pattern phong cách độc đáo.
-          </p>
-        </div>
+    {/* ── Hero (compact) ── */}
+    <div className="pt-16">
+      <div className="border-b border-border px-6 py-12 md:py-16 text-center">
+        <p className="editorial-label mb-3">AI-Powered Analytics</p>
+        <h1 className="font-heading text-3xl md:text-5xl font-light text-foreground blur-text-reveal">
+          Your <span className="italic">Style Profile</span>
+        </h1>
+        <p className="text-muted-foreground font-body mt-3 text-sm max-w-md mx-auto blur-text-reveal blur-text-reveal-delay-1">
+          AI insights về tủ đồ và xu hướng thời trang cá nhân của bạn.
+        </p>
       </div>
+    </div>
 
-      {/* ── Style DNA (Radar) ── */}
-      <Section>
-        <SectionHeader label="Phân tích" title={<>Style <span className="italic">DNA</span></>} />
-        <div className="px-6 py-12 max-w-xl mx-auto">
-          <ResponsiveContainer width="100%" height={320}>
-            <RadarChart data={styleDna} outerRadius="75%">
+    {/* ── Style Analysis 2×2 Grid ── */}
+    <Fade>
+      <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border">
+        {/* Style DNA */}
+        <Card className="border-b md:border-b-0 md:border-r">
+          <CardLabel>Style DNA</CardLabel>
+          <ResponsiveContainer width="100%" height={240}>
+            <RadarChart data={styleDna} outerRadius="72%">
               <PolarGrid stroke="hsl(0 0% 90%)" />
-              <PolarAngleAxis
-                dataKey="style"
-                tick={{ fontSize: 11, fill: "hsl(0 0% 45%)", fontFamily: "'DM Sans'" }}
-              />
-              <Radar
-                dataKey="value"
-                stroke="hsl(0 100% 70%)"
-                fill="hsl(0 100% 70%)"
-                fillOpacity={0.15}
-                strokeWidth={2}
-              />
+              <PolarAngleAxis dataKey="style" tick={{ fontSize: 10, fill: "hsl(0 0% 45%)", fontFamily: "'DM Sans'" }} />
+              <Radar dataKey="value" stroke="hsl(0 100% 70%)" fill="hsl(0 100% 70%)" fillOpacity={0.15} strokeWidth={2} />
             </RadarChart>
           </ResponsiveContainer>
-          <p className="text-center text-xs text-muted-foreground font-body mt-4">
-            Phong cách chủ đạo: <span className="text-foreground font-medium">Minimal (70%)</span>
+          <p className="text-center text-[11px] text-muted-foreground font-body mt-2">
+            Chủ đạo: <span className="text-foreground font-medium">Minimal · 70%</span>
           </p>
-        </div>
-      </Section>
+        </Card>
 
-      {/* ── Favorite Colors ── */}
-      <Section>
-        <SectionHeader label="Bảng màu" title={<>Favorite <span className="italic">Colors</span></>} />
-        <div className="mag-grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
-          {favoriteColors.map((c) => (
-            <div key={c.name} className="p-8 text-center group">
-              <div
-                className="w-16 h-16 mx-auto mb-4 border border-border transition-transform duration-300 group-hover:scale-110"
-                style={{ backgroundColor: c.hex }}
-              />
-              <p className="font-heading text-lg text-foreground">{c.name}</p>
-              <p className="text-xs text-muted-foreground font-body mt-1">{c.pct}% tủ đồ</p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── Outfit Types (Donut) ── */}
-      <Section>
-        <SectionHeader label="Phân loại" title={<>Your Outfit <span className="italic">Types</span></>} />
-        <div className="px-6 py-12 flex flex-col md:flex-row items-center justify-center gap-10 max-w-2xl mx-auto">
-          <ResponsiveContainer width={220} height={220}>
-            <PieChart>
-              <Pie
-                data={outfitTypes}
-                dataKey="value"
-                innerRadius={60}
-                outerRadius={95}
-                paddingAngle={2}
-                strokeWidth={0}
-              >
-                {outfitTypes.map((entry) => (
-                  <Cell key={entry.name} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </ResponsiveContainer>
-          <div className="space-y-3">
-            {outfitTypes.map((t) => (
-              <div key={t.name} className="flex items-center gap-3">
-                <span className="w-3 h-3 shrink-0" style={{ backgroundColor: t.color }} />
-                <span className="text-sm font-body text-foreground w-24">{t.name}</span>
-                <div className="flex-1 h-1.5 bg-secondary min-w-[100px]">
-                  <div className="h-full" style={{ width: `${t.value}%`, backgroundColor: t.color }} />
+        {/* Favorite Colors */}
+        <Card className="border-b md:border-b-0">
+          <CardLabel>Favorite Colors</CardLabel>
+          <div className="flex flex-col gap-3 mt-4">
+            {favoriteColors.map((c) => (
+              <div key={c.name} className="flex items-center gap-3">
+                <div className="w-8 h-8 shrink-0 border border-border" style={{ backgroundColor: c.hex }} />
+                <span className="text-sm font-body text-foreground flex-1">{c.name}</span>
+                <div className="flex-1 h-1.5 bg-secondary max-w-[120px]">
+                  <div className="h-full bg-accent" style={{ width: `${c.pct}%`, opacity: 0.4 + c.pct / 100 }} />
                 </div>
-                <span className="text-xs text-muted-foreground font-body w-8 text-right">{t.value}%</span>
+                <span className="text-xs text-muted-foreground font-body w-10 text-right">{c.pct}%</span>
               </div>
             ))}
           </div>
-        </div>
-      </Section>
+        </Card>
 
-      {/* ── Wardrobe Insights ── */}
-      <Section>
-        <SectionHeader label="AI Insights" title={<>Wardrobe <span className="italic">Insights</span></>} />
-        <div className="mag-grid grid-cols-1 md:grid-cols-2">
-          {insights.map((text, i) => (
-            <div key={i} className="p-8 flex items-start gap-4">
-              <Sparkles className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-              <p className="text-sm text-foreground font-body leading-relaxed">{text}</p>
+        {/* Outfit Types */}
+        <Card className="border-b md:border-b-0 md:border-r">
+          <CardLabel>Outfit Types</CardLabel>
+          <div className="flex items-center gap-6">
+            <ResponsiveContainer width={160} height={160}>
+              <PieChart>
+                <Pie data={outfitTypes} dataKey="value" innerRadius={45} outerRadius={72} paddingAngle={2} strokeWidth={0}>
+                  {outfitTypes.map((e) => <Cell key={e.name} fill={e.color} />)}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="space-y-2 flex-1">
+              {outfitTypes.map((t) => (
+                <div key={t.name} className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 shrink-0" style={{ backgroundColor: t.color }} />
+                  <span className="text-xs font-body text-foreground w-20">{t.name}</span>
+                  <span className="text-xs text-muted-foreground font-body">{t.value}%</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Section>
+          </div>
+        </Card>
 
-      {/* ── Most Worn Items ── */}
-      <Section>
-        <SectionHeader label="Yêu thích" title={<>Wardrobe <span className="italic">Favorites</span></>} />
-        <div className="mag-grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-          {wardrobeFavorites.map((item) => (
-            <div key={item.name} className="group p-4 text-center">
-              <div className="aspect-square overflow-hidden mb-3 mag-img-zoom">
+        {/* AI Style Insight */}
+        <Card className="flex flex-col justify-between">
+          <div>
+            <CardLabel>AI Style Insight</CardLabel>
+            <div className="mt-2 mb-4">
+              <Sparkles className="w-5 h-5 text-accent mb-3" />
+              <p className="font-heading text-lg md:text-xl text-foreground italic leading-relaxed">
+                "Phong cách của bạn là modern minimal với ảnh hưởng streetwear nhẹ nhàng."
+              </p>
+              <p className="text-xs text-muted-foreground font-body mt-3 leading-relaxed">
+                Bạn ưa chuộng outfit trung tính, linh hoạt cho cả casual lẫn office.
+              </p>
+            </div>
+          </div>
+          <div className="border-t border-border pt-4 space-y-2">
+            {insights.slice(0, 3).map((text, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
+                <p className="text-[11px] text-muted-foreground font-body leading-relaxed">{text}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </Fade>
+
+    {/* ── Wardrobe Favorites ── */}
+    <Fade>
+      <div className="border-b border-border">
+        <div className="px-6 py-6 border-b border-border">
+          <p className="editorial-label">Wardrobe Favorites</p>
+        </div>
+        <div className="grid grid-cols-3 md:grid-cols-6">
+          {wardrobeFavorites.map((item, i) => (
+            <div key={item.name} className={`group p-4 text-center ${i < wardrobeFavorites.length - 1 ? "border-r border-border" : ""}`}>
+              <div className="aspect-square overflow-hidden mb-2 mag-img-zoom">
                 <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
               </div>
-              <p className="text-xs font-body font-medium text-foreground">{item.name}</p>
+              <p className="text-[11px] font-body font-medium text-foreground truncate">{item.name}</p>
               <p className="text-[10px] text-muted-foreground font-body mt-0.5">
-                <Shirt className="w-3 h-3 inline mr-1" />{item.worn} lần mặc
+                <Shirt className="w-3 h-3 inline mr-0.5" />{item.worn}×
               </p>
             </div>
           ))}
         </div>
-      </Section>
+      </div>
+    </Fade>
 
-      {/* ── Style Evolution ── */}
-      <Section>
-        <SectionHeader label="Hành trình" title={<>Style <span className="italic">Evolution</span></>} />
-        <div className="px-6 py-12 max-w-2xl mx-auto">
-          <ResponsiveContainer width="100%" height={260}>
-            <AreaChart data={evolution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 92%)" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "hsl(0 0% 45%)" }} />
-              <YAxis tick={{ fontSize: 11, fill: "hsl(0 0% 45%)" }} />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(0 0% 100%)",
-                  border: "1px solid hsl(0 0% 92%)",
-                  fontSize: 12,
-                }}
-              />
-              <Area type="monotone" dataKey="Minimal" stackId="1" stroke="hsl(0 100% 70%)" fill="hsl(0 100% 70%)" fillOpacity={0.2} />
-              <Area type="monotone" dataKey="Casual" stackId="1" stroke="hsl(0 0% 65%)" fill="hsl(0 0% 65%)" fillOpacity={0.15} />
-              <Area type="monotone" dataKey="Office" stackId="1" stroke="hsl(0 0% 40%)" fill="hsl(0 0% 40%)" fillOpacity={0.1} />
-            </AreaChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-6 mt-4">
+    {/* ── Style Evolution (compact) ── */}
+    <Fade>
+      <div className="border-b border-border">
+        <div className="px-6 py-6 border-b border-border flex items-center justify-between">
+          <p className="editorial-label">Style Evolution</p>
+          <div className="flex gap-4">
             {[
               { label: "Minimal", color: "hsl(0 100% 70%)" },
               { label: "Casual", color: "hsl(0 0% 65%)" },
               { label: "Office", color: "hsl(0 0% 40%)" },
             ].map((l) => (
-              <div key={l.label} className="flex items-center gap-2">
-                <span className="w-3 h-3" style={{ backgroundColor: l.color }} />
-                <span className="text-[10px] font-body text-muted-foreground uppercase tracking-wider">{l.label}</span>
+              <div key={l.label} className="flex items-center gap-1.5">
+                <span className="w-2 h-2" style={{ backgroundColor: l.color }} />
+                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">{l.label}</span>
               </div>
             ))}
           </div>
         </div>
-      </Section>
-
-      {/* ── AI Style Insight ── */}
-      <Section>
-        <div className="border-y border-border px-6 py-14 text-center max-w-2xl mx-auto">
-          <Sparkles className="w-5 h-5 text-accent mx-auto mb-4" />
-          <p className="editorial-label mb-4">AI Style Insight</p>
-          <p className="font-heading text-xl md:text-2xl text-foreground italic leading-relaxed">
-            "Phong cách của bạn là modern minimal với ảnh hưởng streetwear nhẹ nhàng."
-          </p>
-          <p className="text-sm text-muted-foreground font-body mt-4 max-w-md mx-auto">
-            Bạn ưa chuộng outfit trung tính, linh hoạt cho cả casual lẫn office.
-          </p>
+        <div className="px-6 py-8 max-w-3xl mx-auto">
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={evolution}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 92%)" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(0 0% 45%)" }} />
+              <YAxis tick={{ fontSize: 10, fill: "hsl(0 0% 45%)" }} width={30} />
+              <Tooltip contentStyle={{ background: "hsl(0 0% 100%)", border: "1px solid hsl(0 0% 92%)", fontSize: 11 }} />
+              <Area type="monotone" dataKey="Minimal" stackId="1" stroke="hsl(0 100% 70%)" fill="hsl(0 100% 70%)" fillOpacity={0.2} />
+              <Area type="monotone" dataKey="Casual" stackId="1" stroke="hsl(0 0% 65%)" fill="hsl(0 0% 65%)" fillOpacity={0.15} />
+              <Area type="monotone" dataKey="Office" stackId="1" stroke="hsl(0 0% 40%)" fill="hsl(0 0% 40%)" fillOpacity={0.1} />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
-      </Section>
+      </div>
+    </Fade>
 
-      {/* ── Suggested Styles ── */}
-      <Section>
-        <SectionHeader label="Gợi ý" title={<>Suggested <span className="italic">Styles</span></>} />
-        <div className="mag-grid grid-cols-2 lg:grid-cols-4">
-          {suggestedStyles.map((s) => (
-            <div key={s.name} className="group">
+    {/* ── Suggested Styles ── */}
+    <Fade>
+      <div className="border-b border-border">
+        <div className="px-6 py-6 border-b border-border">
+          <p className="editorial-label">Suggested Styles</p>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4">
+          {suggestedStyles.map((s, i) => (
+            <div key={s.name} className={`group ${i < suggestedStyles.length - 1 ? "border-r border-border" : ""}`}>
               <div className="aspect-[3/4] overflow-hidden mag-img-zoom">
                 <img src={s.img} alt={s.name} className="w-full h-full object-cover" />
               </div>
-              <div className="p-5 border-t border-border">
-                <h3 className="font-heading text-lg text-foreground">{s.name}</h3>
-                <p className="text-xs text-muted-foreground font-body mt-1">{s.desc}</p>
+              <div className="p-4 border-t border-border">
+                <h3 className="font-heading text-base text-foreground">{s.name}</h3>
+                <p className="text-[11px] text-muted-foreground font-body mt-0.5">{s.desc}</p>
               </div>
             </div>
           ))}
         </div>
-      </Section>
+      </div>
+    </Fade>
 
-      {/* ── CTA ── */}
-      <div className="border-t border-border px-6 py-16 text-center">
-        <p className="editorial-label mb-4">Tiếp theo</p>
-        <h2 className="font-heading text-2xl md:text-3xl font-light text-foreground mb-6">
-          Tạo outfit <span className="italic">cho phong cách của bạn</span>
-        </h2>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Button variant="accent" size="lg" className="gap-2">
-            Generate Outfits <ArrowRight className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="lg" className="gap-2">
-            <TrendingUp className="w-4 h-4" /> Khám phá xu hướng
-          </Button>
-        </div>
+    {/* ── CTA ── */}
+    <div className="px-6 py-14 text-center">
+      <p className="editorial-label mb-3">Tiếp theo</p>
+      <h2 className="font-heading text-2xl md:text-3xl font-light text-foreground mb-5">
+        Tạo outfit <span className="italic">cho phong cách của bạn</span>
+      </h2>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <Button variant="accent" size="lg" className="gap-2">
+          Generate Outfits <ArrowRight className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" size="lg" className="gap-2">
+          <TrendingUp className="w-4 h-4" /> Khám phá xu hướng
+        </Button>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default StyleProfile;
