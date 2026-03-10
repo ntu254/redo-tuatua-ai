@@ -29,6 +29,7 @@ interface Product {
   rating: number;
   sold: string;
   brand: string;
+  image?: string;
 }
 
 interface Outfit {
