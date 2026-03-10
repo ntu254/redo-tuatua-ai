@@ -60,8 +60,8 @@ const StylePicker = () => {
       {/* Section header */}
       <div className="border-b border-border px-6 py-16 text-center">
         <p className="editorial-label mb-4">Phong cách của bạn</p>
-        <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">
-          Chọn phong cách, <span className="italic">nhận gợi ý ngay</span>
+        <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground">
+          Chọn phong cách, <span className="font-semibold">nhận gợi ý ngay</span>
         </h2>
       </div>
 
