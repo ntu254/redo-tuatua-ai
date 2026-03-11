@@ -17,8 +17,13 @@ const styles = [
   { label: "Hẹn hò", image: dateNightImg, tag: "Thanh lịch" },
 ];
 
-const StyleExplorer = () => (
-  <section className="bg-background">
+const StyleExplorer = () => {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const headerY = useTransform(scrollYProgress, [0, 0.5], [40, 0]);
+
+  return (
+  <section ref={ref} className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
       <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
         className="editorial-label mb-4">Khám phá phong cách</motion.p>
