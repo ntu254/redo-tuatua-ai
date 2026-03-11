@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Send, Star } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import heroImg from "@/assets/hero-main-new.jpg";
 import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 
