@@ -30,7 +30,7 @@ const HeroSection = () => {
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[calc(100vh-4rem)] items-center">
           {/* Left — text + value prop */}
-          <div className="py-16 lg:py-24 lg:pr-16">
+          <motion.div style={{ y: textY }} className="py-16 lg:py-24 lg:pr-16">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-coral-light mb-8">
               <Sparkles className="w-3.5 h-3.5 text-accent" />
