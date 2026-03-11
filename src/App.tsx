@@ -10,6 +10,9 @@ import Wardrobe from "./pages/Wardrobe.tsx";
 import Analysis from "./pages/Analysis.tsx";
 import Trends from "./pages/Trends.tsx";
 import StyleProfile from "./pages/StyleProfile.tsx";
+import Login from "./pages/Login.tsx";
+import SignUp from "./pages/SignUp.tsx";
+import Profile from "./pages/Profile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
