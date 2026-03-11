@@ -61,6 +61,6 @@ const StyleExplorer = () => {
       ))}
     </div>
   </section>
-);
-
+  );
+};
 export default StyleExplorer;
