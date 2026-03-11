@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Send, Star } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import heroImg from "@/assets/hero-main-new.jpg";
 import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 
@@ -20,12 +20,17 @@ const HeroSection = () => {
   const [revealed, setRevealed] = useState(false);
   useEffect(() => { setTimeout(() => setRevealed(true), 100); }, []);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const imgY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+
   return (
-    <section className="min-h-screen bg-background pt-16 overflow-hidden">
+    <section ref={sectionRef} className="min-h-screen bg-background pt-16 overflow-hidden">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[calc(100vh-4rem)] items-center">
           {/* Left — text + value prop */}
-          <div className="py-16 lg:py-24 lg:pr-16">
+          <motion.div style={{ y: textY }} className="py-16 lg:py-24 lg:pr-16">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-coral-light mb-8">
               <Sparkles className="w-3.5 h-3.5 text-accent" />
@@ -79,12 +84,13 @@ const HeroSection = () => {
                 ))}
               </div>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Right — fashion imagery */}
           <div className="hidden lg:block relative">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
+              style={{ y: imgY }}
               className="relative">
               {/* Main hero image */}
               <div className="mag-img-zoom aspect-[3/4] max-h-[85vh]">

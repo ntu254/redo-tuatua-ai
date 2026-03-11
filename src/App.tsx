@@ -10,6 +10,9 @@ import Wardrobe from "./pages/Wardrobe.tsx";
 import Analysis from "./pages/Analysis.tsx";
 import Trends from "./pages/Trends.tsx";
 import StyleProfile from "./pages/StyleProfile.tsx";
+import Login from "./pages/Login.tsx";
+import SignUp from "./pages/SignUp.tsx";
+import Profile from "./pages/Profile.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/trends" element={<Trends />} />
           <Route path="/style-profile" element={<StyleProfile />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

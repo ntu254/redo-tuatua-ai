@@ -1,5 +1,6 @@
+import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import casualImg from "@/assets/style-casual-new.jpg";
 import streetImg from "@/assets/style-streetwear-new.jpg";
 import minimalImg from "@/assets/style-minimal-new.jpg";
@@ -16,15 +17,22 @@ const styles = [
   { label: "Hẹn hò", image: dateNightImg, tag: "Thanh lịch" },
 ];
 
-const StyleExplorer = () => (
-  <section className="bg-background">
+const StyleExplorer = () => {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const headerY = useTransform(scrollYProgress, [0, 0.5], [40, 0]);
+
+  return (
+  <section ref={ref} className="bg-background">
     <div className="border-b border-border px-6 py-16 text-center">
       <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
         className="editorial-label mb-4">Khám phá phong cách</motion.p>
-      <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-        className="font-heading text-3xl md:text-4xl font-medium text-foreground">
-        Tìm kiếm <span className="font-semibold">bản sắc thời trang</span>
-      </motion.h2>
+      <motion.div style={{ y: headerY }}>
+        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="font-heading text-3xl md:text-4xl font-medium text-foreground">
+          Tìm kiếm <span className="font-semibold">bản sắc thời trang</span>
+        </motion.h2>
+      </motion.div>
     </div>
 
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
@@ -53,6 +61,6 @@ const StyleExplorer = () => (
       ))}
     </div>
   </section>
-);
-
+  );
+};
 export default StyleExplorer;
