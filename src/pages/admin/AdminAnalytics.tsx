@@ -62,7 +62,7 @@ export default function AdminAnalytics() {
               <XAxis dataKey="day" className="text-xs" />
               <YAxis className="text-xs" />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="count" fill="hsl(0,100%,70%)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="hsl(0,100%,70%)" />
             </BarChart>
           </ChartContainer>
         </div>
