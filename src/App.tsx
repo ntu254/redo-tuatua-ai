@@ -7,7 +7,7 @@ import Index from "./pages/Index.tsx";
 import Quiz from "./pages/Quiz.tsx";
 import Recommender from "./pages/Recommender.tsx";
 import Wardrobe from "./pages/Wardrobe.tsx";
-import Analysis from "./pages/Analysis.tsx";
+
 import Trends from "./pages/Trends.tsx";
 import StyleProfile from "./pages/StyleProfile.tsx";
 import Login from "./pages/Login.tsx";
@@ -28,7 +28,7 @@ const App = () => (
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/recommender" element={<Recommender />} />
           <Route path="/wardrobe" element={<Wardrobe />} />
-          <Route path="/analysis" element={<Analysis />} />
+          
           <Route path="/trends" element={<Trends />} />
           <Route path="/style-profile" element={<StyleProfile />} />
           <Route path="/login" element={<Login />} />
