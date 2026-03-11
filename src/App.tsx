@@ -13,6 +13,7 @@ import StyleProfile from "./pages/StyleProfile.tsx";
 import Login from "./pages/Login.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import Profile from "./pages/Profile.tsx";
+import AccountSettings from "./pages/AccountSettings.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/account" element={<AccountSettings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
