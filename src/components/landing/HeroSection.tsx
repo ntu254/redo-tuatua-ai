@@ -84,7 +84,7 @@ const HeroSection = () => {
                 ))}
               </div>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Right — fashion imagery */}
           <div className="hidden lg:block relative">
