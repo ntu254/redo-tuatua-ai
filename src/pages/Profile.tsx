@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Lock, Shield, Bell, Crown, AlertTriangle, Edit2, Check, X,
   ExternalLink, ShoppingBag, Trash2, LogOut, Sparkles, KeyRound,
-  HelpCircle, Info, Calendar, Clock, ArrowRight, Palette, TrendingUp
+  HelpCircle, Info, Calendar, Clock, Palette, TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ const tabs = [
   { id: "danger", label: "Nguy hiểm", icon: AlertTriangle },
 ];
 
-const platforms = [
+const platformsList = [
   { name: "Shopee", connected: true, accent: "bg-orange-500" },
   { name: "Lazada", connected: true, accent: "bg-blue-600" },
   { name: "Tiki", connected: false, accent: "bg-sky-500" },
@@ -46,19 +46,19 @@ const SectionHead = ({ icon: Icon, title, sub }: { icon: React.ElementType; titl
   <div className="mb-5">
     <div className="flex items-center gap-2">
       <Icon className="w-4 h-4 text-accent" />
-      <h2 className="font-heading text-base font-semibold text-foreground">{title}</h2>
+      <h2 className="font-heading text-lg font-semibold text-foreground">{title}</h2>
     </div>
-    {sub && <p className="font-body text-xs text-muted-foreground mt-1 ml-6">{sub}</p>}
+    {sub && <p className="font-body text-xs text-foreground/50 mt-1 ml-6">{sub}</p>}
   </div>
 );
 
 const InfoCard = ({ icon: Icon, title, children }: { icon: React.ElementType; title: string; children: React.ReactNode }) => (
-  <Card className="bg-secondary/30">
+  <Card className="bg-secondary/40">
     <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-3.5 h-3.5 text-muted-foreground" />
-      <p className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</p>
+      <Icon className="w-3.5 h-3.5 text-foreground/40" />
+      <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">{title}</p>
     </div>
-    <div className="font-body text-sm text-muted-foreground leading-relaxed">{children}</div>
+    <div className="font-body text-sm text-foreground/60 leading-relaxed">{children}</div>
   </Card>
 );
 
@@ -80,7 +80,6 @@ const ProfilePanel = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      {/* Main */}
       <div className="lg:col-span-2 space-y-4">
         <Card>
           <div className="flex items-center justify-between mb-5">
@@ -92,21 +91,21 @@ const ProfilePanel = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-body text-muted-foreground uppercase tracking-wider">Email</Label>
-                <Input value={profile.email} disabled={!editing} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} className="font-body text-sm" />
+                <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">Email</Label>
+                <Input value={profile.email} disabled={!editing} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} className="font-body text-sm text-foreground" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-body text-muted-foreground uppercase tracking-wider">Username</Label>
-                <Input value={profile.username} disabled={!editing} onChange={e => setProfile(p => ({ ...p, username: e.target.value }))} className="font-body text-sm" />
+                <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">Username</Label>
+                <Input value={profile.username} disabled={!editing} onChange={e => setProfile(p => ({ ...p, username: e.target.value }))} className="font-body text-sm text-foreground" />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-body text-muted-foreground uppercase tracking-wider">Địa điểm</Label>
-              <Input value={profile.location} disabled={!editing} onChange={e => setProfile(p => ({ ...p, location: e.target.value }))} className="font-body text-sm" />
+              <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">Địa điểm</Label>
+              <Input value={profile.location} disabled={!editing} onChange={e => setProfile(p => ({ ...p, location: e.target.value }))} className="font-body text-sm text-foreground" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[11px] font-body text-muted-foreground uppercase tracking-wider">Giới thiệu</Label>
-              <Textarea value={profile.bio} disabled={!editing} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} className="font-body text-sm resize-none" rows={3} />
+              <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">Giới thiệu</Label>
+              <Textarea value={profile.bio} disabled={!editing} onChange={e => setProfile(p => ({ ...p, bio: e.target.value }))} className="font-body text-sm text-foreground resize-none" rows={3} />
             </div>
             <AnimatePresence>
               {editing && (
@@ -120,7 +119,6 @@ const ProfilePanel = () => {
         </Card>
       </div>
 
-      {/* Side */}
       <div className="space-y-4">
         <Card>
           <div className="flex items-center gap-4 mb-4">
@@ -129,13 +127,13 @@ const ProfilePanel = () => {
             </motion.div>
             <div>
               <p className="font-heading text-base font-semibold text-foreground">Tu Nguyen</p>
-              <span className="text-[11px] font-body font-medium text-accent uppercase tracking-wider">Urban Minimalist</span>
+              <span className="text-[11px] font-body font-semibold text-accent uppercase tracking-wider">Urban Minimalist</span>
             </div>
           </div>
-          <div className="space-y-2 text-sm font-body">
-            <div className="flex items-center gap-2 text-muted-foreground"><Calendar className="w-3.5 h-3.5" /> Tham gia tháng 1, 2025</div>
-            <div className="flex items-center gap-2 text-muted-foreground"><ShoppingBag className="w-3.5 h-3.5" /> 47 món trong tủ đồ</div>
-            <div className="flex items-center gap-2 text-muted-foreground"><Palette className="w-3.5 h-3.5" /> 23 outfit đã lưu</div>
+          <div className="space-y-2.5 text-sm font-body">
+            <div className="flex items-center gap-2 text-foreground/60"><Calendar className="w-3.5 h-3.5" /> Tham gia tháng 1, 2025</div>
+            <div className="flex items-center gap-2 text-foreground/60"><ShoppingBag className="w-3.5 h-3.5" /> 47 món trong tủ đồ</div>
+            <div className="flex items-center gap-2 text-foreground/60"><Palette className="w-3.5 h-3.5" /> 23 outfit đã lưu</div>
           </div>
           <Link to="/style-profile" className="block mt-4">
             <Button variant="outline" size="sm" className="w-full gap-1.5 font-body text-xs"><TrendingUp className="w-3 h-3" /> Xem Style Profile</Button>
@@ -155,27 +153,25 @@ const SecurityPanel = () => (
     <div className="lg:col-span-2">
       <Card>
         <SectionHead icon={Shield} title="Bảo mật" sub="Quản lý mật khẩu và xác thực" />
-        <div className="space-y-0">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-secondary flex items-center justify-center"><KeyRound className="w-4 h-4 text-muted-foreground" /></div>
-              <div>
-                <p className="font-body text-sm font-medium text-foreground">Mật khẩu</p>
-                <p className="font-body text-[11px] text-muted-foreground">Cập nhật lần cuối 3 tháng trước</p>
-              </div>
+        <div className="flex items-center justify-between py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-secondary flex items-center justify-center"><KeyRound className="w-4 h-4 text-foreground/40" /></div>
+            <div>
+              <p className="font-body text-sm font-semibold text-foreground">Mật khẩu</p>
+              <p className="font-body text-[11px] text-foreground/50">Cập nhật lần cuối 3 tháng trước</p>
             </div>
-            <Button variant="outline" size="sm" className="gap-1.5 font-body text-xs"><Lock className="w-3 h-3" /> Đổi mật khẩu</Button>
           </div>
-          <div className="border-t border-border py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-secondary flex items-center justify-center"><Shield className="w-4 h-4 text-muted-foreground" /></div>
-              <div>
-                <p className="font-body text-sm font-medium text-foreground">Xác thực hai yếu tố</p>
-                <p className="font-body text-[11px] text-muted-foreground">Bảo vệ tài khoản bằng mã xác thực</p>
-              </div>
+          <Button variant="outline" size="sm" className="gap-1.5 font-body text-xs"><Lock className="w-3 h-3" /> Đổi mật khẩu</Button>
+        </div>
+        <div className="border-t border-border py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-secondary flex items-center justify-center"><Shield className="w-4 h-4 text-foreground/40" /></div>
+            <div>
+              <p className="font-body text-sm font-semibold text-foreground">Xác thực hai yếu tố</p>
+              <p className="font-body text-[11px] text-foreground/50">Bảo vệ tài khoản bằng mã xác thực</p>
             </div>
-            <Switch />
           </div>
+          <Switch />
         </div>
       </Card>
     </div>
@@ -185,7 +181,7 @@ const SecurityPanel = () => (
       </InfoCard>
       <InfoCard icon={Clock} title="Hoạt động gần đây">
         <p className="mb-1">Đăng nhập lần cuối:</p>
-        <p className="text-foreground font-medium">Hôm nay, 14:30</p>
+        <p className="text-foreground font-semibold">Hôm nay, 14:30</p>
         <p className="text-xs mt-1">Chrome · Ho Chi Minh City</p>
       </InfoCard>
     </div>
@@ -197,15 +193,15 @@ const PlatformsPanel = () => (
     <div className="lg:col-span-2">
       <Card>
         <SectionHead icon={ExternalLink} title="Nền tảng kết nối" sub="Kết nối tài khoản mua sắm" />
-        {platforms.map((p, i) => (
-          <div key={p.name} className={`flex items-center justify-between py-3.5 ${i < platforms.length - 1 ? "border-b border-border" : ""}`}>
+        {platformsList.map((p, i) => (
+          <div key={p.name} className={`flex items-center justify-between py-3.5 ${i < platformsList.length - 1 ? "border-b border-border" : ""}`}>
             <div className="flex items-center gap-3">
               <div className={`w-9 h-9 ${p.accent} flex items-center justify-center`}>
                 <span className="text-white text-xs font-body font-bold">{p.name[0]}</span>
               </div>
               <div>
-                <p className="font-body text-sm font-medium text-foreground">{p.name}</p>
-                <p className={`text-[11px] font-body ${p.connected ? "text-green-600" : "text-muted-foreground"}`}>
+                <p className="font-body text-sm font-semibold text-foreground">{p.name}</p>
+                <p className={`text-[11px] font-body font-medium ${p.connected ? "text-green-600" : "text-foreground/40"}`}>
                   {p.connected ? "Đã kết nối" : "Chưa kết nối"}
                 </p>
               </div>
@@ -218,13 +214,13 @@ const PlatformsPanel = () => (
       </Card>
     </div>
     <div className="space-y-4">
-      <Card className="bg-secondary/30">
+      <Card className="bg-secondary/40">
         <div className="flex items-center gap-2 mb-3">
           <ShoppingBag className="w-3.5 h-3.5 text-accent" />
-          <p className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tổng quan</p>
+          <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">Tổng quan</p>
         </div>
         <div className="space-y-3 font-body text-sm">
-          <div className="flex justify-between"><span className="text-muted-foreground">Đã kết nối</span><span className="font-semibold text-foreground">3 / 5</span></div>
+          <div className="flex justify-between"><span className="text-foreground/60">Đã kết nối</span><span className="font-semibold text-foreground">3 / 5</span></div>
           <div className="w-full h-1.5 bg-border"><div className="h-full bg-accent" style={{ width: "60%" }} /></div>
         </div>
       </Card>
@@ -250,10 +246,10 @@ const NotificationsPanel = () => {
           {items.map((item, i) => (
             <div key={item.key} className={`flex items-center justify-between py-4 ${i < items.length - 1 ? "border-b border-border" : ""}`}>
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-secondary flex items-center justify-center"><item.icon className="w-4 h-4 text-muted-foreground" /></div>
+                <div className="w-9 h-9 bg-secondary flex items-center justify-center"><item.icon className="w-4 h-4 text-foreground/40" /></div>
                 <div>
-                  <p className="font-body text-sm font-medium text-foreground">{item.label}</p>
-                  <p className="font-body text-[11px] text-muted-foreground mt-0.5">{item.desc}</p>
+                  <p className="font-body text-sm font-semibold text-foreground">{item.label}</p>
+                  <p className="font-body text-[11px] text-foreground/50 mt-0.5">{item.desc}</p>
                 </div>
               </div>
               <Switch checked={notifs[item.key]} onCheckedChange={(v) => setNotifs(n => ({ ...n, [item.key]: v }))} />
@@ -277,15 +273,15 @@ const SubscriptionPanel = () => (
         <div className="absolute top-0 right-0 w-40 h-40 bg-accent/5 -translate-y-12 translate-x-12" />
         <SectionHead icon={Crown} title="Gói đăng ký" />
         <div className="flex items-center gap-2 mb-4">
-          <span className="font-heading text-xl font-semibold text-foreground">Free</span>
-          <span className="text-[10px] font-body uppercase tracking-wider bg-secondary text-muted-foreground px-2 py-0.5">Hiện tại</span>
+          <span className="font-heading text-xl font-bold text-foreground">Free</span>
+          <span className="text-[10px] font-body font-semibold uppercase tracking-wider bg-secondary text-foreground/50 px-2 py-0.5">Hiện tại</span>
         </div>
-        <p className="font-body text-sm text-muted-foreground mb-5">Nâng cấp để mở khóa toàn bộ tính năng AI styling.</p>
+        <p className="font-body text-sm text-foreground/60 mb-5">Nâng cấp để mở khóa toàn bộ tính năng AI styling.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           {premiumPerks.map((f) => (
             <div key={f} className="flex items-center gap-2.5 p-3 bg-secondary/40 border border-border">
               <Sparkles className="w-3.5 h-3.5 text-accent shrink-0" />
-              <span className="font-body text-sm text-foreground">{f}</span>
+              <span className="font-body text-sm font-medium text-foreground">{f}</span>
             </div>
           ))}
         </div>
@@ -293,11 +289,11 @@ const SubscriptionPanel = () => (
       </Card>
     </div>
     <div className="space-y-4">
-      <Card className="bg-secondary/30">
-        <p className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Sử dụng tháng này</p>
+      <Card className="bg-secondary/40">
+        <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider mb-3">Sử dụng tháng này</p>
         <div className="space-y-3 font-body text-sm">
-          <div><div className="flex justify-between mb-1"><span className="text-muted-foreground">Outfit đã tạo</span><span className="text-foreground font-medium">8 / 10</span></div><div className="w-full h-1.5 bg-border"><div className="h-full bg-accent" style={{ width: "80%" }} /></div></div>
-          <div><div className="flex justify-between mb-1"><span className="text-muted-foreground">AI phân tích</span><span className="text-foreground font-medium">3 / 5</span></div><div className="w-full h-1.5 bg-border"><div className="h-full bg-accent" style={{ width: "60%" }} /></div></div>
+          <div><div className="flex justify-between mb-1"><span className="text-foreground/60">Outfit đã tạo</span><span className="text-foreground font-semibold">8 / 10</span></div><div className="w-full h-1.5 bg-border"><div className="h-full bg-accent" style={{ width: "80%" }} /></div></div>
+          <div><div className="flex justify-between mb-1"><span className="text-foreground/60">AI phân tích</span><span className="text-foreground font-semibold">3 / 5</span></div><div className="w-full h-1.5 bg-border"><div className="h-full bg-accent" style={{ width: "60%" }} /></div></div>
         </div>
       </Card>
       <InfoCard icon={Crown} title="Premium">
@@ -314,54 +310,52 @@ const DangerPanel = () => {
       <div className="lg:col-span-2">
         <Card className="border-destructive/20">
           <SectionHead icon={AlertTriangle} title="Vùng nguy hiểm" sub="Hành động không thể hoàn tác" />
-          <div className="space-y-0">
-            <div className="flex items-center justify-between py-4">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-secondary flex items-center justify-center"><LogOut className="w-4 h-4 text-muted-foreground" /></div>
-                <div>
-                  <p className="font-body text-sm font-medium text-foreground">Đăng xuất</p>
-                  <p className="font-body text-[11px] text-muted-foreground">Đăng xuất khỏi tài khoản hiện tại</p>
-                </div>
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-secondary flex items-center justify-center"><LogOut className="w-4 h-4 text-foreground/40" /></div>
+              <div>
+                <p className="font-body text-sm font-semibold text-foreground">Đăng xuất</p>
+                <p className="font-body text-[11px] text-foreground/50">Đăng xuất khỏi tài khoản hiện tại</p>
               </div>
-              <Button variant="outline" size="sm" className="gap-1.5 font-body text-xs"><LogOut className="w-3 h-3" /> Đăng xuất</Button>
             </div>
-            <div className="border-t border-border py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-destructive/10 flex items-center justify-center"><Trash2 className="w-4 h-4 text-destructive" /></div>
-                <div>
-                  <p className="font-body text-sm font-medium text-destructive">Xóa tài khoản</p>
-                  <p className="font-body text-[11px] text-muted-foreground">Xóa vĩnh viễn tài khoản và dữ liệu</p>
-                </div>
+            <Button variant="outline" size="sm" className="gap-1.5 font-body text-xs"><LogOut className="w-3 h-3" /> Đăng xuất</Button>
+          </div>
+          <div className="border-t border-border py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-destructive/10 flex items-center justify-center"><Trash2 className="w-4 h-4 text-destructive" /></div>
+              <div>
+                <p className="font-body text-sm font-semibold text-destructive">Xóa tài khoản</p>
+                <p className="font-body text-[11px] text-foreground/50">Xóa vĩnh viễn tài khoản và dữ liệu</p>
               </div>
-              {!showDelete ? (
-                <Button variant="outline" size="sm" className="font-body text-xs text-destructive border-destructive/30 hover:bg-destructive/5" onClick={() => setShowDelete(true)}>
-                  <Trash2 className="w-3 h-3 mr-1" /> Xóa
-                </Button>
-              ) : (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
-                  <Button variant="destructive" size="sm" className="font-body text-xs gap-1"><Trash2 className="w-3 h-3" /> Xác nhận</Button>
-                  <Button variant="outline" size="sm" className="font-body text-xs" onClick={() => setShowDelete(false)}>Hủy</Button>
-                </motion.div>
-              )}
             </div>
+            {!showDelete ? (
+              <Button variant="outline" size="sm" className="font-body text-xs text-destructive border-destructive/30 hover:bg-destructive/5" onClick={() => setShowDelete(true)}>
+                <Trash2 className="w-3 h-3 mr-1" /> Xóa
+              </Button>
+            ) : (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                <Button variant="destructive" size="sm" className="font-body text-xs gap-1"><Trash2 className="w-3 h-3" /> Xác nhận</Button>
+                <Button variant="outline" size="sm" className="font-body text-xs" onClick={() => setShowDelete(false)}>Hủy</Button>
+              </motion.div>
+            )}
           </div>
         </Card>
       </div>
       <div className="space-y-4">
-        <Card className="bg-secondary/30">
+        <Card className="bg-secondary/40">
           <div className="flex items-center gap-2 mb-3">
-            <User className="w-3.5 h-3.5 text-muted-foreground" />
-            <p className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider">Thông tin tài khoản</p>
+            <User className="w-3.5 h-3.5 text-foreground/40" />
+            <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">Thông tin tài khoản</p>
           </div>
           <div className="space-y-2 font-body text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Email</span><span className="text-foreground">tu.nguyen@email.com</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Tham gia</span><span className="text-foreground">01/2025</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Gói</span><span className="text-foreground">Free</span></div>
+            <div className="flex justify-between"><span className="text-foreground/60">Email</span><span className="text-foreground font-medium">tu.nguyen@email.com</span></div>
+            <div className="flex justify-between"><span className="text-foreground/60">Tham gia</span><span className="text-foreground font-medium">01/2025</span></div>
+            <div className="flex justify-between"><span className="text-foreground/60">Gói</span><span className="text-foreground font-medium">Free</span></div>
           </div>
         </Card>
         <InfoCard icon={AlertTriangle} title="Cảnh báo">
           <p>Xóa tài khoản sẽ xóa vĩnh viễn toàn bộ dữ liệu bao gồm tủ đồ, outfit đã lưu và lịch sử phong cách.</p>
-          <a href="#" className="inline-flex items-center gap-1 text-accent text-xs mt-2 hover:underline">
+          <a href="#" className="inline-flex items-center gap-1 text-accent text-xs font-medium mt-2 hover:underline">
             <HelpCircle className="w-3 h-3" /> Liên hệ hỗ trợ
           </a>
         </InfoCard>
@@ -375,8 +369,6 @@ const panelMap: Record<string, React.FC> = {
   notifications: NotificationsPanel, subscription: SubscriptionPanel, danger: DangerPanel,
 };
 
-/* ════════════════════════════════════════════ */
-
 const Profile = () => {
   const [active, setActive] = useState("profile");
   const ActivePanel = panelMap[active];
@@ -385,20 +377,16 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Compact header */}
       <div className="pt-16 border-b border-border">
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-5">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <p className="editorial-label mb-1">Tài khoản</p>
-            <h1 className="font-heading text-2xl md:text-3xl font-semibold text-foreground">Cài đặt tài khoản</h1>
+            <p className="text-[11px] font-body font-semibold text-accent uppercase tracking-widest mb-1">Tài khoản</p>
+            <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Cài đặt tài khoản</h1>
           </motion.div>
         </div>
       </div>
 
-      {/* Layout */}
       <div className="container mx-auto px-6 py-6 flex gap-6">
-
-        {/* Sidebar */}
         <aside className="hidden md:block w-48 shrink-0">
           <nav className="sticky top-20 space-y-0.5">
             {tabs.map((tab) => {
@@ -407,27 +395,26 @@ const Profile = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActive(tab.id)}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all duration-200 relative ${
-                    isActive ? "text-foreground bg-secondary" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-left transition-all duration-200 relative ${
+                    isActive ? "text-foreground bg-secondary" : "text-foreground/45 hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
-                  <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-accent transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0"}`} />
-                  <tab.icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? "text-accent" : ""}`} />
-                  <span className="font-body text-sm">{tab.label}</span>
+                  <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-accent transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0"}`} />
+                  <tab.icon className={`w-4 h-4 shrink-0 ${isActive ? "text-accent" : ""}`} />
+                  <span className={`font-body text-sm ${isActive ? "font-semibold" : "font-medium"}`}>{tab.label}</span>
                 </button>
               );
             })}
           </nav>
         </aside>
 
-        {/* Mobile tabs */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border flex overflow-x-auto px-2 py-1.5 gap-1 scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-body font-medium whitespace-nowrap transition-colors ${
-                active === tab.id ? "text-accent" : "text-muted-foreground"
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-body font-semibold whitespace-nowrap transition-colors ${
+                active === tab.id ? "text-accent" : "text-foreground/40"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -436,7 +423,6 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Content */}
         <main className="flex-1 min-w-0 pb-20 md:pb-0">
           <AnimatePresence mode="wait">
             <motion.div key={active} {...panelAnim}>
