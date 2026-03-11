@@ -7,7 +7,7 @@ import Index from "./pages/Index.tsx";
 import Quiz from "./pages/Quiz.tsx";
 import Recommender from "./pages/Recommender.tsx";
 import Wardrobe from "./pages/Wardrobe.tsx";
-import Analysis from "./pages/Analysis.tsx";
+
 import Trends from "./pages/Trends.tsx";
 import StyleProfile from "./pages/StyleProfile.tsx";
 import Login from "./pages/Login.tsx";
