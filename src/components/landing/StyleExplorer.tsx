@@ -1,5 +1,6 @@
+import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import casualImg from "@/assets/style-casual-new.jpg";
 import streetImg from "@/assets/style-streetwear-new.jpg";
 import minimalImg from "@/assets/style-minimal-new.jpg";
