@@ -1,11 +1,5 @@
 import { StatCard } from "@/components/admin/StatCard";
 import { Sparkles, Target, Eye, Brain, TrendingUp, Heart } from "lucide-react";
-import {
-  ChartContainer, ChartTooltip, ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line,
-} from "recharts";
 
 const aiGenerations = [
   { day: "Mon", count: 820 }, { day: "Tue", count: 1050 },
@@ -35,6 +29,9 @@ const failedDetections = [
   { item: "Transparent fabrics", count: 98, rate: "4%" },
 ];
 
+const maxGen = Math.max(...aiGenerations.map(d => d.count));
+const maxAcc = 100;
+
 export default function AdminAnalytics() {
   return (
     <div className="space-y-6 max-w-7xl">
@@ -52,36 +49,45 @@ export default function AdminAnalytics() {
         <StatCard label="Failed Detections" value="814" change="5% decrease" trend="up" icon={Eye} />
       </div>
 
-      {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
+        {/* Daily AI Generations */}
         <div className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-sm font-semibold text-foreground font-body mb-4">Daily AI Generations</h3>
-          <ChartContainer config={{ count: { label: "Generations", color: "hsl(0,100%,70%)" } }} className="h-[260px] w-full">
-            <BarChart data={aiGenerations}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis dataKey="day" className="text-xs" />
-              <YAxis className="text-xs" />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="count" fill="hsl(0,100%,70%)" />
-            </BarChart>
-          </ChartContainer>
+          <div className="flex items-end gap-3 h-[220px]">
+            {aiGenerations.map((d) => (
+              <div key={d.day} className="flex-1 flex flex-col items-center gap-2">
+                <span className="text-[10px] font-body text-muted-foreground">{d.count.toLocaleString()}</span>
+                <div className="w-full bg-muted rounded-sm overflow-hidden flex-1 flex flex-col justify-end">
+                  <div
+                    className="w-full bg-accent transition-all duration-500 rounded-t-sm"
+                    style={{ height: `${(d.count / maxGen) * 100}%` }}
+                  />
+                </div>
+                <span className="text-[10px] font-body text-muted-foreground">{d.day}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
+        {/* Detection Accuracy Trend */}
         <div className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-sm font-semibold text-foreground font-body mb-4">Detection Accuracy Trend</h3>
-          <ChartContainer config={{ rate: { label: "Accuracy %", color: "hsl(166,65%,50%)" } }} className="h-[260px] w-full">
-            <LineChart data={accuracy}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis dataKey="month" className="text-xs" />
-              <YAxis className="text-xs" domain={[70, 100]} />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Line type="monotone" dataKey="rate" stroke="hsl(166,65%,50%)" strokeWidth={2} dot={{ r: 4 }} />
-            </LineChart>
-          </ChartContainer>
+          <div className="space-y-3 mt-2">
+            {accuracy.map((d) => (
+              <div key={d.month}>
+                <div className="flex justify-between mb-1">
+                  <span className="text-xs font-body text-foreground">{d.month}</span>
+                  <span className="text-xs font-semibold font-body text-teal">{d.rate}%</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-teal rounded-full transition-all duration-500" style={{ width: `${(d.rate / maxAcc) * 100}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Tables */}
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="bg-card border border-border rounded-lg p-5">
           <h3 className="text-sm font-semibold text-foreground font-body mb-4">Top Prompt Types</h3>
