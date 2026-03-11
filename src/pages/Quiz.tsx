@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/landing/Navbar";
+import { Progress } from "@/components/ui/progress";
+import { useNavigate, Link } from "react-router-dom";
 
 const quizSteps = [
-  { id: "gender", question: "Bạn là?", subtitle: "Giúp AI gợi ý phù hợp hơn", type: "single" as const,
+  { id: "gender", question: "Bạn thuộc nhóm nào?", subtitle: "Giúp AI gợi ý phù hợp hơn", type: "single" as const,
     options: [
       { value: "female", label: "Nữ", emoji: "👩" },
       { value: "male", label: "Nam", emoji: "👨" },
-      { value: "nonbinary", label: "Phi nhị giới", emoji: "🌈" },
+      { value: "lgbtq", label: "LGBTQ+", emoji: "🏳️‍🌈" },
       { value: "skip", label: "Không muốn nói", emoji: "—" },
     ]},
   { id: "style", question: "Phong cách yêu thích?", subtitle: "Chọn một hoặc nhiều", type: "multi" as const,
@@ -71,82 +71,114 @@ const Quiz = () => {
 
   if (completed) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="pt-16 min-h-screen flex items-center justify-center">
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md px-6">
-            <div className="w-16 h-16 border border-teal flex items-center justify-center mx-auto mb-8">
-              <Check className="w-8 h-8 text-teal" strokeWidth={1.5} />
-            </div>
-            <h1 className="font-heading text-4xl font-light text-foreground mb-2">Hồ sơ phong cách</h1>
-            <p className="font-heading text-4xl italic text-foreground mb-6">đã sẵn sàng!</p>
-            <p className="text-muted-foreground font-body text-sm mb-10 leading-relaxed">
-              AI đã phân tích sở thích của bạn. Hãy khám phá outfit được gợi ý riêng cho bạn.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button variant="accent" size="lg" className="gap-2" onClick={() => navigate("/recommender")}>
-                Xem gợi ý <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-              <Button variant="hero-outline" size="lg" onClick={() => navigate("/wardrobe")}>Tủ đồ</Button>
-            </div>
-          </motion.div>
-        </div>
+      <div className="h-screen bg-background flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md px-6">
+          <div className="w-16 h-16 border border-accent flex items-center justify-center mx-auto mb-8">
+            <Check className="w-8 h-8 text-accent" strokeWidth={1.5} />
+          </div>
+          <h1 className="font-heading text-3xl font-semibold text-foreground mb-2">Hồ sơ phong cách</h1>
+          <p className="font-heading text-3xl font-semibold text-foreground mb-6">đã sẵn sàng!</p>
+          <p className="text-foreground/50 font-body text-sm mb-10 leading-relaxed">
+            AI đã phân tích sở thích của bạn. Hãy khám phá outfit được gợi ý riêng cho bạn.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Button variant="accent" size="lg" className="gap-2" onClick={() => navigate("/recommender")}>
+              Xem gợi ý <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => navigate("/wardrobe")}>Tủ đồ</Button>
+          </div>
+        </motion.div>
       </div>
     );
   }
 
+  const progress = ((step + 1) / quizSteps.length) * 100;
+  const cols = current.options.length <= 4 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3";
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-16 min-h-screen">
-        <div className="mag-grid grid-cols-1 lg:grid-cols-[1fr_2fr] min-h-[calc(100vh-4rem)]">
-          {/* Left — progress */}
-          <div className="flex flex-col justify-center p-10 lg:p-16 bg-secondary">
-            <p className="editorial-label mb-6">Bước {step + 1} / {quizSteps.length}</p>
-            <div className="space-y-2 mb-10">
-              {quizSteps.map((_, i) => (
-                <div key={i} className={`h-px transition-all duration-500 ${i <= step ? "bg-accent w-full" : "bg-border w-1/2"}`} />
-              ))}
-            </div>
-            <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground leading-tight mb-2">
-              {current.question.split("?")[0]}
-              <span className="italic">?</span>
-            </h2>
-            <p className="text-xs text-muted-foreground font-body">{current.subtitle}</p>
-          </div>
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-4 shrink-0 border-b border-border">
+        <Link to="/" className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-accent" />
+          <span className="font-heading text-lg font-semibold text-foreground">StyleAI</span>
+        </Link>
+        <span className="text-[11px] font-body font-semibold text-foreground/40 uppercase tracking-widest">
+          Bước {step + 1} / {quizSteps.length}
+        </span>
+      </div>
 
-          {/* Right — options */}
-          <div className="flex flex-col justify-center p-10 lg:p-16">
-            <AnimatePresence mode="wait">
-              <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.3 }}>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-border max-w-lg">
-                  {current.options.map(opt => {
-                    const isSelected = selected.includes(opt.value);
-                    return (
-                      <button key={opt.value} onClick={() => toggleOption(opt.value)}
-                        className={`p-6 text-center transition-all duration-300 ${
-                          isSelected ? "bg-accent text-accent-foreground" : "bg-background hover:bg-secondary"
-                        }`}>
-                        <span className="text-lg block mb-2 font-heading">{opt.emoji}</span>
-                        <span className="text-xs font-body font-medium uppercase tracking-wider">{opt.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            </AnimatePresence>
+      {/* Progress */}
+      <div className="px-6 py-3 shrink-0">
+        <div className="max-w-lg mx-auto">
+          <Progress value={progress} className="h-1 bg-secondary [&>div]:bg-accent" />
+        </div>
+      </div>
 
-            <div className="flex items-center justify-between mt-12 max-w-lg">
-              <button onClick={() => step > 0 && setStep(step - 1)}
-                className={`flex items-center gap-2 text-xs font-body uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors ${step === 0 ? "opacity-0 pointer-events-none" : ""}`}>
-                <ArrowLeft className="w-3.5 h-3.5" /> Quay lại
-              </button>
-              <Button variant="accent" disabled={!canNext} onClick={next} className="gap-2">
-                {step === quizSteps.length - 1 ? "Hoàn tất" : "Tiếp theo"} <ArrowRight className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-          </div>
+      {/* Center content */}
+      <div className="flex-1 flex items-center justify-center px-6">
+        <div className="w-full max-w-lg">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.25 }}
+            >
+              {/* Question */}
+              <div className="text-center mb-8">
+                <h1 className="font-heading text-2xl md:text-3xl font-semibold text-foreground mb-1.5">
+                  {current.question}
+                </h1>
+                <p className="text-foreground/45 font-body text-sm">{current.subtitle}</p>
+              </div>
+
+              {/* Options grid */}
+              <div className={`grid ${cols} gap-3`}>
+                {current.options.map(opt => {
+                  const isSelected = selected.includes(opt.value);
+                  return (
+                    <motion.button
+                      key={opt.value}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => toggleOption(opt.value)}
+                      className={`relative p-5 border text-center transition-all duration-200 ${
+                        isSelected
+                          ? "border-accent bg-accent/5 ring-2 ring-accent/20"
+                          : "border-border hover:border-foreground/20 bg-background"
+                      }`}
+                    >
+                      <span className="text-xl block mb-2">{opt.emoji}</span>
+                      <span className="text-sm font-body font-semibold text-foreground">{opt.label}</span>
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute top-2 right-2 w-5 h-5 bg-accent flex items-center justify-center"
+                        >
+                          <Check className="w-3 h-3 text-accent-foreground" />
+                        </motion.div>
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-between mt-8">
+                <button
+                  onClick={() => step > 0 && setStep(step - 1)}
+                  className={`flex items-center gap-2 text-xs font-body font-medium uppercase tracking-wider text-foreground/40 hover:text-foreground transition-colors ${step === 0 ? "opacity-0 pointer-events-none" : ""}`}
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Quay lại
+                </button>
+                <Button variant="accent" disabled={!canNext} onClick={next} className="gap-2 font-body">
+                  {step === quizSteps.length - 1 ? "Hoàn tất" : "Tiếp theo"} <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
