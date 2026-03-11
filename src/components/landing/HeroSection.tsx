@@ -20,8 +20,13 @@ const HeroSection = () => {
   const [revealed, setRevealed] = useState(false);
   useEffect(() => { setTimeout(() => setRevealed(true), 100); }, []);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const imgY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+
   return (
-    <section className="min-h-screen bg-background pt-16 overflow-hidden">
+    <section ref={sectionRef} className="min-h-screen bg-background pt-16 overflow-hidden">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[calc(100vh-4rem)] items-center">
           {/* Left — text + value prop */}
