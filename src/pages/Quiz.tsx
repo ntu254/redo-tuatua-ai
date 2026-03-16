@@ -86,7 +86,7 @@ const pageTransition = {
 const WelcomeScreen = ({ onStart }: { onStart: () => void }) => (
   <motion.div {...pageTransition} className="h-screen flex overflow-hidden">
     {/* Left visual */}
-    <div className="hidden lg:block lg:w-1/2 relative">
+    <div className="hidden lg:block lg:w-[42%] xl:w-[40%] relative">
       <motion.img
         src={heroImg}
         alt="Fashion"
@@ -237,7 +237,7 @@ const ResultScreen = () => {
   return (
     <motion.div {...pageTransition} className="h-screen flex overflow-hidden">
       {/* Left — style preview */}
-      <div className="hidden lg:block lg:w-2/5 relative">
+      <div className="hidden lg:block lg:w-[34%] xl:w-[32%] relative">
         <img
           src={lookbook1}
           alt="Style preview"

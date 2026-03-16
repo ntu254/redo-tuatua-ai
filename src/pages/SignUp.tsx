@@ -18,7 +18,7 @@ const SignUp = () => {
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Left — editorial image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[42%] xl:w-[40%] relative overflow-hidden">
         <motion.div
           className="absolute inset-0"
           initial={{ scale: 1.1 }}
@@ -80,7 +80,7 @@ const SignUp = () => {
         {/* Center */}
         <div className="flex-1 flex items-center justify-center px-6">
           <motion.div
-            className="soft-panel w-full max-w-sm p-6 sm:p-7"
+            className="soft-panel w-full max-w-lg p-7 sm:p-8"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}

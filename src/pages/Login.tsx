@@ -17,7 +17,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left — editorial image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[42%] xl:w-[40%] relative overflow-hidden">
         <motion.div
           className="absolute inset-0"
           initial={{ scale: 1.1 }}
@@ -64,7 +64,7 @@ const Login = () => {
       {/* Right — login form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.55)_0%,transparent_38%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--off-white))_100%)]">
         <motion.div
-          className="soft-panel w-full max-w-sm p-6 sm:p-7"
+          className="soft-panel w-full max-w-lg p-7 sm:p-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}

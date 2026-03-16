@@ -75,7 +75,7 @@ const CTABanner = () => (
             size="lg"
             className="gap-2 bg-background text-foreground shadow-[0_22px_38px_-20px_hsl(var(--foreground)/0.28)] hover:bg-background/96"
           >
-            Bat dau ngay <ArrowRight className="h-3.5 w-3.5" />
+            Bắt đầu ngay <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         </motion.div>
       </div>

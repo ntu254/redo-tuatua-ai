@@ -53,8 +53,16 @@ const Navbar = () => {
         </div>
 
         <div className="hidden xl:flex items-center gap-3">
-          <Button variant="accent" size="sm">
-            Thử miễn phí
+          <Button
+            asChild
+            variant={location.pathname === "/login" ? "secondary" : "outline"}
+            size="sm"
+            className="rounded-full"
+          >
+            <Link to="/login">Đăng nhập</Link>
+          </Button>
+          <Button asChild variant="accent" size="sm" className="rounded-full">
+            <Link to="/signup">Đăng ký</Link>
           </Button>
         </div>
       </div>
