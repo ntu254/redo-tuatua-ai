@@ -31,7 +31,7 @@ const Navbar = () => {
           <span className="font-heading text-2xl font-semibold italic text-foreground tracking-tight">StyleAI</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-10">
+        <div className="hidden lg:flex items-center gap-10">
           {navLinks.map(l => (
             <Link key={l.href} to={l.href}
               className={`text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-colors ${
@@ -40,17 +40,17 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <Button variant="accent" size="sm">Thử miễn phí</Button>
         </div>
 
-        <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="lg:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-background border-b border-border px-6 py-5 space-y-3">
+        <div className="lg:hidden bg-background border-b border-border px-6 py-5 space-y-3">
           {navLinks.map(l => (
             <Link key={l.href} to={l.href} onClick={() => setMobileOpen(false)}
               className="block text-sm text-muted-foreground hover:text-foreground font-body py-1.5">{l.label}</Link>
@@ -63,3 +63,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+

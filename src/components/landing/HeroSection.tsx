@@ -18,7 +18,10 @@ const outfitCards = [
 
 const HeroSection = () => {
   const [revealed, setRevealed] = useState(false);
-  useEffect(() => { setTimeout(() => setRevealed(true), 100); }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setRevealed(true), 100);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
@@ -87,20 +90,20 @@ const HeroSection = () => {
           </motion.div>
 
           {/* Right — fashion imagery */}
-          <div className="hidden lg:block relative">
+          <div className="relative mt-12 lg:mt-0 pb-16 lg:pb-0">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
               style={{ y: imgY }}
-              className="relative">
+              className="relative mx-auto max-w-md lg:max-w-none">
               {/* Main hero image */}
-              <div className="mag-img-zoom aspect-[3/4] max-h-[85vh]">
+              <div className="mag-img-zoom aspect-[3/4] max-h-[70vh] lg:max-h-[85vh]">
                 <img src={heroImg} alt="Thời trang editorial - Outfit được AI phối" className="w-full h-full object-cover" loading="eager" />
               </div>
 
               {/* Floating outfit card */}
               <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1, duration: 0.5 }}
-                className="absolute -left-12 bottom-24 bg-background border border-border p-4 shadow-lg w-56">
+                className="absolute left-4 bottom-6 bg-background border border-border p-4 shadow-lg w-56 sm:left-6 sm:bottom-8 lg:-left-12 lg:bottom-24">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 overflow-hidden">
                     <img src={outfitImg} alt="Gợi ý outfit" className="w-full h-full object-cover" />
@@ -124,7 +127,7 @@ const HeroSection = () => {
               {/* Floating tag */}
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
-                className="absolute top-8 -left-6 bg-accent text-accent-foreground px-4 py-2">
+                className="absolute top-6 left-4 bg-accent text-accent-foreground px-4 py-2 sm:left-6 lg:top-8 lg:-left-6">
                 <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI phối đồ</p>
               </motion.div>
             </motion.div>
@@ -154,3 +157,5 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
+
