@@ -20,7 +20,7 @@ interface OutfitHeaderProps {
 
 const OutfitHeader = ({ activeFilter, onFilterChange }: OutfitHeaderProps) => {
   return (
-    <div className="bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+    <div className="bg-background/76 backdrop-blur-xl sticky top-0 z-20">
       {/* Title bar */}
       <div className="px-8 pt-7 pb-4 flex items-start justify-between">
         <div>
@@ -59,8 +59,8 @@ const OutfitHeader = ({ activeFilter, onFilterChange }: OutfitHeaderProps) => {
             onClick={() => onFilterChange(tab.label)}
             className={`text-[12px] font-body font-medium px-4 py-2 rounded-full border transition-all whitespace-nowrap ${
               activeFilter === tab.label
-                ? "bg-foreground text-background border-foreground shadow-sm"
-                : "border-border text-foreground/70 hover:border-foreground/30 hover:bg-secondary/50"
+                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                : "border-border text-foreground/72 hover:border-accent/20 hover:bg-secondary/72"
             }`}
           >
             {tab.icon} {tab.label}

@@ -1,15 +1,29 @@
-import { useLocation, Link } from "react-router-dom";
 import {
-  LayoutDashboard, Users, Shirt, Sparkles, TrendingUp,
-  ShoppingBag, BarChart3, MessageSquare, Settings, ChevronLeft,
-  Zap,
-} from "lucide-react";
-import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
-  SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader,
-  SidebarFooter, useSidebar,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import {
+  BarChart3,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Shirt,
+  ShoppingBag,
+  Sparkles,
+  TrendingUp,
+  Users,
+  Zap,
+} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const navItems = [
   { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
@@ -34,7 +48,10 @@ export function AdminSidebar() {
       : location.pathname.startsWith(url);
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border bg-background">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-border bg-background"
+    >
       <SidebarHeader className="p-4 border-b border-border">
         <Link to="/admin" className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-accent flex items-center justify-center shrink-0">
@@ -42,7 +59,7 @@ export function AdminSidebar() {
           </div>
           {!collapsed && (
             <span className="font-body font-semibold text-sm tracking-tight text-foreground">
-              StyleAI Admin
+              Redo Admin
             </span>
           )}
         </Link>
@@ -61,7 +78,7 @@ export function AdminSidebar() {
                         "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-body transition-colors",
                         isActive(item.url)
                           ? "bg-accent/10 text-accent font-medium"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted",
                       )}
                     >
                       <item.icon className="h-4 w-4 shrink-0" />
@@ -82,8 +99,12 @@ export function AdminSidebar() {
               A
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">Admin</p>
-              <p className="text-xs text-muted-foreground truncate">admin@styleai.com</p>
+              <p className="text-sm font-medium text-foreground truncate">
+                Admin
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                admin@Redo.com
+              </p>
             </div>
           </div>
         )}

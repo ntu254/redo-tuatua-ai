@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Send, Star } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, Sparkles, Star } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-main-new.jpg";
 import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 
@@ -18,6 +19,7 @@ const outfitCards = [
 
 const HeroSection = () => {
   const [revealed, setRevealed] = useState(false);
+
   useEffect(() => {
     const timer = window.setTimeout(() => setRevealed(true), 100);
     return () => window.clearTimeout(timer);
@@ -29,59 +31,96 @@ const HeroSection = () => {
   const textY = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
   return (
-    <section ref={sectionRef} className="min-h-screen bg-background pt-16 overflow-hidden">
+    <section ref={sectionRef} className="min-h-screen overflow-hidden bg-background pt-20">
       <div className="container mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-[calc(100vh-4rem)] items-center">
-          {/* Left — text + value prop */}
-          <motion.div style={{ y: textY }} className="py-16 lg:py-24 lg:pr-16">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-coral-light mb-8">
-              <Sparkles className="w-3.5 h-3.5 text-accent" />
-              <span className="text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-accent">Thời trang AI</span>
+        <div className="grid min-h-[calc(100vh-5rem)] grid-cols-1 items-center gap-8 lg:grid-cols-2">
+          <motion.div style={{ y: textY }} className="py-10 lg:py-24 lg:pr-16">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              className="soft-chip mb-8 inline-flex items-center gap-2 border border-accent/20 bg-secondary/72 px-4 py-2 shadow-[0_14px_30px_-24px_hsl(var(--accent)/0.6)]"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-accent" />
+              <span className="text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-accent">
+                Thời trang AI
+              </span>
             </motion.div>
 
-            <h1 className="font-heading text-5xl md:text-6xl xl:text-7xl font-semibold leading-[1.05] tracking-[-0.01em] text-foreground mb-8">
+            <h1 className="mb-8 font-heading text-5xl font-semibold leading-[1.02] tracking-[-0.02em] text-foreground md:text-6xl xl:text-7xl">
               <span className={`block ${revealed ? "blur-text-reveal" : "opacity-0"}`}>
                 Tìm Outfit Hoàn Hảo
               </span>
-              <span className={`block font-medium ${revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"}`}>
+              <span
+                className={`gradient-text block font-medium ${
+                  revealed ? "blur-text-reveal blur-text-reveal-delay-1" : "opacity-0"
+                }`}
+              >
                 Với Trợ Lý AI
               </span>
             </h1>
 
-            <p className={`text-muted-foreground text-base leading-relaxed max-w-md font-body mb-10 ${revealed ? "blur-text-reveal blur-text-reveal-delay-2" : "opacity-0"}`}>
-              Mô tả phong cách của bạn và nhận gợi ý outfit ngay lập tức kèm link mua hàng từ Shopee, Lazada, Tiki và nhiều sàn khác.
+            <p
+              className={`mb-10 max-w-md text-base leading-relaxed text-muted-foreground ${
+                revealed ? "blur-text-reveal blur-text-reveal-delay-2" : "opacity-0"
+              }`}
+            >
+              Mô tả phong cách của bạn và nhận gợi ý outfit ngay lập tức kèm link mua hàng từ Shopee,
+              Lazada, Tiki và nhiều sàn khác.
             </p>
 
-            <div className={`flex flex-col sm:flex-row gap-3 mb-14 ${revealed ? "blur-text-reveal blur-text-reveal-delay-3" : "opacity-0"}`}>
+            <div
+              className={`mb-14 flex flex-col gap-3 sm:flex-row ${
+                revealed ? "blur-text-reveal blur-text-reveal-delay-3" : "opacity-0"
+              }`}
+            >
               <Button variant="accent" size="lg" className="gap-2">
-                Nhận gợi ý outfit AI <ArrowRight className="w-3.5 h-3.5" />
+                Nhận gợi ý outfit AI <ArrowRight className="h-3.5 w-3.5" />
               </Button>
-              <Button variant="hero-outline" size="lg">Xem cách hoạt động</Button>
+              <Button variant="hero-outline" size="lg">
+                Xem cách hoạt động
+              </Button>
             </div>
 
-            {/* Mini chat preview */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-              className={`bg-off-white border border-border p-5 max-w-md ${revealed ? "" : "opacity-0"}`}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className={`soft-panel max-w-md p-5 ${revealed ? "" : "opacity-0"}`}
+            >
               <p className="editorial-label mb-4">Xem trước AI Stylist</p>
-              <div className="space-y-3 mb-4">
-                {chatMessages.map((m, i) => (
-                  <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`px-4 py-2.5 max-w-[85%] ${m.role === "user" ? "bg-foreground text-background" : "bg-secondary text-foreground"}`}>
-                      <p className="text-xs font-body">{m.text}</p>
+              <div className="mb-4 space-y-3">
+                {chatMessages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                    className={`max-w-[85%] rounded-[22px] px-4 py-2.5 ${
+                        message.role === "user"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary/92 text-foreground"
+                      }`}
+                    >
+                      <p className="text-xs font-body">{message.text}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              {/* Mini outfit cards */}
+
               <div className="flex gap-2">
-                {outfitCards.map(c => (
-                  <div key={c.name} className="flex-1 bg-background border border-border p-2.5">
-                    <div className="w-full aspect-square bg-secondary mb-2" />
-                    <p className="text-[10px] font-body font-medium text-foreground truncate">{c.name}</p>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[10px] font-body font-semibold text-accent">{c.price}</span>
-                      <span className="text-[8px] font-body text-muted-foreground uppercase">{c.platform}</span>
+                {outfitCards.map((card) => (
+                  <div
+                    key={card.name}
+                    className="flex-1 rounded-2xl border border-border/90 bg-background/88 p-2.5"
+                  >
+                    <div className="mb-2 aspect-square w-full rounded-xl bg-secondary" />
+                    <p className="truncate text-[10px] font-body font-medium text-foreground">{card.name}</p>
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="text-[10px] font-body font-semibold text-accent">{card.price}</span>
+                      <span className="text-[8px] font-body uppercase text-muted-foreground">
+                        {card.platform}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -89,45 +128,59 @@ const HeroSection = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right — fashion imagery */}
-          <div className="relative mt-12 lg:mt-0 pb-16 lg:pb-0">
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+          <div className="relative mt-12 pb-16 lg:mt-0 lg:pb-0">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
               style={{ y: imgY }}
-              className="relative mx-auto max-w-md lg:max-w-none">
-              {/* Main hero image */}
-              <div className="mag-img-zoom aspect-[3/4] max-h-[70vh] lg:max-h-[85vh]">
-                <img src={heroImg} alt="Thời trang editorial - Outfit được AI phối" className="w-full h-full object-cover" loading="eager" />
+              className="relative mx-auto max-w-md lg:max-w-none"
+            >
+              <div className="mag-img-zoom aspect-[3/4] max-h-[70vh] rounded-[36px] border border-border/70 shadow-[0_34px_84px_-34px_hsl(var(--primary)/0.34)] lg:max-h-[85vh]">
+                <img
+                  src={heroImg}
+                  alt="Thời trang editorial - Outfit được AI phối"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                />
               </div>
 
-              {/* Floating outfit card */}
-              <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 1, duration: 0.5 }}
-                className="absolute left-4 bottom-6 bg-background border border-border p-4 shadow-lg w-56 sm:left-6 sm:bottom-8 lg:-left-12 lg:bottom-24">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 overflow-hidden">
-                    <img src={outfitImg} alt="Gợi ý outfit" className="w-full h-full object-cover" />
+                className="soft-panel absolute bottom-6 left-4 w-56 p-4 sm:bottom-8 sm:left-6 lg:-left-12 lg:bottom-24"
+              >
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="h-12 w-12 overflow-hidden rounded-xl">
+                    <img src={outfitImg} alt="Gợi ý outfit" className="h-full w-full object-cover" />
                   </div>
                   <div>
                     <p className="text-[10px] font-body font-semibold text-foreground">Casual Chic Set</p>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Star className="w-2.5 h-2.5 fill-accent text-accent" />
+                    <div className="mt-0.5 flex items-center gap-1">
+                      <Star className="h-2.5 w-2.5 fill-accent text-accent" />
                       <span className="text-[9px] font-body text-muted-foreground">4.8 · AI phù hợp 96%</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-1.5">
-                  {["#F5DEB3", "#6B8E23", "#4682B4"].map(c => (
-                    <span key={c} className="w-4 h-4 border border-border" style={{ backgroundColor: c }} />
+                  {["#F5DEB3", "#6B8E23", "#4682B4"].map((color) => (
+                    <span
+                      key={color}
+                      className="h-4 w-4 rounded-full border border-border"
+                      style={{ backgroundColor: color }}
+                    />
                   ))}
                   <span className="ml-auto text-[9px] font-body font-semibold text-accent">881K</span>
                 </div>
               </motion.div>
 
-              {/* Floating tag */}
-              <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
-                className="absolute top-6 left-4 bg-accent text-accent-foreground px-4 py-2 sm:left-6 lg:top-8 lg:-left-6">
+                className="absolute left-4 top-6 rounded-full bg-accent px-4 py-2 text-accent-foreground shadow-[0_16px_34px_-20px_hsl(var(--accent)/0.82)] sm:left-6 lg:-left-6 lg:top-8"
+              >
                 <p className="text-[10px] font-body font-bold uppercase tracking-wider">AI phối đồ</p>
               </motion.div>
             </motion.div>
@@ -135,9 +188,8 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Partners bar */}
-      <div className="border-t border-b border-border">
-        <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="border-y border-border/70 bg-background/55">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-6 py-6 md:flex-row">
           <p className="editorial-label">Sản phẩm từ các sàn thương mại điện tử hàng đầu</p>
           <div className="flex items-center gap-8 md:gap-12">
             {[
@@ -146,8 +198,13 @@ const HeroSection = () => {
               { name: "Tiki", color: "text-tiki" },
               { name: "Zalora", color: "text-zalora" },
               { name: "TikTok Shop", color: "text-tiktok" },
-            ].map(p => (
-              <span key={p.name} className={`text-xs font-body font-semibold ${p.color} opacity-60 hover:opacity-100 transition-opacity cursor-default uppercase tracking-wider`}>{p.name}</span>
+            ].map((partner) => (
+              <span
+                key={partner.name}
+                className={`text-xs font-body font-semibold uppercase tracking-wider ${partner.color} opacity-60 transition-opacity hover:opacity-100`}
+              >
+                {partner.name}
+              </span>
             ))}
           </div>
         </div>
@@ -157,5 +214,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-
-

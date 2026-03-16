@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import heroImg from "@/assets/hero-fashion-1.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Sparkles, Eye, EyeOff } from "lucide-react";
-import heroImg from "@/assets/hero-fashion-1.jpg";
+import { motion } from "framer-motion";
+import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const styleTags = ["Minimal", "Streetwear", "Office", "Date Night"];
 
@@ -54,16 +54,17 @@ const Login = () => {
               cùng AI
             </h2>
             <p className="text-background/70 font-body text-sm max-w-sm leading-relaxed">
-              Trợ lý AI thời trang cá nhân của bạn đã sẵn sàng giúp bạn tạo nên outfit hoàn hảo.
+              Trợ lý AI thời trang cá nhân của bạn đã sẵn sàng giúp bạn tạo nên
+              outfit hoàn hảo.
             </p>
           </motion.div>
         </div>
       </div>
 
       {/* Right — login form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-background">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.55)_0%,transparent_38%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--off-white))_100%)]">
         <motion.div
-          className="w-full max-w-sm"
+          className="soft-panel w-full max-w-sm p-6 sm:p-7"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -71,7 +72,9 @@ const Login = () => {
           {/* Logo */}
           <div className="flex items-center gap-2 mb-12">
             <Sparkles className="w-5 h-5 text-accent" />
-            <span className="font-heading text-xl font-semibold text-foreground">StyleAI</span>
+            <span className="font-heading text-xl font-semibold text-foreground">
+              Redo
+            </span>
           </div>
 
           <h1 className="font-heading text-3xl font-semibold text-foreground mb-2">
@@ -83,20 +86,27 @@ const Login = () => {
 
           <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div className="space-y-2">
-              <Label className="font-body text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
+              <Label className="font-body text-xs uppercase tracking-wider text-muted-foreground">
+                Email
+              </Label>
               <Input
                 type="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 font-body border-border bg-background"
+                className="h-12 font-body border-border bg-background/88"
               />
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="font-body text-xs uppercase tracking-wider text-muted-foreground">Mật khẩu</Label>
-                <button type="button" className="text-[11px] font-body text-accent hover:underline">
+                <Label className="font-body text-xs uppercase tracking-wider text-muted-foreground">
+                  Mật khẩu
+                </Label>
+                <button
+                  type="button"
+                  className="text-[11px] font-body text-accent hover:underline"
+                >
                   Quên mật khẩu?
                 </button>
               </div>
@@ -106,19 +116,27 @@ const Login = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 font-body border-border bg-background pr-10"
+                  className="h-12 font-body border-border bg-background/88 pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
-            <Button variant="accent" size="lg" className="w-full h-12 font-body font-semibold">
+            <Button
+              variant="accent"
+              size="lg"
+              className="w-full h-12 font-body font-semibold"
+            >
               Đăng nhập
             </Button>
           </form>
@@ -126,18 +144,47 @@ const Login = () => {
           {/* Divider */}
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-[10px] font-body uppercase tracking-wider text-muted-foreground">hoặc</span>
+            <span className="text-[10px] font-body uppercase tracking-wider text-muted-foreground">
+              hoặc
+            </span>
             <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Social login */}
           <div className="space-y-3">
-            <Button variant="outline" size="lg" className="w-full h-12 font-body gap-3">
-              <svg className="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full h-12 font-body gap-3"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                  fill="#4285F4"
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#34A853"
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  fill="#FBBC05"
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#EA4335"
+                />
+              </svg>
               Tiếp tục với Google
             </Button>
-            <Button variant="outline" size="lg" className="w-full h-12 font-body gap-3">
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full h-12 font-body gap-3"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+              </svg>
               Tiếp tục với Apple
             </Button>
           </div>
@@ -145,7 +192,10 @@ const Login = () => {
           {/* Footer */}
           <p className="text-center text-sm font-body text-muted-foreground mt-8">
             Chưa có tài khoản?{" "}
-            <Link to="/signup" className="text-accent font-medium hover:underline">
+            <Link
+              to="/signup"
+              className="text-accent font-medium hover:underline"
+            >
               Đăng ký
             </Link>
           </p>

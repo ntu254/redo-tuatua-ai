@@ -33,7 +33,7 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
       transition={{ delay: index * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="bg-card rounded-2xl overflow-hidden border border-border/60 hover:border-border hover:shadow-xl hover:shadow-foreground/[0.04] transition-all duration-500 group"
+      className="bg-[linear-gradient(180deg,hsl(var(--card))_0%,hsl(var(--secondary)/0.36)_100%)] rounded-2xl overflow-hidden border border-border/60 hover:border-border hover:shadow-xl hover:shadow-foreground/[0.04] transition-all duration-500 group"
     >
       <div className="flex">
         {/* Left: outfit image */}
@@ -65,7 +65,7 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
         {/* Right: content */}
         <div className="flex-1 p-5 xl:p-6 flex flex-col min-w-0">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <span className="bg-secondary text-foreground text-[10px] font-body font-medium px-2.5 py-1 rounded-lg border border-border">
+            <span className="bg-secondary/78 text-foreground text-[10px] font-body font-medium px-2.5 py-1 rounded-lg border border-border">
               {outfit.style}
             </span>
             {outfit.aiMatch && (
@@ -81,7 +81,7 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
             </h3>
           </div>
 
-          <div className="bg-gradient-to-r from-accent/[0.06] to-transparent border border-accent/10 rounded-xl px-4 py-3 mb-4">
+          <div className="bg-gradient-to-r from-secondary/88 via-secondary/46 to-transparent border border-accent/12 rounded-xl px-4 py-3 mb-4">
             <p className="text-[12px] font-body text-foreground/80 leading-relaxed">
               <span className="text-accent font-semibold inline-flex items-center gap-1">
                 <Sparkles className="w-3 h-3" /> AI Stylist:
@@ -93,8 +93,8 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
           <div className="space-y-1.5 flex-1">
             {(expanded ? outfit.products : outfit.products.slice(0, 3)).map((p) => (
               <motion.div key={p.name} whileHover={{ x: 2 }}
-                className="flex items-center gap-3 group/item hover:bg-secondary/40 rounded-xl p-2 -mx-2 transition-colors cursor-pointer">
-                <div className="w-11 h-11 rounded-xl bg-secondary shrink-0 overflow-hidden ring-1 ring-border/50">
+                className="flex items-center gap-3 group/item hover:bg-secondary/56 rounded-xl p-2 -mx-2 transition-colors cursor-pointer">
+                <div className="w-11 h-11 rounded-xl bg-secondary/78 shrink-0 overflow-hidden ring-1 ring-border/50">
                   <img src={p.image || outfit.image} alt={p.name} className="w-full h-full object-cover opacity-75 group-hover/item:opacity-100 transition-opacity" />
                 </div>
                 <div className="flex-1 min-w-0">

@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, MessageCircle, X, Wand2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { MessageCircle, Send, Sparkles, Wand2, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface ChatMsg {
   role: "user" | "ai";
@@ -26,7 +26,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
   const [chat, setChat] = useState<ChatMsg[]>([
     {
       role: "ai",
-      text: "Xin chào! 👋 Mình là StyleAI — trợ lý thời trang AI của bạn.\n\nMô tả phong cách, dịp, hoặc mood — mình sẽ gợi ý outfit hoàn hảo nhé! ✨",
+      text: "Xin chào! 👋 Mình là Redo — trợ lý thời trang AI của bạn.\n\nMô tả phong cách, dịp, hoặc mood — mình sẽ gợi ý outfit hoàn hảo nhé! ✨",
     },
   ]);
   const [input, setInput] = useState("");
@@ -62,7 +62,11 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
         onClick={onToggle}
         className="md:hidden fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-accent text-accent-foreground shadow-lg shadow-accent/25 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
-        {isOpen ? <X className="w-5 h-5" /> : <MessageCircle className="w-5 h-5" />}
+        {isOpen ? (
+          <X className="w-5 h-5" />
+        ) : (
+          <MessageCircle className="w-5 h-5" />
+        )}
       </button>
 
       {/* Sidebar */}
@@ -71,11 +75,13 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
         animate={{ x: isOpen ? 0 : -380 }}
         transition={{ type: "spring", damping: 28, stiffness: 220 }}
         className={`fixed md:relative z-40 w-[320px] lg:w-[340px] h-full flex flex-col shrink-0 ${
-          !isOpen ? "pointer-events-none md:pointer-events-auto hidden md:flex" : "flex"
+          !isOpen
+            ? "pointer-events-none md:pointer-events-auto hidden md:flex"
+            : "flex"
         }`}
       >
         {/* Glass background */}
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-xl border-r border-border" />
+        <div className="absolute inset-0 border-r border-border bg-[linear-gradient(180deg,hsl(var(--background)/0.94)_0%,hsl(var(--secondary)/0.5)_100%)] backdrop-blur-xl" />
 
         <div className="relative z-10 flex flex-col h-full">
           {/* Header */}
@@ -89,7 +95,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
               </div>
               <div className="flex-1">
                 <h2 className="font-heading text-[17px] font-semibold text-foreground leading-tight">
-                  StyleAI
+                  Redo
                 </h2>
                 <span className="flex items-center gap-1.5 text-[11px] font-body text-teal font-medium mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-teal inline-block animate-pulse" />
@@ -110,15 +116,15 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
                 className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {m.role === "ai" && (
-                  <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center mt-1 shrink-0">
+                  <div className="mt-1 flex h-7 w-7 items-center justify-center rounded-lg bg-accent/12 shrink-0">
                     <Sparkles className="w-3.5 h-3.5 text-accent" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] px-4 py-3 text-[13px] font-body leading-relaxed whitespace-pre-line ${
                     m.role === "user"
-                      ? "bg-accent text-accent-foreground rounded-2xl rounded-br-sm shadow-sm"
-                      : "bg-secondary/80 text-foreground rounded-2xl rounded-bl-sm"
+                      ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm shadow-sm"
+                      : "bg-secondary/88 text-foreground rounded-2xl rounded-bl-sm border border-border/60"
                   }`}
                 >
                   {m.text}
@@ -135,13 +141,22 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
                   exit={{ opacity: 0, y: -4 }}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/12 shrink-0">
                     <Sparkles className="w-3.5 h-3.5 text-accent" />
                   </div>
-                  <div className="bg-secondary/80 rounded-2xl rounded-bl-sm px-4 py-3.5 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-accent/60 animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-2 h-2 rounded-full bg-accent/60 animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-2 h-2 rounded-full bg-accent/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm border border-border/60 bg-secondary/88 px-4 py-3.5">
+                    <span
+                      className="w-2 h-2 rounded-full bg-accent/60 animate-bounce"
+                      style={{ animationDelay: "0ms" }}
+                    />
+                    <span
+                      className="w-2 h-2 rounded-full bg-accent/60 animate-bounce"
+                      style={{ animationDelay: "150ms" }}
+                    />
+                    <span
+                      className="w-2 h-2 rounded-full bg-accent/60 animate-bounce"
+                      style={{ animationDelay: "300ms" }}
+                    />
                   </div>
                 </motion.div>
               )}
@@ -159,7 +174,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
                 <button
                   key={s.label}
                   onClick={() => sendMsg(s.label)}
-                  className="text-[11px] font-body px-3 py-1.5 rounded-full border border-border bg-background hover:border-accent hover:text-accent hover:bg-accent/5 hover:shadow-sm active:scale-95 transition-all"
+                  className="text-[11px] font-body px-3 py-1.5 rounded-full border border-border bg-background/88 hover:border-accent/30 hover:text-accent hover:bg-secondary/72 hover:shadow-sm active:scale-95 transition-all"
                 >
                   {s.icon} {s.label}
                 </button>
@@ -176,7 +191,7 @@ const ChatSidebar = ({ isOpen, onToggle }: ChatSidebarProps) => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMsg()}
                 placeholder="Mô tả outfit bạn muốn mặc hôm nay..."
-                className="w-full bg-secondary/60 border border-border px-4 py-3.5 pr-12 text-sm font-body rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all placeholder:text-muted-foreground/60"
+                className="w-full bg-background/88 border border-border px-4 py-3.5 pr-12 text-sm font-body rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all placeholder:text-muted-foreground/60"
               />
               <button
                 onClick={() => sendMsg()}
