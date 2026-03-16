@@ -99,7 +99,7 @@ const Wardrobe = () => {
         ) : (
           <div className="flex gap-6">
             {/* Left Sidebar — AI Generator on top, then Filters */}
-            <div className="hidden lg:flex lg:flex-col w-[250px] shrink-0 gap-4">
+            <div className="hidden sm:flex sm:flex-col sm:w-[190px] md:w-[220px] lg:w-[250px] shrink-0 gap-4">
               <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
               <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
             </div>
@@ -136,6 +136,11 @@ const Wardrobe = () => {
                 </Button>
               </div>
 
+              <div className="space-y-4 sm:hidden">
+                <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
+                <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
+              </div>
+
               {/* Selection info */}
               <AnimatePresence>
                 {selectedIds.length > 0 && (
@@ -167,7 +172,7 @@ const Wardrobe = () => {
               {/* Wardrobe grid */}
               <motion.div
                 layout
-                className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
               >
                 <AnimatePresence mode="popLayout">
                   {filtered.map((item, i) => (
@@ -193,10 +198,6 @@ const Wardrobe = () => {
                 </motion.div>
               )}
 
-              {/* Mobile AI Generator */}
-              <div className="lg:hidden">
-                <AIOutfitGenerator items={wardrobeItems} selectedIds={selectedIds} />
-              </div>
             </div>
           </div>
         )}
