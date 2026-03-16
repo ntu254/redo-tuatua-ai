@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
 
 const navLinks = [
   { label: "Trang chủ", href: "/" },
@@ -17,45 +18,77 @@ const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", h);
-    return () => window.removeEventListener("scroll", h);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-      scrolled ? "bg-background/95 backdrop-blur-sm border-b border-border" : "bg-transparent"
-    }`}>
-      <div className="container mx-auto flex items-center justify-between h-16 px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="font-heading text-2xl font-semibold italic text-foreground tracking-tight">StyleAI</span>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-background/95 border-b border-border backdrop-blur-sm"
+          : "bg-background/90 backdrop-blur-sm"
+      }`}
+    >
+      <div className="container mx-auto flex h-16 items-center gap-4 px-6">
+        <Link to="/" className="shrink-0 flex items-center gap-2">
+          <span className="font-heading text-2xl font-semibold italic tracking-tight text-foreground">
+            StyleAI
+          </span>
         </Link>
 
-        <div className="hidden lg:flex items-center gap-10">
-          {navLinks.map(l => (
-            <Link key={l.href} to={l.href}
-              className={`text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-colors ${
-                location.pathname === l.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}>{l.label}</Link>
+        <div className="hidden md:flex flex-1 items-center justify-center gap-5 lg:gap-8 xl:gap-10">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              className={`text-[11px] font-body font-medium uppercase tracking-[0.2em] transition-colors ${
+                location.pathname === link.href
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {link.label}
+            </Link>
           ))}
         </div>
 
-        <div className="hidden lg:flex items-center gap-3">
-          <Button variant="accent" size="sm">Thử miễn phí</Button>
+        <div className="hidden xl:flex items-center gap-3">
+          <Button variant="accent" size="sm">
+            Thử miễn phí
+          </Button>
         </div>
 
-        <button className="lg:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        <button
+          type="button"
+          className="ml-auto text-foreground md:hidden"
+          onClick={() => setMobileOpen((open) => !open)}
+          aria-label={mobileOpen ? "Đóng menu" : "Mở menu"}
+        >
+          {mobileOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="lg:hidden bg-background border-b border-border px-6 py-5 space-y-3">
-          {navLinks.map(l => (
-            <Link key={l.href} to={l.href} onClick={() => setMobileOpen(false)}
-              className="block text-sm text-muted-foreground hover:text-foreground font-body py-1.5">{l.label}</Link>
+        <div className="space-y-3 border-b border-border bg-background px-6 py-5 md:hidden">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="block py-1.5 font-body text-sm text-muted-foreground hover:text-foreground"
+            >
+              {link.label}
+            </Link>
           ))}
-          <Button variant="accent" size="sm" className="w-full mt-2">Thử miễn phí</Button>
+          <Button variant="accent" size="sm" className="mt-2 w-full">
+            Thử miễn phí
+          </Button>
         </div>
       )}
     </nav>
@@ -63,5 +96,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
