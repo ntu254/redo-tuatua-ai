@@ -1,4 +1,21 @@
-# Welcome to your Lovable project
+# Redo TuaTua AI
+
+## Tổng quan
+
+Redo TuaTua AI là một ứng dụng thời trang AI xây bằng React + TypeScript + Vite. Dự án tập trung vào:
+
+- phối đồ bằng AI
+- quản lý tủ đồ cá nhân
+- khám phá xu hướng thời trang
+- style profile và analytics
+- admin dashboard cho vận hành hệ thống
+
+## Tài liệu dự án
+
+- [Project documentation](./docs/PROJECT_DOCS.md)
+- [Architecture guidelines](./docs/ARCHITECTURE_GUIDELINES.md)
+- [Refactor map](./docs/REFACTOR_MAP.md)
+- [Backend, AI & deployment roadmap](./docs/ROADMAP_BACKEND_AI_DEPLOYMENT.md)
 
 ## Project info
 
