@@ -1,4 +1,5 @@
 import type { WardrobeItem } from "@/features/wardrobe/types";
+import { wardrobeSuggestionMock } from "@/shared/api/mock-fixtures";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight, RefreshCw, Shirt, Sparkles, Wand2 } from "lucide-react";
@@ -9,15 +10,10 @@ interface AIOutfitGeneratorProps {
   selectedIds: number[];
 }
 
-const mockOutfit = [
-  { role: "Áo", name: "Áo thun trắng basic", color: "#FFFFFF" },
-  { role: "Quần", name: "Quần jeans xanh đậm", color: "#1C3A5F" },
-  { role: "Giày", name: "Giày sneaker trắng", color: "#F5F5F5" },
-];
-
 const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
   const [generated, setGenerated] = useState(false);
   const [spinning, setSpinning] = useState(false);
+  const availableItems = items.length;
 
   const handleGenerate = () => {
     setSpinning(true);
@@ -53,7 +49,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
             <p className="text-[11px] text-muted-foreground font-body leading-snug mt-0.5">
               {selectedIds.length > 0
                 ? `${selectedIds.length} món đồ đã chọn — AI sẽ phối quanh chúng`
-                : "Tạo bộ outfit từ tủ đồ của bạn"}
+                : `Tạo bộ outfit từ ${availableItems} món đồ trong tủ của bạn`}
             </p>
           </div>
         </div>
@@ -81,7 +77,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
             >
               <p className="editorial-label">Gợi ý từ AI</p>
               <div className="space-y-1.5">
-                {mockOutfit.map((piece, i) => (
+                {wardrobeSuggestionMock.map((piece, i) => (
                   <motion.div
                     key={piece.role}
                     initial={{ opacity: 0, x: -8 }}

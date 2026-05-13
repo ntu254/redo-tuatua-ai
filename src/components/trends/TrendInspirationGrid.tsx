@@ -133,13 +133,21 @@ const TrendInspirationGrid = () => {
   const toggleSave = (i: number) =>
     setSaved((prev) => {
       const n = new Set(prev);
-      n.has(i) ? n.delete(i) : n.add(i);
+      if (n.has(i)) {
+        n.delete(i);
+      } else {
+        n.add(i);
+      }
       return n;
     });
   const toggleLike = (i: number) =>
     setLiked((prev) => {
       const n = new Set(prev);
-      n.has(i) ? n.delete(i) : n.add(i);
+      if (n.has(i)) {
+        n.delete(i);
+      } else {
+        n.add(i);
+      }
       return n;
     });
 
@@ -212,7 +220,11 @@ const TrendInspirationGrid = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleSave(gi);
+                        if (saved.has(gi)) {
+                          toggleSave(gi);
+                        } else {
+                          toggleSave(gi);
+                        }
                       }}
                       className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-background/60 backdrop-blur-sm hover:bg-background/90 transition-all"
                     >
@@ -244,7 +256,11 @@ const TrendInspirationGrid = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            toggleLike(gi);
+                            if (liked.has(gi)) {
+                              toggleLike(gi);
+                            } else {
+                              toggleLike(gi);
+                            }
                           }}
                           className="w-9 h-9 flex items-center justify-center bg-background/95 backdrop-blur-sm hover:bg-background transition-colors"
                         >

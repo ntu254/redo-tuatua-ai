@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { wardrobeUploadAnalysisMock } from "@/shared/api/mock-fixtures";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -48,37 +49,38 @@ const colorOptions = [
   { label: "Hồng", hex: "#F4A0A0" },
 ];
 
-const mockOutfitSuggestion = [
-  { role: "Áo", name: "Áo thun trắng" },
-  { role: "Quần", name: "Quần jeans xanh" },
-  { role: "Giày", name: "Sneaker trắng" },
-];
-
 const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
   const [step, setStep] = useState<UploadStep>("upload");
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [detectedName, setDetectedName] = useState("Áo thun trắng");
-  const [detectedCategory, setDetectedCategory] = useState("Tops");
-  const [detectedType, setDetectedType] = useState("Áo thun");
-  const [detectedColor, setDetectedColor] = useState("#FFFFFF");
-  const [detectedTags, setDetectedTags] = useState<string[]>([
-    "Casual",
-    "Minimal",
-  ]);
+  const [detectedName, setDetectedName] = useState(
+    wardrobeUploadAnalysisMock.detectedName,
+  );
+  const [detectedCategory, setDetectedCategory] = useState(
+    wardrobeUploadAnalysisMock.detectedCategory,
+  );
+  const [detectedType, setDetectedType] = useState(
+    wardrobeUploadAnalysisMock.detectedType,
+  );
+  const [detectedColor, setDetectedColor] = useState(
+    wardrobeUploadAnalysisMock.detectedColor,
+  );
+  const [detectedTags, setDetectedTags] = useState<string[]>(
+    wardrobeUploadAnalysisMock.detectedTags,
+  );
   const [isEditing, setIsEditing] = useState(false);
 
   const reset = useCallback(() => {
     setStep("upload");
     setPreview(null);
     setIsEditing(false);
-    setDetectedName("Áo thun trắng");
-    setDetectedCategory("Tops");
-    setDetectedType("Áo thun");
-    setDetectedColor("#FFFFFF");
-    setDetectedTags(["Casual", "Minimal"]);
+    setDetectedName(wardrobeUploadAnalysisMock.detectedName);
+    setDetectedCategory(wardrobeUploadAnalysisMock.detectedCategory);
+    setDetectedType(wardrobeUploadAnalysisMock.detectedType);
+    setDetectedColor(wardrobeUploadAnalysisMock.detectedColor);
+    setDetectedTags(wardrobeUploadAnalysisMock.detectedTags);
   }, []);
 
   const handleClose = () => {
@@ -424,7 +426,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                     Ý tưởng outfit với món đồ này
                   </p>
                   <div className="flex items-center gap-2">
-                    {mockOutfitSuggestion.map((piece, i) => (
+                    {wardrobeUploadAnalysisMock.suggestion.map((piece, i) => (
                       <div key={i} className="flex items-center gap-1.5">
                         <div className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center">
                           <Shirt
@@ -435,7 +437,8 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                         <span className="text-[10px] font-body text-foreground">
                           {piece.name}
                         </span>
-                        {i < mockOutfitSuggestion.length - 1 && (
+                        {i <
+                          wardrobeUploadAnalysisMock.suggestion.length - 1 && (
                           <ChevronRight className="w-3 h-3 text-muted-foreground/30 mx-0.5" />
                         )}
                       </div>

@@ -6,26 +6,75 @@ import {
   WardrobeItemCard,
   WardrobeUploadModal,
 } from "@/features/wardrobe/components";
-import { wardrobeItems } from "@/features/wardrobe/data";
 import {
   defaultWardrobeFilters,
   useWardrobeFilters,
 } from "@/features/wardrobe/hooks/useWardrobeFilters";
+import type { WardrobeOverview } from "@/features/wardrobe/services/wardrobe.service";
+import { wardrobeService } from "@/features/wardrobe/services/wardrobe.service";
 import type { ActiveFilters } from "@/features/wardrobe/types";
 import { Navbar } from "@/shared/layout";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Search, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { WardrobeItem } from "../types";
 
 const WardrobePage = () => {
   const [filters, setFilters] = useState<ActiveFilters>(defaultWardrobeFilters);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [items, setItems] = useState<WardrobeItem[]>([]);
+  const [summary, setSummary] = useState<WardrobeOverview>({
+    itemCount: 0,
+    savedOutfits: 0,
+    aiSuggestions: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadWardrobe = async () => {
+      try {
+        setIsLoading(true);
+        setLoadError(null);
+
+        const [itemsData, summaryData] = await Promise.all([
+          wardrobeService.listItems(),
+          wardrobeService.getOverview(),
+        ]);
+
+        if (cancelled) return;
+
+        setItems(itemsData);
+        setSummary(summaryData);
+      } catch (error) {
+        if (cancelled) return;
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Không thể tải dữ liệu tủ đồ.";
+        setLoadError(message);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadWardrobe();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filtered = useWardrobeFilters({
-    items: wardrobeItems,
+    items,
     filters,
     search,
   });
@@ -36,16 +85,42 @@ const WardrobePage = () => {
     );
   };
 
-  const isEmpty = wardrobeItems.length === 0;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto max-w-7xl px-6 py-20">
+          <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-sm">
+            Đang tải mock wardrobe API...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container mx-auto max-w-7xl px-6 py-20">
+          <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8 text-center text-sm text-destructive shadow-sm">
+            {loadError}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isEmpty = items.length === 0;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
       <WardrobeHeader
-        itemCount={wardrobeItems.length}
-        savedOutfits={5}
-        aiSuggestions={18}
+        itemCount={summary.itemCount}
+        savedOutfits={summary.savedOutfits}
+        aiSuggestions={summary.aiSuggestions}
         onAddClick={() => setUploadOpen(true)}
       />
 
@@ -56,10 +131,7 @@ const WardrobePage = () => {
           <div className="flex gap-6">
             {/* Left Sidebar — AI Generator on top, then Filters */}
             <div className="hidden sm:flex sm:flex-col sm:w-[190px] md:w-[220px] lg:w-[250px] shrink-0 gap-4">
-              <AIOutfitGenerator
-                items={wardrobeItems}
-                selectedIds={selectedIds}
-              />
+              <AIOutfitGenerator items={items} selectedIds={selectedIds} />
               <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
             </div>
 
@@ -99,10 +171,7 @@ const WardrobePage = () => {
               </div>
 
               <div className="space-y-4 sm:hidden">
-                <AIOutfitGenerator
-                  items={wardrobeItems}
-                  selectedIds={selectedIds}
-                />
+                <AIOutfitGenerator items={items} selectedIds={selectedIds} />
                 <WardrobeFilterSidebar
                   filters={filters}
                   onChange={setFilters}
