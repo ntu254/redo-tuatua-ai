@@ -1,10 +1,16 @@
 import trendsHeroBg from "@/assets/trends-hero-bg.jpg";
 import AITrendInsights from "@/features/trends/components/AITrendInsights";
+import NextTrendPrediction from "@/features/trends/components/NextTrendPrediction";
+import PersonalizedTrends from "@/features/trends/components/PersonalizedTrends";
+import RegionalTrends from "@/features/trends/components/RegionalTrends";
+import SeasonalTrends from "@/features/trends/components/SeasonalTrends";
+import TrendSearch from "@/features/trends/components/TrendSearch";
 import TrendingColors from "@/features/trends/components/TrendingColors";
 import TrendingItems from "@/features/trends/components/TrendingItems";
 import TrendingSearches from "@/features/trends/components/TrendingSearches";
 import TrendingStyles from "@/features/trends/components/TrendingStyles";
 import TrendInspirationGrid from "@/features/trends/components/TrendInspirationGrid";
+import WardrobeTrendMatch from "@/features/trends/components/WardrobeTrendMatch";
 import { Footer, Navbar } from "@/shared/layout";
 import { motion } from "framer-motion";
 import { Wand2 } from "lucide-react";
@@ -75,11 +81,17 @@ const TrendsPage = () => {
           <div className="border-b border-border" />
         </section>
 
+        <TrendSearch onSearch={() => {}} />
         <TrendingSearches />
         <TrendingColors />
         <TrendingItems />
+        <SeasonalTrends />
         <TrendingStyles />
+        <PersonalizedTrends />
+        <WardrobeTrendMatch />
+        <RegionalTrends />
         <AITrendInsights />
+        <NextTrendPrediction />
         <TrendInspirationGrid />
       </div>
 

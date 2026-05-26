@@ -8,6 +8,9 @@ interface WardrobeItemCardProps {
   index: number;
   selected?: boolean;
   onToggleSelect?: (id: number) => void;
+  onEdit: (item: WardrobeItem) => void;
+  onDelete: (id: number) => void;
+  onSuggestOutfit: (item: WardrobeItem) => void;
 }
 
 const tagColors: Record<string, string> = {
@@ -19,7 +22,7 @@ const tagColors: Record<string, string> = {
   Sporty: "bg-teal-light text-teal",
 };
 
-const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeItemCardProps) => {
+const WardrobeItemCard = ({ item, index, selected, onToggleSelect, onEdit, onDelete, onSuggestOutfit }: WardrobeItemCardProps) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -37,7 +40,6 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
       onMouseLeave={() => setHovered(false)}
       onClick={() => onToggleSelect?.(item.id)}
     >
-      {/* Image */}
       <div className="aspect-[4/5] bg-secondary relative flex items-center justify-center overflow-hidden">
         {item.image ? (
           <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-600 group-hover:scale-[1.04]" />
@@ -47,7 +49,6 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
           </div>
         )}
 
-        {/* Selection indicator */}
         {onToggleSelect && (
           <div className={`absolute top-2.5 left-2.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
             selected
@@ -58,7 +59,13 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
           </div>
         )}
 
-        {/* Hover actions */}
+        {/* Season badge */}
+        {item.season && (
+          <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-md bg-background/80 backdrop-blur-sm text-[9px] font-body font-medium text-muted-foreground">
+            {item.season}
+          </div>
+        )}
+
         <AnimatePresence>
           {hovered && (
             <motion.div
@@ -71,10 +78,9 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
               <motion.button
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0 }}
                 className="w-8 h-8 rounded-full bg-background/90 flex items-center justify-center hover:bg-background shadow-sm transition-colors"
-                title="Edit"
-                onClick={(e) => e.stopPropagation()}
+                title="Chỉnh sửa"
+                onClick={(e) => { e.stopPropagation(); onEdit(item); }}
               >
                 <Pencil className="w-3 h-3 text-foreground" />
               </motion.button>
@@ -83,8 +89,8 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.04 }}
                 className="w-8 h-8 rounded-full bg-accent flex items-center justify-center hover:bg-accent/80 shadow-sm transition-colors"
-                title="Use in outfit"
-                onClick={(e) => e.stopPropagation()}
+                title="Tạo outfit từ item này"
+                onClick={(e) => { e.stopPropagation(); onSuggestOutfit(item); }}
               >
                 <Sparkles className="w-3 h-3 text-accent-foreground" />
               </motion.button>
@@ -93,8 +99,8 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.08 }}
                 className="w-8 h-8 rounded-full bg-background/90 flex items-center justify-center hover:bg-destructive/10 shadow-sm transition-colors"
-                title="Remove"
-                onClick={(e) => e.stopPropagation()}
+                title="Xóa"
+                onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
               >
                 <Trash2 className="w-3 h-3 text-destructive" />
               </motion.button>
@@ -103,7 +109,6 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
         </AnimatePresence>
       </div>
 
-      {/* Info */}
       <div className="p-3">
         <p className="text-[13px] font-body font-medium text-foreground truncate leading-tight">{item.name}</p>
         <div className="flex items-center gap-1.5 mt-1">
@@ -114,6 +119,11 @@ const WardrobeItemCard = ({ item, index, selected, onToggleSelect }: WardrobeIte
           <span className="text-[9px] text-muted-foreground font-body uppercase tracking-wider">
             {item.category}
           </span>
+          {item.source === "ai-scan" && (
+            <span className="text-[8px] text-accent font-body font-medium ml-auto flex items-center gap-0.5">
+              <Sparkles className="w-2.5 h-2.5" /> AI
+            </span>
+          )}
         </div>
         {item.tags.length > 0 && (
           <div className="flex gap-1 mt-2 flex-wrap">

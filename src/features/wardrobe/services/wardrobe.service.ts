@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/api";
-import type { WardrobeItem } from "../types";
+import type { WardrobeAnalysis, WardrobeItem } from "../types";
 
 export interface WardrobeOverview {
   itemCount: number;
@@ -16,6 +16,14 @@ export interface WardrobeUploadAnalysis {
   suggestion: Array<{ role: string; name: string; color: string }>;
 }
 
+export interface ItemUpdatePayload {
+  name?: string;
+  category?: string;
+  color?: string;
+  tags?: string[];
+  season?: string;
+}
+
 export const wardrobeService = {
   listItems: () => apiClient.get<WardrobeItem[]>("/api/wardrobe/items"),
   getOverview: () => apiClient.get<WardrobeOverview>("/api/wardrobe/overview"),
@@ -25,4 +33,10 @@ export const wardrobeService = {
     ),
   analyzeUpload: () =>
     apiClient.get<WardrobeUploadAnalysis>("/api/wardrobe/upload-analysis"),
+  getAnalysis: () =>
+    apiClient.get<WardrobeAnalysis>("/api/wardrobe/analysis"),
+  deleteItem: (id: number) =>
+    apiClient.delete<void>(`/api/wardrobe/items/${id}`),
+  updateItem: (id: number, payload: ItemUpdatePayload) =>
+    apiClient.patch<WardrobeItem>(`/api/wardrobe/items/${id}`, { json: payload }),
 };

@@ -1,9 +1,12 @@
 import { AdminSidebar } from "@/features/admin/components";
 import { Button, Input, SidebarProvider, SidebarTrigger } from "@/shared/ui";
-import { Bell, Search } from "lucide-react";
+import { Bell, LogOut, Search } from "lucide-react";
 import { Outlet } from "react-router-dom";
+import { useAdminAuth } from "../hooks/useAdminAuth";
 
 export default function AdminLayout() {
+  const { session, logout } = useAdminAuth();
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/30">
@@ -25,9 +28,18 @@ export default function AdminLayout() {
                 <Bell className="h-4 w-4" />
                 <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-accent" />
               </Button>
-              <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center text-xs font-bold text-accent-foreground">
-                A
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center text-xs font-bold text-accent-foreground">
+                  {session?.email?.charAt(0).toUpperCase() || "A"}
+                </div>
+                <div className="hidden md:block text-left">
+                  <p className="text-xs font-medium text-foreground font-body leading-tight">{session?.email || "Admin"}</p>
+                  <p className="text-[10px] text-muted-foreground font-body capitalize">{session?.roleName?.replace("_", " ") || "Admin"}</p>
+                </div>
               </div>
+              <Button variant="ghost" size="icon" onClick={logout} title="Logout">
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </header>
 

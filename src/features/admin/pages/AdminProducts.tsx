@@ -1,12 +1,21 @@
 import { StatusBadge } from "@/features/admin/components";
+import { adminProductsService } from "@/features/admin/services/admin-products.service";
 import { cn } from "@/lib/utils";
 import {
+  Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   Input,
+  Label,
+  ScrollArea,
   Table,
   TableBody,
   TableCell,
@@ -14,13 +23,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/ui";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  AlertTriangle,
+  DollarSign,
   EyeOff,
   Link2,
+  Link2Off,
   MoreHorizontal,
+  MousePointerClick,
+  Package,
   Search,
   Star,
+  Unlink,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -32,119 +47,100 @@ const platformColors: Record<string, string> = {
   "TikTok Shop": "bg-[#FF0050]",
 };
 
-const products = [
-  {
-    id: 1,
-    title: "Classic White Tee",
-    platform: "Shopee",
-    category: "Tops",
-    affiliate: "Active",
-    link: "Healthy",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "Wide Leg Jeans",
-    platform: "Lazada",
-    category: "Bottoms",
-    affiliate: "Active",
-    link: "Healthy",
-    featured: false,
-  },
-  {
-    id: 3,
-    title: "Silk Midi Skirt",
-    platform: "Zalora",
-    category: "Bottoms",
-    affiliate: "Active",
-    link: "Broken",
-    featured: false,
-  },
-  {
-    id: 4,
-    title: "Canvas Tote Bag",
-    platform: "Tiki",
-    category: "Accessories",
-    affiliate: "Inactive",
-    link: "Healthy",
-    featured: false,
-  },
-  {
-    id: 5,
-    title: "Chunky Sneakers",
-    platform: "TikTok Shop",
-    category: "Shoes",
-    affiliate: "Active",
-    link: "Healthy",
-    featured: true,
-  },
-  {
-    id: 6,
-    title: "Oversized Blazer",
-    platform: "Shopee",
-    category: "Outerwear",
-    affiliate: "Active",
-    link: "Healthy",
-    featured: false,
-  },
-  {
-    id: 7,
-    title: "Sequin Party Dress",
-    platform: "Lazada",
-    category: "Dresses",
-    affiliate: "Active",
-    link: "Broken",
-    featured: false,
-  },
-  {
-    id: 8,
-    title: "Leather Belt",
-    platform: "Tiki",
-    category: "Accessories",
-    affiliate: "Inactive",
-    link: "Healthy",
-    featured: false,
-  },
-];
-
-type PlatformFilter =
-  | "all"
-  | "Shopee"
-  | "Lazada"
-  | "Tiki"
-  | "Zalora"
-  | "TikTok Shop";
+type PlatformFilter = "all" | "Shopee" | "Lazada" | "Tiki" | "Zalora" | "TikTok Shop";
 
 export default function AdminProducts() {
   const [search, setSearch] = useState("");
   const [platform, setPlatform] = useState<PlatformFilter>("all");
+  const [clicksProductId, setClicksProductId] = useState<string | null>(null);
+  const [linkProduct, setLinkProduct] = useState<{ id: string; title: string } | null>(null);
+  const [linkUrl, setLinkUrl] = useState("");
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "products"],
+    queryFn: () => adminProductsService.getData(),
+  });
+
+  const { data: clickData } = useQuery({
+    queryKey: ["admin", "products", "clicks", clicksProductId],
+    queryFn: () => adminProductsService.getClicks(clicksProductId!),
+    enabled: !!clicksProductId,
+  });
+
+  const toggleFeaturedMutation = useMutation({
+    mutationFn: (productId: string) => adminProductsService.toggleFeatured(productId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "products"] }),
+  });
+
+  const toggleVisibilityMutation = useMutation({
+    mutationFn: ({ productId, hidden }: { productId: string; hidden: boolean }) =>
+      adminProductsService.toggleVisibility(productId, hidden),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "products"] }),
+  });
+
+  const updateLinkMutation = useMutation({
+    mutationFn: () => adminProductsService.updateLink(linkProduct!.id, linkUrl),
+    onSuccess: () => {
+      setLinkProduct(null);
+      setLinkUrl("");
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
+    },
+  });
+
+  const products = data?.products ?? [];
+  const stats = data?.stats;
 
   const filtered = products.filter((p) => {
     if (platform !== "all" && p.platform !== platform) return false;
-    if (search && !p.title.toLowerCase().includes(search.toLowerCase()))
-      return false;
+    if (search && !p.title.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
-  const platforms: PlatformFilter[] = [
-    "all",
-    "Shopee",
-    "Lazada",
-    "Tiki",
-    "Zalora",
-    "TikTok Shop",
-  ];
+  const platforms: PlatformFilter[] = ["all", "Shopee", "Lazada", "Tiki", "Zalora", "TikTok Shop"];
+
+  const selectedProduct = products.find((p) => p.id === clicksProductId);
 
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground font-body">
-          Products & Platforms
-        </h1>
-        <p className="text-sm text-muted-foreground font-body mt-1">
-          Manage product feeds and affiliate links
-        </p>
+        <h1 className="text-2xl font-semibold text-foreground font-body">Products & Platforms</h1>
+        <p className="text-sm text-muted-foreground font-body mt-1">Manage product feeds and affiliate links</p>
       </div>
+
+      {stats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-accent mb-1">
+              <Package className="h-4 w-4" />
+              <span className="text-xs font-medium font-body">Total Products</span>
+            </div>
+            <p className="text-2xl font-semibold font-body">{stats.totalProducts}</p>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-teal mb-1">
+              <Link2 className="h-4 w-4" />
+              <span className="text-xs font-medium font-body">Active Affiliates</span>
+            </div>
+            <p className="text-2xl font-semibold font-body">{stats.activeAffiliates}</p>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-destructive mb-1">
+              <Unlink className="h-4 w-4" />
+              <span className="text-xs font-medium font-body">Broken Links</span>
+            </div>
+            <p className="text-2xl font-semibold font-body">{stats.brokenLinks}</p>
+          </div>
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 text-blue-500 mb-1">
+              <MousePointerClick className="h-4 w-4" />
+              <span className="text-xs font-medium font-body">Total Clicks</span>
+            </div>
+            <p className="text-2xl font-semibold font-body">{stats.totalClicks.toLocaleString()}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
         <div className="flex gap-2 flex-wrap">
           {platforms.map((p) => (
@@ -169,6 +165,7 @@ export default function AdminProducts() {
           />
         </div>
       </div>
+
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
@@ -178,73 +175,163 @@ export default function AdminProducts() {
               <TableHead className="font-body">Category</TableHead>
               <TableHead className="font-body">Affiliate</TableHead>
               <TableHead className="font-body">Link Health</TableHead>
+              <TableHead className="font-body text-right">Clicks</TableHead>
+              <TableHead className="font-body text-right">Commission</TableHead>
               <TableHead className="font-body w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((p) => (
-              <TableRow key={p.id}>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium font-body">
-                      {p.title}
-                    </span>
-                    {p.featured && (
-                      <Star className="h-3.5 w-3.5 text-accent fill-accent" />
-                    )}
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-12">
+                  <div className="flex justify-center gap-2">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="h-3 w-16 bg-muted rounded animate-pulse" />
+                    ))}
                   </div>
                 </TableCell>
-                <TableCell>
-                  <span
-                    className={cn(
-                      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white",
-                      platformColors[p.platform],
-                    )}
-                  >
-                    {p.platform}
-                  </span>
-                </TableCell>
-                <TableCell className="text-sm font-body text-muted-foreground">
-                  {p.category}
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={p.affiliate} />
-                </TableCell>
-                <TableCell>
-                  <StatusBadge status={p.link} />
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Link2 className="h-4 w-4 mr-2" />
-                        Update Link
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <EyeOff className="h-4 w-4 mr-2" />
-                        Hide Product
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Star className="h-4 w-4 mr-2" />
-                        Mark Featured
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <AlertTriangle className="h-4 w-4 mr-2" />
-                        Fix Affiliate Link
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
               </TableRow>
-            ))}
+            ) : filtered.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center py-12 text-sm text-muted-foreground font-body">No products found</TableCell>
+              </TableRow>
+            ) : (
+              filtered.map((p) => (
+                <TableRow key={p.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium font-body">{p.title}</span>
+                      {p.featured && <Star className="h-3.5 w-3.5 text-accent fill-accent" />}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <span className={cn("inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white", platformColors[p.platform])}>
+                      {p.platform}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-sm font-body text-muted-foreground">{p.category}</TableCell>
+                  <TableCell><StatusBadge status={p.affiliate} /></TableCell>
+                  <TableCell>
+                    {p.linkHealth === "Broken" ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-destructive bg-destructive/10 px-2 py-0.5 rounded-full">
+                        <Unlink className="h-3 w-3" /> Broken
+                      </span>
+                    ) : (
+                      <StatusBadge status="Active" />
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm font-body text-right">{p.clicks.toLocaleString()}</TableCell>
+                  <TableCell className="text-sm font-body text-right">
+                    <span className="flex items-center justify-end gap-1">
+                      <DollarSign className="h-3 w-3 text-muted-foreground" />
+                      {p.commission.toLocaleString()}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setClicksProductId(p.id)}>
+                          <MousePointerClick className="h-4 w-4 mr-2" /> View Clicks
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setLinkProduct({ id: p.id, title: p.title });
+                          setLinkUrl("");
+                        }}>
+                          <Link2 className="h-4 w-4 mr-2" /> Update Link
+                        </DropdownMenuItem>
+                        {p.linkHealth === "Broken" ? (
+                          <DropdownMenuItem
+                            onClick={() => toggleVisibilityMutation.mutate({ productId: p.id, hidden: true })}
+                          >
+                            <EyeOff className="h-4 w-4 mr-2" /> Hide Product
+                          </DropdownMenuItem>
+                        ) : null}
+                        <DropdownMenuItem onClick={() => toggleFeaturedMutation.mutate(p.id)}>
+                          <Star className="h-4 w-4 mr-2" />
+                          {p.featured ? "Unmark Featured" : "Mark Featured"}
+                        </DropdownMenuItem>
+                        {p.linkHealth === "Broken" ? (
+                          <DropdownMenuItem onClick={() => {
+                            setLinkProduct({ id: p.id, title: p.title });
+                            setLinkUrl("");
+                          }}>
+                            <Link2Off className="h-4 w-4 mr-2" /> Fix Affiliate Link
+                          </DropdownMenuItem>
+                        ) : null}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={!!linkProduct} onOpenChange={(v) => { if (!v) { setLinkProduct(null); setLinkUrl(""); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Update Affiliate Link</DialogTitle>
+            <DialogDescription className="srOnly">Update affiliate link for {linkProduct?.title}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm font-body text-muted-foreground">Product: <span className="text-foreground font-medium">{linkProduct?.title}</span></p>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-body text-foreground">Affiliate URL</Label>
+              <Input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." className="h-9 font-body text-sm" />
+            </div>
+            <Button className="w-full" onClick={() => updateLinkMutation.mutate()} disabled={updateLinkMutation.isPending || !linkUrl}>
+              {updateLinkMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+              Update Link
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!clicksProductId} onOpenChange={(v) => { if (!v) setClicksProductId(null); }}>
+        <DialogContent className="max-w-lg max-h-[70vh] p-0">
+          <DialogHeader className="p-6 pb-0">
+            <DialogDescription className="srOnly">View product click details</DialogDescription>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-base font-semibold font-body">
+                Clicks — {selectedProduct?.title ?? ""}
+              </DialogTitle>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setClicksProductId(null)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          <ScrollArea className="max-h-[calc(70vh-80px)]">
+            <div className="p-6 pt-4">
+              {!clickData || clickData.length === 0 ? (
+                <p className="text-sm text-muted-foreground font-body py-8 text-center">No click data available</p>
+              ) : (
+                <div className="space-y-3">
+                  {clickData.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                      <div>
+                        <p className="text-sm font-medium text-foreground font-body">{c.user}</p>
+                        <p className="text-xs text-muted-foreground font-body">via {c.source}</p>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="outline" className="text-[10px]">{c.platform}</Badge>
+                        <p className="text-xs text-muted-foreground mt-1 font-body">{new Date(c.clicked_at).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
+

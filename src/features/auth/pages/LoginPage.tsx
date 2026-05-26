@@ -1,16 +1,29 @@
+import { useMutation } from "@tanstack/react-query";
 import heroImg from "@/assets/hero-fashion-1.jpg";
 import { Button, Input, Label } from "@/shared/ui";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/auth.service";
 
 const styleTags = ["Minimal", "Streetwear", "Office", "Date Night"];
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const loginMutation = useMutation({
+    mutationFn: () => authService.login(email, password),
+    onSuccess: () => navigate("/"),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    loginMutation.mutate();
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -79,7 +92,14 @@ const LoginPage = () => {
             Tiếp tục phối đồ cùng trợ lý AI của bạn.
           </p>
 
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+          {loginMutation.isError && (
+            <div className="flex items-center gap-2 p-3 mb-5 bg-destructive/5 border border-destructive/20 text-destructive text-sm font-body">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              {(loginMutation.error as Error)?.message ?? "Đăng nhập thất bại"}
+            </div>
+          )}
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label className="font-body text-xs uppercase tracking-wider text-muted-foreground">
                 Email
@@ -90,6 +110,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-12 font-body border-border bg-background/88"
+                required
               />
             </div>
 
@@ -112,6 +133,7 @@ const LoginPage = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="h-12 font-body border-border bg-background/88 pr-10"
+                  required
                 />
                 <button
                   type="button"
@@ -131,8 +153,13 @@ const LoginPage = () => {
               variant="accent"
               size="lg"
               className="w-full h-12 font-body font-semibold"
+              disabled={loginMutation.isPending}
             >
-              Đăng nhập
+              {loginMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                "Đăng nhập"
+              )}
             </Button>
           </form>
 

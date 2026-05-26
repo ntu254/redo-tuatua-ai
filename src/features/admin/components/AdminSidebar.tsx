@@ -13,35 +13,40 @@ import {
 } from "@/shared/ui";
 import {
   BarChart3,
+  Brain,
+  CreditCard,
   LayoutDashboard,
+  Megaphone,
   MessageSquare,
   Settings,
-  Shirt,
   ShoppingBag,
-  Sparkles,
   TrendingUp,
   Users,
   Zap,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAdminAuth } from "../hooks/useAdminAuth";
 
 const navItems = [
-  { title: "Dashboard", url: "/admin", icon: LayoutDashboard },
-  { title: "Users", url: "/admin/users", icon: Users },
-  { title: "Wardrobe Items", url: "/admin/wardrobe", icon: Shirt },
-  { title: "Outfit Recommendations", url: "/admin/outfits", icon: Sparkles },
-  { title: "Trends & Lookbook", url: "/admin/trends", icon: TrendingUp },
-  { title: "Products & Platforms", url: "/admin/products", icon: ShoppingBag },
-  { title: "AI Analytics", url: "/admin/analytics", icon: BarChart3 },
-  { title: "Feedback & Reports", url: "/admin/feedback", icon: MessageSquare },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
+  { title: "Dashboard", url: "/admin", icon: LayoutDashboard, module: "dashboard" },
+  { title: "Users", url: "/admin/users", icon: Users, module: "users" },
+  { title: "AI Engine", url: "/admin/ai-engine", icon: Brain, module: "ai_engine" },
+  { title: "Products", url: "/admin/products", icon: ShoppingBag, module: "products" },
+  { title: "Trends & Content", url: "/admin/trends", icon: TrendingUp, module: "trends" },
+  { title: "Plans & Billing", url: "/admin/plans", icon: CreditCard, module: "plans" },
+  { title: "Analytics", url: "/admin/analytics", icon: BarChart3, module: "analytics" },
+  { title: "Notifications", url: "/admin/notifications", icon: Megaphone, module: "notifications" },
+  { title: "Reports", url: "/admin/feedback", icon: MessageSquare, module: "reports" },
+  { title: "Settings", url: "/admin/settings", icon: Settings, module: "settings" },
 ];
 
 export function AdminSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const location = useLocation();
+  const { session, hasPermission } = useAdminAuth();
 
+  const visibleItems = navItems.filter((item) => hasPermission(item.module, "read"));
   const isActive = (url: string) =>
     url === "/admin"
       ? location.pathname === "/admin"
@@ -69,7 +74,7 @@ export function AdminSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {visibleItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link
@@ -93,17 +98,17 @@ export function AdminSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-border">
-        {!collapsed && (
+        {!collapsed && session && (
           <div className="flex items-center gap-3 px-2">
-            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-foreground">
-              A
+            <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center text-xs font-semibold text-accent-foreground">
+              {session.email.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
-                Admin
+              <p className="text-sm font-medium text-foreground truncate capitalize">
+                {session.roleName.replace("_", " ")}
               </p>
               <p className="text-xs text-muted-foreground truncate">
-                admin@Redo.com
+                {session.email}
               </p>
             </div>
           </div>

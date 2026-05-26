@@ -6,6 +6,7 @@ export interface ApiConfig {
 
 export interface ApiRequestOptions extends RequestInit {
   json?: unknown;
+  path?: string;
 }
 
 export type MockHandler = (

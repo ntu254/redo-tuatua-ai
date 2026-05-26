@@ -1,4 +1,7 @@
 export { default as AIOutfitGenerator } from "./AIOutfitGenerator";
+export { WardrobeAnalysis } from "./WardrobeAnalysis";
+export { WardrobeDeleteConfirm } from "./WardrobeDeleteConfirm";
+export { WardrobeEditModal } from "./WardrobeEditModal";
 export { default as WardrobeEmptyState } from "./WardrobeEmptyState";
 export { default as WardrobeFilterSidebar } from "./WardrobeFilterSidebar";
 export { default as WardrobeHeader } from "./WardrobeHeader";

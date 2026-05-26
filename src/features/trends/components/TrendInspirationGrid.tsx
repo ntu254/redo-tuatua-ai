@@ -12,11 +12,13 @@ import {
   Bookmark,
   Flame,
   Heart,
+  Share2,
   Sparkles,
   Wand2,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import TrendDetailModal from "./TrendDetailModal";
 
 const categories = [
   "Tất cả",
@@ -123,6 +125,7 @@ const TrendInspirationGrid = () => {
   const [activeFilter, setActiveFilter] = useState(0);
   const [saved, setSaved] = useState<Set<number>>(new Set());
   const [liked, setLiked] = useState<Set<number>>(new Set());
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const filtered =
@@ -150,6 +153,13 @@ const TrendInspirationGrid = () => {
       }
       return n;
     });
+  const handleShare = (title: string) => {
+    if (navigator.share) {
+      navigator.share({ title, url: window.location.href });
+    } else {
+      navigator.clipboard?.writeText(`${title} — Redo Trends`);
+    }
+  };
 
   return (
     <section className="py-14 md:py-20 border-t border-border">
@@ -194,6 +204,7 @@ const TrendInspirationGrid = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06, duration: 0.4 }}
+                  onClick={() => setSelectedItem(gi)}
                   className="break-inside-avoid group cursor-pointer relative overflow-hidden bg-card"
                 >
                   <div
@@ -260,6 +271,15 @@ const TrendInspirationGrid = () => {
                             className={`w-3.5 h-3.5 ${liked.has(gi) ? "fill-accent text-accent" : "text-foreground"}`}
                           />
                         </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(t.title);
+                          }}
+                          className="w-9 h-9 flex items-center justify-center bg-background/95 backdrop-blur-sm hover:bg-background transition-colors"
+                        >
+                          <Share2 className="w-3.5 h-3.5 text-foreground" />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -280,7 +300,10 @@ const TrendInspirationGrid = () => {
 
                   <div className="px-5 py-3 border-t border-border flex items-center justify-between">
                     <button
-                      onClick={() => navigate("/recommender")}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/recommender");
+                      }}
                       className="text-[10px] font-body font-medium uppercase tracking-wider text-accent flex items-center gap-1 group-hover:gap-2 transition-all"
                     >
                       Xem outfit <ArrowRight className="w-3 h-3" />
@@ -295,6 +318,12 @@ const TrendInspirationGrid = () => {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      <TrendDetailModal
+        item={selectedItem !== null ? trends[selectedItem] : null}
+        open={selectedItem !== null}
+        onClose={() => setSelectedItem(null)}
+      />
     </section>
   );
 };

@@ -1,7 +1,15 @@
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/shared/layout";
-import { Button } from "@/shared/ui";
+import { Badge, Button } from "@/shared/ui";
 import { motion } from "framer-motion";
-import { ArrowRight, Shirt, Sparkles, TrendingUp } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  Lightbulb,
+  Shirt,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -81,6 +89,21 @@ const insights = [
   "Outfit casual chiếm phần lớn tủ đồ — linh hoạt cho mọi dịp.",
 ];
 
+const styleRecommendations = [
+  { prompt: "outfit minimal cho đi làm", label: "Đi làm — Minimal", style: "Minimal" },
+  { prompt: "outfit streetwear cá tính", label: "Dạo phố — Streetwear", style: "Streetwear" },
+  { prompt: "outfit casual cuối tuần", label: "Cuối tuần — Casual", style: "Casual" },
+  { prompt: "outfit tối giản sang trọng", label: "Hẹn hò — Minimal", style: "Minimal" },
+];
+
+const missingEssentials = [
+  { item: "Sneaker trắng basic", reason: "Phù hợp mọi outfit casual & minimal", priority: "high" as const },
+  { item: "Blazer đen", reason: "Nâng cấp office look ngay lập tức", priority: "high" as const },
+  { item: "Túi tote đa năng", reason: "Phụ kiện thiết yếu cho ngày dài", priority: "medium" as const },
+  { item: "Áo len cashmere", reason: "Layer mỏng nhẹ cho thu/đông", priority: "medium" as const },
+  { item: "Đồng hồ tối giản", reason: "Điểm nhấn tinh tế cho style minimal", priority: "low" as const },
+];
+
 const suggestedStyles = [
   {
     name: "Quiet Luxury",
@@ -140,7 +163,10 @@ const CardLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="editorial-label mb-3">{children}</p>
 );
 
-const StyleProfilePage = () => (
+const StyleProfilePage = () => {
+  const navigate = useNavigate();
+
+  return (
   <div className="min-h-screen bg-background">
     <Navbar />
 
@@ -272,6 +298,48 @@ const StyleProfilePage = () => (
                 <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
                   {text}
                 </p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </Fade>
+
+    <Fade>
+      <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border">
+        <Card className="border-b md:border-b-0 md:border-r">
+          <CardLabel>Style Consistency</CardLabel>
+          <div className="flex flex-col items-center justify-center h-full py-4">
+            <div className="relative w-28 h-28 mb-3">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(0 0% 92%)" strokeWidth="8" />
+                <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(0 100% 70%)" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52}`} strokeDashoffset={`${2 * Math.PI * 52 * (1 - 72 / 100)}`} strokeLinecap="round" />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center font-heading text-2xl text-foreground">72%</span>
+            </div>
+            <p className="text-[11px] text-muted-foreground font-body text-center max-w-[200px]">
+              Style consistency dựa trên sự đồng bộ về màu sắc, kiểu dáng và chất liệu trong tủ đồ.
+            </p>
+          </div>
+        </Card>
+
+        <Card>
+          <CardLabel>Cải thiện tủ đồ</CardLabel>
+          <div className="space-y-3 mt-2">
+            {missingEssentials.map((e) => (
+              <div key={e.item} className="flex items-start gap-3">
+                <AlertTriangle className={`w-4 h-4 shrink-0 mt-0.5 ${
+                  e.priority === "high" ? "text-accent" : e.priority === "medium" ? "text-amber-400" : "text-muted-foreground"
+                }`} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-body text-foreground">{e.item}</span>
+                    <Badge variant={e.priority === "high" ? "default" : "secondary"} className="text-[9px] px-1.5 py-0 leading-none">
+                      {e.priority === "high" ? "Cần" : e.priority === "medium" ? "Nên" : "Có thể"}
+                    </Badge>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground font-body mt-0.5">{e.reason}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -534,21 +602,61 @@ const StyleProfilePage = () => (
       </div>
     </Fade>
 
+    <Fade>
+      <div className="border-b border-border">
+        <div className="px-6 py-6 border-b border-border">
+          <p className="editorial-label mb-1">Gợi ý phối đồ</p>
+          <p className="text-xs text-muted-foreground font-body">
+            Tạo outfit ngay dựa trên phong cách cá nhân của bạn.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4">
+          {styleRecommendations.map((r) => (
+            <button
+              key={r.label}
+              type="button"
+              onClick={() => navigate(`/recommender?prompt=${encodeURIComponent(r.prompt)}`)}
+              className="group p-6 text-left border-r border-border last:border-r-0 hover:bg-muted/30 transition-colors"
+            >
+              <Lightbulb className="w-5 h-5 text-accent mb-2" />
+              <p className="font-heading text-sm text-foreground group-hover:text-accent transition-colors">
+                {r.label}
+              </p>
+              <p className="text-[10px] text-muted-foreground font-body mt-1 line-clamp-2">
+                {r.prompt}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
+    </Fade>
+
     <div className="px-6 py-14 text-center">
       <p className="editorial-label mb-3">Tiếp theo</p>
       <h2 className="font-heading text-2xl md:text-3xl font-light text-foreground mb-5">
         Tạo outfit <span className="italic">cho phong cách của bạn</span>
       </h2>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <Button variant="accent" size="lg" className="gap-2">
+        <Button
+          variant="accent"
+          size="lg"
+          className="gap-2"
+          onClick={() => navigate("/recommender")}
+        >
           Generate Outfits <ArrowRight className="w-4 h-4" />
         </Button>
-        <Button variant="outline" size="lg" className="gap-2">
+        <Button
+          variant="outline"
+          size="lg"
+          className="gap-2"
+          onClick={() => navigate("/trends")}
+        >
           <TrendingUp className="w-4 h-4" /> Khám phá xu hướng
         </Button>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default StyleProfilePage;

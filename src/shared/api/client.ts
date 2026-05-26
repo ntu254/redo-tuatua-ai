@@ -42,7 +42,17 @@ const handleMockRequest = async <T>(
     await delay(apiConfig.mockDelayMs);
   }
 
-  const handler = mockHandlers[path];
+  let handler = mockHandlers[path];
+
+  if (!handler) {
+    const prefix = Object.keys(mockHandlers).find(
+      (k) => path.startsWith(k) && k.endsWith("/"),
+    );
+    if (prefix) {
+      handler = mockHandlers[prefix];
+      options = { ...options, path };
+    }
+  }
 
   if (!handler) {
     throw new ApiError(`No mock handler registered for ${path}`, {

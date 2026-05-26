@@ -1,17 +1,30 @@
+import { useMutation } from "@tanstack/react-query";
 import heroImg from "@/assets/hero-fashion-1.jpg";
 import { Button, Input, Label } from "@/shared/ui";
 import { motion } from "framer-motion";
-import { ArrowRight, Eye, EyeOff, Sparkles } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authService } from "../services/auth.service";
 
 const styleTags = ["Minimal", "Streetwear", "Office", "Date Night"];
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const signupMutation = useMutation({
+    mutationFn: () => authService.signup(email, password, name),
+    onSuccess: () => navigate("/quiz"),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    signupMutation.mutate();
+  };
 
   return (
     <div className="h-screen flex overflow-hidden">
@@ -93,7 +106,14 @@ const SignUpPage = () => {
               Bắt đầu hành trình thời trang AI của bạn.
             </p>
 
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            {signupMutation.isError && (
+              <div className="flex items-center gap-2 p-3 mb-5 bg-destructive/5 border border-destructive/20 text-destructive text-sm font-body">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                {(signupMutation.error as Error)?.message ?? "Đăng ký thất bại"}
+              </div>
+            )}
+
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="space-y-1.5">
                 <Label className="font-body text-[11px] font-semibold uppercase tracking-wider text-foreground/55">
                   Tên hiển thị
@@ -103,6 +123,7 @@ const SignUpPage = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="h-11 font-body border-border bg-background/88"
+                  required
                 />
               </div>
               <div className="space-y-1.5">
@@ -115,6 +136,7 @@ const SignUpPage = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="h-11 font-body border-border bg-background/88"
+                  required
                 />
               </div>
               <div className="space-y-1.5">
@@ -128,6 +150,7 @@ const SignUpPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-11 font-body border-border bg-background/88 pr-10"
+                    required
                   />
                   <button
                     type="button"
@@ -143,15 +166,20 @@ const SignUpPage = () => {
                 </div>
               </div>
 
-              <Link to="/quiz" className="block pt-1">
+              <div className="pt-1">
                 <Button
                   variant="accent"
                   size="lg"
                   className="w-full h-11 font-body font-semibold gap-2"
+                  disabled={signupMutation.isPending}
                 >
-                  Tiếp tục <ArrowRight className="w-4 h-4" />
+                  {signupMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>Tiếp tục <ArrowRight className="w-4 h-4" /></>
+                  )}
                 </Button>
-              </Link>
+              </div>
             </form>
 
             <div className="flex items-center gap-4 my-5">

@@ -16,6 +16,8 @@ Sản phẩm hiện tại gồm các khu vực chính:
 
 Hiện tại dự án dùng **mock data** và UI mô phỏng rất nhiều luồng sản phẩm. Điều này tốt cho demo, nhưng để trở thành một nền tảng production cần bổ sung backend, AI service, storage, auth và CI/CD.
 
+Chi tiết use cases user-facing xem tại [`USE_CASES_USER_PROFILE.md`](./USE_CASES_USER_PROFILE.md) (UC-USER-97→125).
+
 ---
 
 ## 2) Mục tiêu sản phẩm

@@ -5,7 +5,7 @@ import jeansImg from "@/assets/products/jeans-wide-leg.jpg";
 import blazerImg from "@/assets/products/silk-blouse.jpg";
 import sneakersImg from "@/assets/products/sneakers-white.jpg";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { ArrowRight, ShoppingCart, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const items = [
@@ -48,8 +48,13 @@ const TrendingItems = () => {
                   <span className="text-[9px] font-body font-semibold text-accent">{item.growth}</span>
                 </div>
                 <p className="text-[11px] font-body text-muted-foreground leading-relaxed line-clamp-2">{item.insight}</p>
-                <div className="mt-2 flex items-center gap-1 text-[9px] font-body font-medium uppercase tracking-wider text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                  Tạo outfit <ArrowRight className="w-2.5 h-2.5" />
+                <div className="mt-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="flex items-center gap-1 text-[9px] font-body font-medium uppercase tracking-wider text-accent">
+                    Tạo outfit <ArrowRight className="w-2.5 h-2.5" />
+                  </span>
+                  <span className="flex items-center gap-1 text-[9px] font-body font-medium uppercase tracking-wider text-foreground">
+                    <ShoppingCart className="w-2.5 h-2.5" /> Mua
+                  </span>
                 </div>
               </div>
             </motion.button>

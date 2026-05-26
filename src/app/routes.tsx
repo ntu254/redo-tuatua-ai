@@ -11,17 +11,20 @@ import Trends from "@/features/trends/pages/TrendsPage";
 import Wardrobe from "@/features/wardrobe/pages";
 import NotFound from "@/pages/NotFound";
 
-import { AdminLayout } from "@/features/admin/components";
+import { AdminAuthProvider } from "@/features/admin/hooks/useAdminAuth";
+import { AdminAuthGuard, AdminLayout } from "@/features/admin/components";
 import {
+  AdminAiEngine,
   AdminAnalytics,
   AdminDashboard,
   AdminFeedback,
-  AdminOutfits,
+  AdminLoginPage,
+  AdminNotifications,
+  AdminPlansBilling,
   AdminProducts,
   AdminSettings,
   AdminTrends,
   AdminUsers,
-  AdminWardrobe,
 } from "@/features/admin/pages";
 
 export function AppRoutes() {
@@ -38,14 +41,16 @@ export function AppRoutes() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/profile" element={<Profile />} />
 
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin/login" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
+        <Route path="/admin" element={<AdminAuthProvider><AdminAuthGuard><AdminLayout /></AdminAuthGuard></AdminAuthProvider>}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
-          <Route path="wardrobe" element={<AdminWardrobe />} />
-          <Route path="outfits" element={<AdminOutfits />} />
-          <Route path="trends" element={<AdminTrends />} />
+          <Route path="ai-engine" element={<AdminAiEngine />} />
           <Route path="products" element={<AdminProducts />} />
+          <Route path="trends" element={<AdminTrends />} />
+          <Route path="plans" element={<AdminPlansBilling />} />
           <Route path="analytics" element={<AdminAnalytics />} />
+          <Route path="notifications" element={<AdminNotifications />} />
           <Route path="feedback" element={<AdminFeedback />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>

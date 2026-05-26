@@ -1,7 +1,9 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Navbar } from "@/shared/layout";
 import { Button, Input, Label, Switch, Textarea } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertCircle,
   AlertTriangle,
   Bell,
   Calendar,
@@ -13,19 +15,22 @@ import {
   HelpCircle,
   Info,
   KeyRound,
+  Loader2,
   Lock,
   LogOut,
   Palette,
   Shield,
   ShoppingBag,
   Sparkles,
-  Trash2,
   TrendingUp,
   User,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { authService } from "@/features/auth/services/auth.service";
+import { supabase } from "@/shared/lib";
+import { profileService, type Profile } from "../services/profile.service";
 
 const tabs = [
   { id: "profile", label: "Hồ sơ", icon: User },
@@ -114,15 +119,28 @@ const panelAnim = {
   transition: { duration: 0.2 },
 };
 
-const ProfilePanel = () => {
+const ProfilePanel = ({
+  profile: initial,
+  onSave,
+}: {
+  profile: Profile | null;
+  onSave: (updates: { display_name?: string; avatar_url?: string }) => Promise<void>;
+}) => {
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Tu Nguyen",
-    email: "tu.nguyen@email.com",
-    username: "tunguyen",
-    location: "Ho Chi Minh City",
-    bio: "Fashion lover exploring minimalist outfits with AI styling.",
+    display_name: initial?.display_name ?? "",
+    email: initial?.email ?? "",
   });
+
+  useEffect(() => {
+    if (initial) {
+      setProfile((p) => ({
+        display_name: initial.display_name ?? p.display_name,
+        email: initial.email ?? p.email,
+      }));
+    }
+  }, [initial]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -147,53 +165,23 @@ const ProfilePanel = () => {
                 </Label>
                 <Input
                   value={profile.email}
-                  disabled={!editing}
-                  onChange={(e) =>
-                    setProfile((p) => ({ ...p, email: e.target.value }))
-                  }
+                  disabled
                   className="font-body text-sm text-foreground"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">
-                  Username
+                  Tên hiển thị
                 </Label>
                 <Input
-                  value={profile.username}
+                  value={profile.display_name}
                   disabled={!editing}
                   onChange={(e) =>
-                    setProfile((p) => ({ ...p, username: e.target.value }))
+                    setProfile((p) => ({ ...p, display_name: e.target.value }))
                   }
                   className="font-body text-sm text-foreground"
                 />
               </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">
-                Địa điểm
-              </Label>
-              <Input
-                value={profile.location}
-                disabled={!editing}
-                onChange={(e) =>
-                  setProfile((p) => ({ ...p, location: e.target.value }))
-                }
-                className="font-body text-sm text-foreground"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[11px] font-body font-semibold text-foreground/60 uppercase tracking-wider">
-                Giới thiệu
-              </Label>
-              <Textarea
-                value={profile.bio}
-                disabled={!editing}
-                onChange={(e) =>
-                  setProfile((p) => ({ ...p, bio: e.target.value }))
-                }
-                className="font-body text-sm text-foreground resize-none"
-                rows={3}
-              />
             </div>
             <AnimatePresence>
               {editing && (
@@ -207,9 +195,23 @@ const ProfilePanel = () => {
                     variant="accent"
                     size="sm"
                     className="gap-1.5 font-body text-xs"
-                    onClick={() => setEditing(false)}
+                    disabled={saving}
+                    onClick={async () => {
+                      setSaving(true);
+                      try {
+                        await onSave({ display_name: profile.display_name || undefined });
+                        setEditing(false);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
                   >
-                    <Check className="w-3 h-3" /> Lưu
+                    {saving ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Check className="w-3 h-3" />
+                    )}{" "}
+                    Lưu
                   </Button>
                   <Button
                     variant="outline"
@@ -234,27 +236,30 @@ const ProfilePanel = () => {
               whileHover={{ scale: 1.05 }}
             >
               <span className="font-heading text-xl font-semibold text-foreground">
-                TN
+                {(initial?.display_name ?? "U")[0].toUpperCase()}
               </span>
             </motion.div>
             <div>
               <p className="font-heading text-base font-semibold text-foreground">
-                Tu Nguyen
+                {initial?.display_name ?? "User"}
               </p>
-              <span className="text-[11px] font-body font-semibold text-accent uppercase tracking-wider">
-                Urban Minimalist
-              </span>
+              {initial?.style_dna && (
+                <span className="text-[11px] font-body font-semibold text-accent uppercase tracking-wider">
+                  {Object.entries(initial.style_dna)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 2)
+                    .map(([s]) => s)
+                    .join(" · ")}
+                </span>
+              )}
             </div>
           </div>
           <div className="space-y-2.5 text-sm font-body">
             <div className="flex items-center gap-2 text-foreground/60">
-              <Calendar className="w-3.5 h-3.5" /> Tham gia tháng 1, 2025
-            </div>
-            <div className="flex items-center gap-2 text-foreground/60">
-              <ShoppingBag className="w-3.5 h-3.5" /> 47 món trong tủ đồ
-            </div>
-            <div className="flex items-center gap-2 text-foreground/60">
-              <Palette className="w-3.5 h-3.5" /> 23 outfit đã lưu
+              <Calendar className="w-3.5 h-3.5" />{" "}
+              {initial?.created_at
+                ? `Tham gia ${new Date(initial.created_at).toLocaleDateString("vi-VN", { month: "long", year: "numeric" })}`
+                : "New member"}
             </div>
           </div>
           <Link to="/style-profile" className="block mt-4">
@@ -483,7 +488,30 @@ const NotificationsPanel = () => {
   );
 };
 
-const SubscriptionPanel = () => (
+const SubscriptionPanel = ({ userId }: { userId: string }) => {
+  const { data: plan } = useQuery({
+    queryKey: ["subscription", userId],
+    queryFn: async () => {
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("*, plans(*)")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const { data: credits } = await supabase
+        .from("user_credits")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      return { sub, credits };
+    },
+    enabled: !!userId,
+  });
+
+  const planName = plan?.sub?.plans?.name ?? "Free";
+  const aiLimit = plan?.sub?.plans?.ai_generations_limit ?? 10;
+  const creditBalance = plan?.credits?.balance ?? 0;
+
+  return (
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
     <div className="lg:col-span-2">
       <Card className="relative overflow-hidden">
@@ -491,30 +519,19 @@ const SubscriptionPanel = () => (
         <SectionHead icon={Crown} title="Gói đăng ký" />
         <div className="flex items-center gap-2 mb-4">
           <span className="font-heading text-xl font-bold text-foreground">
-            Free
+            {planName}
           </span>
           <span className="text-[10px] font-body font-semibold uppercase tracking-wider bg-secondary text-foreground/50 px-2 py-0.5">
-            Hiện tại
+            {plan?.sub ? "Đã đăng ký" : "Hiện tại"}
           </span>
         </div>
         <p className="font-body text-sm text-foreground/60 mb-5">
-          Nâng cấp để mở khóa toàn bộ tính năng AI styling.
+          {planName === "Free"
+            ? "Nâng cấp để mở khóa toàn bộ tính năng AI styling."
+            : `Gói ${planName} đang hoạt động.`}
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-          {premiumPerks.map((f) => (
-            <div
-              key={f}
-              className="flex items-center gap-2.5 p-3 bg-secondary/40 border border-border"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-accent shrink-0" />
-              <span className="font-body text-sm font-medium text-foreground">
-                {f}
-              </span>
-            </div>
-          ))}
-        </div>
         <Button variant="accent" className="gap-2 font-body">
-          <Crown className="w-4 h-4" /> Nâng cấp Premium
+          <Crown className="w-4 h-4" /> {planName === "Free" ? "Nâng cấp Premium" : "Quản lý gói"}
         </Button>
       </Card>
     </div>
@@ -526,21 +543,19 @@ const SubscriptionPanel = () => (
         <div className="space-y-3 font-body text-sm">
           <div>
             <div className="flex justify-between mb-1">
-              <span className="text-foreground/60">Outfit đã tạo</span>
-              <span className="text-foreground font-semibold">8 / 10</span>
+              <span className="text-foreground/60">AI Credits</span>
+              <span className="text-foreground font-semibold">
+                {aiLimit > 0 ? `${creditBalance} / ${aiLimit}` : "Không giới hạn"}
+              </span>
             </div>
-            <div className="w-full h-1.5 bg-border">
-              <div className="h-full bg-accent" style={{ width: "80%" }} />
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between mb-1">
-              <span className="text-foreground/60">AI phân tích</span>
-              <span className="text-foreground font-semibold">3 / 5</span>
-            </div>
-            <div className="w-full h-1.5 bg-border">
-              <div className="h-full bg-accent" style={{ width: "60%" }} />
-            </div>
+            {aiLimit > 0 && (
+              <div className="w-full h-1.5 bg-border">
+                <div
+                  className="h-full bg-accent"
+                  style={{ width: `${Math.min(100, (creditBalance / aiLimit) * 100)}%` }}
+                />
+              </div>
+            )}
           </div>
         </div>
       </Card>
@@ -550,7 +565,8 @@ const SubscriptionPanel = () => (
       </InfoCard>
     </div>
   </div>
-);
+  );
+};
 
 const DangerPanel = () => {
   const [showDelete, setShowDelete] = useState(false);
@@ -676,18 +692,46 @@ const DangerPanel = () => {
   );
 };
 
-const panelMap: Record<string, React.FC> = {
-  profile: ProfilePanel,
-  security: SecurityPanel,
-  platforms: PlatformsPanel,
-  notifications: NotificationsPanel,
-  subscription: SubscriptionPanel,
-  danger: DangerPanel,
-};
-
 const ProfilePage = () => {
   const [active, setActive] = useState("profile");
-  const ActivePanel = panelMap[active];
+  const queryClient = useQueryClient();
+
+  const { data: session } = useQuery({
+    queryKey: ["auth", "session"],
+    queryFn: () => authService.getSession(),
+  });
+
+  const userId = session?.user.id ?? "";
+
+  const { data: profile, isLoading, error } = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => profileService.getProfile(userId),
+    enabled: !!userId,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (updates: Parameters<typeof profileService.updateProfile>[1]) =>
+      profileService.updateProfile(userId, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+    },
+  });
+
+  const profileSave = async (updates: { display_name?: string; avatar_url?: string }) => {
+    await updateMutation.mutateAsync(updates);
+  };
+
+  const ActivePanel = () => {
+    switch (active) {
+      case "profile": return <ProfilePanel profile={profile ?? null} onSave={profileSave} />;
+      case "security": return <SecurityPanel />;
+      case "platforms": return <PlatformsPanel />;
+      case "notifications": return <NotificationsPanel />;
+      case "subscription": return <SubscriptionPanel userId={userId} />;
+      case "danger": return <DangerPanel />;
+      default: return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
