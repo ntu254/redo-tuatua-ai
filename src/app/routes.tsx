@@ -35,11 +35,11 @@ export function AppRoutes() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Index />} />
-        <Route path="/quiz" element={<Quiz />} />
-        <Route path="/recommender" element={<Recommender />} />
-        <Route path="/wardrobe" element={<Wardrobe />} />
-        <Route path="/trends" element={<Trends />} />
-        <Route path="/style-profile" element={<StyleProfile />} />
+        <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+        <Route path="/recommender" element={<ProtectedRoute><Recommender /></ProtectedRoute>} />
+        <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
+        <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
+        <Route path="/style-profile" element={<ProtectedRoute><StyleProfile /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -4,6 +4,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 interface AuthContextType {
   session: AuthResult | null;
   user: AuthResult["user"] | null;
+  role: "user" | "admin" | null;
+  is_banned: boolean;
   loading: boolean;
   refreshSession: () => Promise<AuthResult | null>;
   login: (email: string, password: string) => Promise<AuthResult>;
@@ -67,6 +69,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       session,
       user: session?.user ?? null,
+      role: session?.role ?? null,
+      is_banned: session?.is_banned ?? false,
       loading,
       refreshSession,
       login,

@@ -51,19 +51,25 @@ const platformColors: Record<string, string> = {
 
 type PlatformFilter = "all" | "Shopee" | "Lazada" | "Tiki" | "Zalora" | "TikTok Shop";
 
+type DialogMode =
+  | { type: null }
+  | { type: "clicks"; productId: string }
+  | { type: "link"; productId: string; title: string }
+  | { type: "delete"; productId: string; title: string };
+
 export default function AdminProducts() {
   const [search, setSearch] = useState("");
   const [platform, setPlatform] = useState<PlatformFilter>("all");
-  const [clicksProductId, setClicksProductId] = useState<string | null>(null);
-  const [linkProduct, setLinkProduct] = useState<{ id: string; title: string } | null>(null);
+  const [dialog, setDialog] = useState<DialogMode>({ type: null });
   const [linkUrl, setLinkUrl] = useState("");
-  const [deleteProduct, setDeleteProduct] = useState<{ id: string; title: string } | null>(null);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "products"],
     queryFn: () => adminProductsService.getData(),
   });
+
+  const clicksProductId = dialog.type === "clicks" ? dialog.productId : null;
 
   const { data: clickData } = useQuery({
     queryKey: ["admin", "products", "clicks", clicksProductId],
@@ -83,18 +89,18 @@ export default function AdminProducts() {
   });
 
   const updateLinkMutation = useMutation({
-    mutationFn: () => adminProductsService.updateLink(linkProduct!.id, linkUrl),
+    mutationFn: () => adminProductsService.updateLink((dialog as { type: "link"; productId: string }).productId, linkUrl),
     onSuccess: () => {
-      setLinkProduct(null);
+      setDialog({ type: null });
       setLinkUrl("");
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
     },
   });
 
   const deleteProductMutation = useMutation({
-    mutationFn: () => adminProductsService.deleteProduct!(deleteProduct!.id),
+    mutationFn: () => adminProductsService.deleteProduct!((dialog as { type: "delete"; productId: string }).productId),
     onSuccess: () => {
-      setDeleteProduct(null);
+      setDialog({ type: null });
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
     },
   });
@@ -246,11 +252,11 @@ export default function AdminProducts() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setClicksProductId(p.id)}>
+                        <DropdownMenuItem onClick={() => setDialog({ type: "clicks", productId: p.id })}>
                           <MousePointerClick className="h-4 w-4 mr-2" /> View Clicks
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => {
-                          setLinkProduct({ id: p.id, title: p.title });
+                          setDialog({ type: "link", productId: p.id, title: p.title });
                           setLinkUrl("");
                         }}>
                           <Link2 className="h-4 w-4 mr-2" /> Update Link
@@ -268,14 +274,14 @@ export default function AdminProducts() {
                         </DropdownMenuItem>
                         {p.linkHealth === "Broken" ? (
                           <DropdownMenuItem onClick={() => {
-                            setLinkProduct({ id: p.id, title: p.title });
+                            setDialog({ type: "link", productId: p.id, title: p.title });
                             setLinkUrl("");
                           }}>
                             <Link2Off className="h-4 w-4 mr-2" /> Fix Affiliate Link
                           </DropdownMenuItem>
                         ) : null}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive" onClick={() => setDeleteProduct({ id: p.id, title: p.title })}>
+                        <DropdownMenuItem className="text-destructive" onClick={() => setDialog({ type: "delete", productId: p.id, title: p.title })}>
                           <X className="h-4 w-4 mr-2" /> Delete Product
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -288,17 +294,17 @@ export default function AdminProducts() {
         </Table>
       </div>
 
-      <Dialog open={!!deleteProduct} onOpenChange={(v) => { if (!v) setDeleteProduct(null); }}>
+      <Dialog open={dialog.type === "delete"} onOpenChange={(v) => { if (!v) setDialog({ type: null }); }}>
         <DialogContent className="sm:max-w-xs">
           <DialogHeader>
             <DialogTitle>Delete Product</DialogTitle>
             <DialogDescription className="srOnly">Confirm product deletion</DialogDescription>
           </DialogHeader>
           <div className="py-2 text-sm font-body text-muted-foreground">
-            Are you sure you want to delete <span className="font-medium text-foreground">{deleteProduct?.title}</span>? This action cannot be undone.
+            Are you sure you want to delete <span className="font-medium text-foreground">{dialog.type === "delete" ? dialog.title : ""}</span>? This action cannot be undone.
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDeleteProduct(null)}>Cancel</Button>
+            <Button variant="outline" size="sm" onClick={() => setDialog({ type: null })}>Cancel</Button>
             <Button variant="destructive" size="sm" disabled={deleteProductMutation.isPending} onClick={() => deleteProductMutation.mutate()}>
               {deleteProductMutation.isPending ? "Deleting..." : "Delete"}
             </Button>
@@ -306,14 +312,14 @@ export default function AdminProducts() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!linkProduct} onOpenChange={(v) => { if (!v) { setLinkProduct(null); setLinkUrl(""); } }}>
+      <Dialog open={dialog.type === "link"} onOpenChange={(v) => { if (!v) { setDialog({ type: null }); setLinkUrl(""); } }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Update Affiliate Link</DialogTitle>
-            <DialogDescription className="srOnly">Update affiliate link for {linkProduct?.title}</DialogDescription>
+            <DialogDescription className="srOnly">Update affiliate link for {dialog.type === "link" ? dialog.title : ""}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-sm font-body text-muted-foreground">Product: <span className="text-foreground font-medium">{linkProduct?.title}</span></p>
+            <p className="text-sm font-body text-muted-foreground">Product: <span className="text-foreground font-medium">{dialog.type === "link" ? dialog.title : ""}</span></p>
             <div className="space-y-1.5">
               <Label className="text-xs font-body text-foreground">Affiliate URL</Label>
               <Input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." className="h-9 font-body text-sm" />
@@ -326,18 +332,13 @@ export default function AdminProducts() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!clicksProductId} onOpenChange={(v) => { if (!v) setClicksProductId(null); }}>
+      <Dialog open={dialog.type === "clicks"} onOpenChange={(v) => { if (!v) setDialog({ type: null }); }}>
         <DialogContent className="max-w-lg max-h-[70vh] p-0">
           <DialogHeader className="p-6 pb-0">
+            <DialogTitle className="text-base font-semibold font-body">
+              Clicks — {selectedProduct?.title ?? ""}
+            </DialogTitle>
             <DialogDescription className="srOnly">View product click details</DialogDescription>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-base font-semibold font-body">
-                Clicks — {selectedProduct?.title ?? ""}
-              </DialogTitle>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setClicksProductId(null)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
           </DialogHeader>
           <ScrollArea className="max-h-[calc(70vh-80px)]">
             <div className="p-6 pt-4">

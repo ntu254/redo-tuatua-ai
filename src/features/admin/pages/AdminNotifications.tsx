@@ -32,7 +32,6 @@ import {
   MessageSquare,
   Save,
   Send,
-  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -278,10 +277,7 @@ export default function AdminNotifications() {
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle>Broadcast Preview</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowPreview(false)}><X className="h-4 w-4" /></Button>
-            </div>
+            <DialogTitle>Broadcast Preview</DialogTitle>
             <DialogDescription className="srOnly">Preview broadcast notification</DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">

@@ -94,6 +94,20 @@ export const adminUsersService = {
     return apiClient.post<{ success: boolean }>(`/api/admin/users/${userId}/credits`, { json: { amount } } as RequestInit);
   },
 
+  createUser: async (data: { email: string; password: string; display_name: string; plan: string }): Promise<{ success: boolean }> => {
+    if (!apiConfig.useMockApi) {
+      const { error } = await supabase.from("profiles").insert({
+        id: crypto.randomUUID(),
+        email: data.email,
+        display_name: data.display_name || null,
+        is_banned: false,
+        quiz_completed: false,
+      });
+      return { success: !error };
+    }
+    return apiClient.post<{ success: boolean }>("/api/admin/users", { json: data } as RequestInit);
+  },
+
   changeRole: async (_userId: string, _roleId: string): Promise<{ success: boolean }> => {
     if (!apiConfig.useMockApi) {
       const { data: adminUser } = await supabase.from("admin_users").select("id").eq("user_id", _userId).single();

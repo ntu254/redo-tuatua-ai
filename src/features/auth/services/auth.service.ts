@@ -5,6 +5,8 @@ import { apiConfig } from "@/shared/api/config";
 export interface AuthResult {
   user: { id: string; email: string };
   session: { access_token: string };
+  role?: "user" | "admin";
+  is_banned?: boolean;
 }
 
 export type SocialProvider = "google" | "apple";
@@ -44,15 +46,32 @@ export const authService = {
   login: async (email: string, password: string) => {
     if (apiConfig.useMockApi) {
       const res = await apiClient.post<MockLoginResponse>("/api/auth/login", { json: { email, password } });
-      const session = { user: res.user, session: { access_token: res.token } };
+      const session: AuthResult = { user: res.user, session: { access_token: res.token } };
       saveMockSession(session);
       return session;
     }
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    const userId = data.user.id;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_banned, ban_reason")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profile?.is_banned) {
+      await supabase.auth.signOut();
+      throw new Error(profile.ban_reason || "Tài khoản của bạn đã bị vô hiệu hóa");
+    }
+
+    const { data: adminCheck } = await supabase.rpc("is_admin_user");
+    const isAdmin = Array.isArray(adminCheck) && adminCheck.length > 0;
+
     return {
-      user: { id: data.user.id, email: data.user.email ?? "" },
+      user: { id: userId, email: data.user.email ?? "" },
       session: { access_token: data.session?.access_token ?? "" },
+      role: isAdmin ? "admin" : "user",
+      is_banned: profile?.is_banned ?? false,
     };
   },
 
@@ -157,6 +176,18 @@ export const authService = {
     if (apiConfig.useMockApi) {
       return apiClient.post("/api/auth/delete-account");
     }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+
+    await supabase.from("analytics_events").delete().eq("user_id", user.id);
+
+    const outfitIds = (await supabase.from("outfits").select("id").eq("user_id", user.id)).data?.map(o => o.id) ?? [];
+    if (outfitIds.length > 0) {
+      await supabase.from("outfit_items").delete().in("outfit_id", outfitIds);
+    }
+    await supabase.from("outfits").delete().eq("user_id", user.id);
+    await supabase.from("wardrobe_items").delete().eq("user_id", user.id);
+
     const { error } = await supabase.rpc("delete_my_account");
     if (error) throw error;
     return { success: true };
@@ -168,9 +199,15 @@ export const authService = {
     }
     const { data } = await supabase.auth.getSession();
     if (!data.session) return null;
+    const userId = data.session.user.id;
+
+    const { data: adminCheck } = await supabase.rpc("is_admin_user");
+    const isAdmin = Array.isArray(adminCheck) && adminCheck.length > 0;
+
     return {
-      user: { id: data.session.user.id, email: data.session.user.email ?? "" },
+      user: { id: userId, email: data.session.user.email ?? "" },
       session: { access_token: data.session.access_token },
+      role: isAdmin ? "admin" : "user",
     };
   },
 

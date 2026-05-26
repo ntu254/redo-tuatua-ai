@@ -308,7 +308,7 @@ export default function AdminTrends() {
             <DialogDescription className="srOnly">Edit fashion trend</DialogDescription>
             <div className="flex items-center justify-between">
               <DialogTitle className="text-base font-semibold font-body">Edit: {editTrend?.title}</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditTrend(null)}><X className="h-4 w-4" /></Button>
+              
             </div>
           </DialogHeader>
           <div className="space-y-4 pt-2">

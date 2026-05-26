@@ -58,6 +58,8 @@ as $$
   );
 $$;
 
+drop function if exists public.is_admin_user();
+
 create or replace function public.is_admin_user()
 returns table (
   id uuid,
@@ -151,6 +153,85 @@ drop policy if exists "rls_authenticated_all_outfit_items" on outfit_items;
 drop policy if exists "rls_authenticated_all_user_activity_log" on user_activity_log;
 
 alter table if exists user_notification_preferences enable row level security;
+
+-- Drop scoped policies too so this migration can be rerun after a partial apply.
+drop policy if exists "admin_roles_admin_all" on admin_roles;
+drop policy if exists "admin_users_admin_all" on admin_users;
+drop policy if exists "admin_permissions_admin_all" on admin_permissions;
+drop policy if exists "admin_audit_logs_admin_all" on admin_audit_logs;
+drop policy if exists "ai_models_admin_all" on ai_models;
+drop policy if exists "ai_provider_configs_admin_all" on ai_provider_configs;
+drop policy if exists "prompt_templates_admin_all" on prompt_templates;
+drop policy if exists "daily_user_metrics_admin_all" on daily_user_metrics;
+drop policy if exists "daily_ai_metrics_admin_all" on daily_ai_metrics;
+drop policy if exists "daily_affiliate_metrics_admin_all" on daily_affiliate_metrics;
+drop policy if exists "daily_revenue_metrics_admin_all" on daily_revenue_metrics;
+drop policy if exists "product_sources_admin_all" on product_sources;
+drop policy if exists "product_sync_logs_admin_all" on product_sync_logs;
+drop policy if exists "billing_events_admin_all" on billing_events;
+drop policy if exists "report_actions_admin_all" on report_actions;
+drop policy if exists "blocked_keywords_admin_all" on blocked_keywords;
+drop policy if exists "moderation_logs_admin_all" on moderation_logs;
+drop policy if exists "content_safety_rules_admin_all" on content_safety_rules;
+drop policy if exists "system_settings_admin_all" on system_settings;
+drop policy if exists "rate_limits_admin_all" on rate_limits;
+drop policy if exists "plans_public_read_active" on plans;
+drop policy if exists "plans_admin_all" on plans;
+drop policy if exists "product_categories_public_read" on product_categories;
+drop policy if exists "product_categories_admin_all" on product_categories;
+drop policy if exists "product_tags_public_read" on product_tags;
+drop policy if exists "product_tags_admin_all" on product_tags;
+drop policy if exists "products_public_read_active" on products;
+drop policy if exists "products_admin_all" on products;
+drop policy if exists "fashion_trends_public_read_published" on fashion_trends;
+drop policy if exists "fashion_trends_admin_all" on fashion_trends;
+drop policy if exists "trend_keywords_public_read_published" on trend_keywords;
+drop policy if exists "trend_keywords_admin_all" on trend_keywords;
+drop policy if exists "trend_colors_public_read_published" on trend_colors;
+drop policy if exists "trend_colors_admin_all" on trend_colors;
+drop policy if exists "style_presets_public_read_active" on style_presets;
+drop policy if exists "style_presets_admin_all" on style_presets;
+drop policy if exists "trend_products_public_read_published" on trend_products;
+drop policy if exists "trend_products_admin_all" on trend_products;
+drop policy if exists "feature_flags_read_enabled" on feature_flags;
+drop policy if exists "feature_flags_admin_all" on feature_flags;
+drop policy if exists "profiles_read_own_or_admin" on profiles;
+drop policy if exists "profiles_insert_own_or_admin" on profiles;
+drop policy if exists "profiles_update_own_or_admin" on profiles;
+drop policy if exists "subscriptions_read_own_or_admin" on subscriptions;
+drop policy if exists "subscriptions_admin_all" on subscriptions;
+drop policy if exists "user_credits_read_own_or_admin" on user_credits;
+drop policy if exists "user_credits_admin_all" on user_credits;
+drop policy if exists "credit_transactions_read_own_or_admin" on credit_transactions;
+drop policy if exists "credit_transactions_insert_own_or_admin" on credit_transactions;
+drop policy if exists "credit_transactions_admin_all" on credit_transactions;
+drop policy if exists "payments_read_own_or_admin" on payments;
+drop policy if exists "payments_admin_all" on payments;
+drop policy if exists "invoices_read_own_or_admin" on invoices;
+drop policy if exists "invoices_admin_all" on invoices;
+drop policy if exists "wardrobe_items_own_all" on wardrobe_items;
+drop policy if exists "outfits_own_all" on outfits;
+drop policy if exists "outfit_items_own_all" on outfit_items;
+drop policy if exists "user_activity_log_own_all" on user_activity_log;
+drop policy if exists "notification_preferences_own_all" on user_notification_preferences;
+drop policy if exists "ai_jobs_own_create_read" on ai_jobs;
+drop policy if exists "ai_jobs_own_insert" on ai_jobs;
+drop policy if exists "ai_jobs_admin_all" on ai_jobs;
+drop policy if exists "ai_generation_logs_read_own_or_admin" on ai_generation_logs;
+drop policy if exists "ai_generation_logs_admin_all" on ai_generation_logs;
+drop policy if exists "analytics_events_insert_own_or_anon" on analytics_events;
+drop policy if exists "analytics_events_read_own_or_admin" on analytics_events;
+drop policy if exists "analytics_events_admin_all" on analytics_events;
+drop policy if exists "product_clicks_insert_own_or_anon" on product_clicks;
+drop policy if exists "product_clicks_read_own_or_admin" on product_clicks;
+drop policy if exists "product_clicks_admin_all" on product_clicks;
+drop policy if exists "device_tokens_own_all" on device_tokens;
+drop policy if exists "notifications_read_targeted" on notifications;
+drop policy if exists "notifications_admin_all" on notifications;
+drop policy if exists "notification_logs_own_all" on notification_logs;
+drop policy if exists "user_reports_own_insert" on user_reports;
+drop policy if exists "user_reports_read_own_or_admin" on user_reports;
+drop policy if exists "user_reports_admin_all" on user_reports;
 
 -- Admin-owned data
 create policy "admin_roles_admin_all" on admin_roles for all to authenticated using (public.is_admin()) with check (public.is_admin());

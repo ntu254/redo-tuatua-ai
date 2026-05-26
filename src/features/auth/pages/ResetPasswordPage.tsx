@@ -20,7 +20,7 @@ const ResetPasswordPage = () => {
       return authService.updatePassword(password);
     },
     onSuccess: () => {
-      window.setTimeout(() => navigate("/profile"), 900);
+      window.setTimeout(() => navigate("/login"), 900);
     },
   });
 

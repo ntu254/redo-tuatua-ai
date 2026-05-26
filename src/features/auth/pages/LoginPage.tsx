@@ -21,7 +21,13 @@ const LoginPage = () => {
 
   const loginMutation = useMutation({
     mutationFn: () => login(email, password),
-    onSuccess: () => navigate(from, { replace: true }),
+    onSuccess: (result) => {
+      if (result.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
+    },
   });
 
   const socialMutation = useMutation({

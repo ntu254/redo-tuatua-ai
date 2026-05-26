@@ -1,3 +1,5 @@
+import { quizService } from "@/features/quiz/services/quiz.service";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Button, Progress } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -408,9 +410,20 @@ const QuizPage = () => {
     }
   };
 
+  const { user } = useAuth();
+
   const next = () => {
     if (step < steps.length - 1) setStep(step + 1);
-    else setPhase("analyzing");
+    else {
+      quizService.completeQuiz(user?.id ?? "", {
+        gender: (answers.gender ?? [])[0],
+        styles: answers.style_preset ?? [],
+        occasions: answers.occasion ?? [],
+        budget: (answers.budget ?? [])[0],
+        colors: answers.color ?? [],
+      }).catch(() => {});
+      setPhase("analyzing");
+    }
   };
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;

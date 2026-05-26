@@ -173,7 +173,7 @@ export default function AdminFeedback() {
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle className="text-base font-semibold font-body">Report Details</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDetailReport(null)}><X className="h-4 w-4" /></Button>
+              
             </div>
             <DialogDescription className="srOnly">View report details</DialogDescription>
           </DialogHeader>

@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DropdownMenu,
@@ -15,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
+  Label,
   Table,
   TableBody,
   TableCell,
@@ -33,10 +35,12 @@ import {
   DollarSign,
   Eye,
   FileText,
+  Loader2,
   MoreHorizontal,
   Search,
   ShieldCheck,
   ShieldX,
+  UserPlus,
   UserCog,
 } from "lucide-react";
 import { useState } from "react";
@@ -55,16 +59,22 @@ type Filter =
   | "trial_ending"
   | "credit_exhausted";
 
+type DialogMode =
+  | { type: null }
+  | { type: "user_detail"; userId: string }
+  | { type: "adjust_credits"; userId: string }
+  | { type: "ai_activity"; userId: string; name: string; ai_generations: number }
+  | { type: "billing"; userId: string; name: string; plan: string }
+  | { type: "change_plan"; userId: string; name: string; plan: string }
+  | { type: "prompts"; userId: string; name: string }
+  | { type: "new_user" };
+
 export default function AdminUsers() {
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [adjustCreditsUserId, setAdjustCreditsUserId] = useState<string | null>(null);
+  const [dialog, setDialog] = useState<DialogMode>({ type: null });
   const [creditAmount, setCreditAmount] = useState(0);
-  const [aiActivityUser, setAiActivityUser] = useState<{ id: string; name: string; ai_generations: number } | null>(null);
-  const [billingUser, setBillingUser] = useState<{ id: string; name: string; plan: string } | null>(null);
-  const [changePlanUser, setChangePlanUser] = useState<{ id: string; name: string; plan: string } | null>(null);
-  const [promptsUser, setPromptsUser] = useState<{ id: string; name: string } | null>(null);
+  const [newUserForm, setNewUserForm] = useState({ email: "", password: "", display_name: "", plan: "Free" });
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -83,10 +93,19 @@ export default function AdminUsers() {
   });
 
   const adjustCreditsMutation = useMutation({
-    mutationFn: () => adminUsersService.adjustCredits(adjustCreditsUserId!, creditAmount),
+    mutationFn: () => adminUsersService.adjustCredits((dialog as { type: "adjust_credits"; userId: string }).userId, creditAmount),
     onSuccess: () => {
-      setAdjustCreditsUserId(null);
+      setDialog({ type: null });
       setCreditAmount(0);
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+
+  const createUserMutation = useMutation({
+    mutationFn: () => adminUsersService.createUser(newUserForm),
+    onSuccess: () => {
+      setDialog({ type: null });
+      setNewUserForm({ email: "", password: "", display_name: "", plan: "Free" });
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },
   });
@@ -151,14 +170,19 @@ export default function AdminUsers() {
             </Button>
           ))}
         </div>
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search users..."
-            className="pl-9 h-9 text-sm font-body"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search users..."
+              className="pl-9 h-9 text-sm font-body"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <Button size="sm" className="gap-1.5 text-xs" onClick={() => { setDialog({ type: "new_user" }); setNewUserForm({ email: "", password: "", display_name: "", plan: "Free" }); }}>
+            <UserPlus className="h-3.5 w-3.5" /> New User
+          </Button>
         </div>
       </div>
 
@@ -240,27 +264,27 @@ export default function AdminUsers() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem onClick={() => setSelectedUserId(u.id)}>
+                        <DropdownMenuItem onClick={() => setDialog({ type: "user_detail", userId: u.id })}>
                           <Eye className="h-4 w-4 mr-2" />
                           View Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setAiActivityUser({ id: u.id, name: u.name, ai_generations: u.ai_generations })}>
+                        <DropdownMenuItem onClick={() => setDialog({ type: "ai_activity", userId: u.id, name: u.name, ai_generations: u.ai_generations })}>
                           <Activity className="h-4 w-4 mr-2" />
                           View AI Activity
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { setAdjustCreditsUserId(u.id); setCreditAmount(0); }}>
+                        <DropdownMenuItem onClick={() => { setDialog({ type: "adjust_credits", userId: u.id }); setCreditAmount(0); }}>
                           <Coins className="h-4 w-4 mr-2" />
                           Adjust Credits
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setBillingUser({ id: u.id, name: u.name, plan: u.plan })}>
+                        <DropdownMenuItem onClick={() => setDialog({ type: "billing", userId: u.id, name: u.name, plan: u.plan })}>
                           <Banknote className="h-4 w-4 mr-2" />
                           View Billing
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setChangePlanUser({ id: u.id, name: u.name, plan: u.plan })}>
+                        <DropdownMenuItem onClick={() => setDialog({ type: "change_plan", userId: u.id, name: u.name, plan: u.plan })}>
                           <UserCog className="h-4 w-4 mr-2" />
                           Change Plan
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setPromptsUser({ id: u.id, name: u.name })}>
+                        <DropdownMenuItem onClick={() => setDialog({ type: "prompts", userId: u.id, name: u.name })}>
                           <FileText className="h-4 w-4 mr-2" />
                           View Prompts
                         </DropdownMenuItem>
@@ -287,13 +311,12 @@ export default function AdminUsers() {
       </div>
 
       <UserDetailModal
-        userId={selectedUserId}
-        open={!!selectedUserId}
-        onClose={() => setSelectedUserId(null)}
+        userId={dialog.type === "user_detail" ? dialog.userId : null}
+        open={dialog.type === "user_detail"}
+        onClose={() => setDialog({ type: null })}
       />
-    </div>
 
-      <Dialog open={!!adjustCreditsUserId} onOpenChange={(v) => { if (!v) { setAdjustCreditsUserId(null); setCreditAmount(0); } }}>
+      <Dialog open={dialog.type === "adjust_credits"} onOpenChange={(v) => { if (!v) { setDialog({ type: null }); setCreditAmount(0); } }}>
         <DialogContent className="sm:max-w-xs">
           <DialogHeader>
             <DialogTitle>Adjust Credits</DialogTitle>
@@ -320,16 +343,16 @@ export default function AdminUsers() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!aiActivityUser} onOpenChange={(v) => { if (!v) setAiActivityUser(null); }}>
+      <Dialog open={dialog.type === "ai_activity"} onOpenChange={(v) => { if (!v) setDialog({ type: null }); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>AI Activity: {aiActivityUser?.name}</DialogTitle>
+            <DialogTitle>AI Activity: {dialog.type === "ai_activity" ? dialog.name : ""}</DialogTitle>
             <DialogDescription className="srOnly">View user AI generation activity</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-muted/40 rounded-lg p-4 border border-border text-center">
-                <p className="text-2xl font-semibold font-body">{aiActivityUser?.ai_generations ?? 0}</p>
+                <p className="text-2xl font-semibold font-body">{dialog.type === "ai_activity" ? dialog.ai_generations : 0}</p>
                 <p className="text-xs text-muted-foreground font-body">Total Generations</p>
               </div>
               <div className="bg-muted/40 rounded-lg p-4 border border-border text-center">
@@ -350,16 +373,16 @@ export default function AdminUsers() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!billingUser} onOpenChange={(v) => { if (!v) setBillingUser(null); }}>
+      <Dialog open={dialog.type === "billing"} onOpenChange={(v) => { if (!v) setDialog({ type: null }); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Billing: {billingUser?.name}</DialogTitle>
+            <DialogTitle>Billing: {dialog.type === "billing" ? dialog.name : ""}</DialogTitle>
             <DialogDescription className="srOnly">View user billing history</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="flex items-center justify-between p-3 bg-muted/40 border border-border rounded-lg">
               <span className="text-sm font-body">Current Plan</span>
-              <span className="text-sm font-semibold font-body">{billingUser?.plan}</span>
+              <span className="text-sm font-semibold font-body">{dialog.type === "billing" ? dialog.plan : ""}</span>
             </div>
             <div className="space-y-2">
               <h4 className="text-xs font-semibold text-muted-foreground uppercase font-body">Recent Payments</h4>
@@ -378,20 +401,20 @@ export default function AdminUsers() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!changePlanUser} onOpenChange={(v) => { if (!v) setChangePlanUser(null); }}>
+      <Dialog open={dialog.type === "change_plan"} onOpenChange={(v) => { if (!v) setDialog({ type: null }); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Change Plan: {changePlanUser?.name}</DialogTitle>
+            <DialogTitle>Change Plan: {dialog.type === "change_plan" ? dialog.name : ""}</DialogTitle>
             <DialogDescription className="srOnly">Change user subscription plan</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-sm font-body text-muted-foreground">Current plan: <span className="font-medium text-foreground">{changePlanUser?.plan}</span></p>
+            <p className="text-sm font-body text-muted-foreground">Current plan: <span className="font-medium text-foreground">{dialog.type === "change_plan" ? dialog.plan : ""}</span></p>
             <div className="grid gap-3">
               {["Free", "Premium", "Pro"].map((plan) => (
                 <div
                   key={plan}
                   className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors text-sm ${
-                    changePlanUser?.plan === plan
+                    dialog.type === "change_plan" && dialog.plan === plan
                       ? "border-primary bg-primary/5"
                       : "border-border hover:border-primary/50"
                   }`}
@@ -405,7 +428,7 @@ export default function AdminUsers() {
                       {plan === "Free" ? "Basic access" : plan === "Premium" ? "AI features + 200 credits/mo" : "Unlimited AI + priority"}
                     </p>
                   </div>
-                  {changePlanUser?.plan === plan && <span className="text-primary text-xs font-medium font-body">Current</span>}
+                  {dialog.type === "change_plan" && dialog.plan === plan && <span className="text-primary text-xs font-medium font-body">Current</span>}
                 </div>
               ))}
             </div>
@@ -414,10 +437,10 @@ export default function AdminUsers() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!promptsUser} onOpenChange={(v) => { if (!v) setPromptsUser(null); }}>
+      <Dialog open={dialog.type === "prompts"} onOpenChange={(v) => { if (!v) setDialog({ type: null }); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Recent Prompts: {promptsUser?.name}</DialogTitle>
+            <DialogTitle>Recent Prompts: {dialog.type === "prompts" ? dialog.name : ""}</DialogTitle>
             <DialogDescription className="srOnly">View user prompt history</DialogDescription>
           </DialogHeader>
           <div className="space-y-2 py-2">
@@ -439,6 +462,46 @@ export default function AdminUsers() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={dialog.type === "new_user"} onOpenChange={(v) => { if (!v) { setDialog({ type: null }); setNewUserForm({ email: "", password: "", display_name: "", plan: "Free" }); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create New User</DialogTitle>
+            <DialogDescription className="srOnly">Create a new user account</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+              <Label className="text-xs font-body text-foreground text-right">Email *</Label>
+              <Input value={newUserForm.email} onChange={(e) => setNewUserForm(f => ({ ...f, email: e.target.value }))} placeholder="user@email.com" className="h-9 font-body text-sm" />
+            </div>
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+              <Label className="text-xs font-body text-foreground text-right">Password *</Label>
+              <Input value={newUserForm.password} onChange={(e) => setNewUserForm(f => ({ ...f, password: e.target.value }))} type="password" placeholder="Min 6 characters" className="h-9 font-body text-sm" />
+            </div>
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+              <Label className="text-xs font-body text-foreground text-right">Display Name</Label>
+              <Input value={newUserForm.display_name} onChange={(e) => setNewUserForm(f => ({ ...f, display_name: e.target.value }))} placeholder="Optional" className="h-9 font-body text-sm" />
+            </div>
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+              <Label className="text-xs font-body text-foreground text-right">Plan</Label>
+              <select value={newUserForm.plan} onChange={(e) => setNewUserForm(f => ({ ...f, plan: e.target.value }))} className="w-full h-10 px-3 rounded-md border border-border bg-background font-body text-sm">
+                <option value="Free">Free</option>
+                <option value="Premium">Premium</option>
+                <option value="Pro">Pro</option>
+              </select>
+            </div>
+            <p className="text-xs text-muted-foreground font-body">User will receive a welcome email with login instructions.</p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => { setDialog({ type: null }); setNewUserForm({ email: "", password: "", display_name: "", plan: "Free" }); }}>Cancel</Button>
+            <Button size="sm" disabled={createUserMutation.isPending || !newUserForm.email || !newUserForm.password} onClick={() => createUserMutation.mutate()}>
+              {createUserMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : null}
+              Create User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
     </>
   );
 }
