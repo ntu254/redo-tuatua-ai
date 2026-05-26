@@ -7,11 +7,13 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Input,
   Label,
@@ -55,6 +57,7 @@ export default function AdminProducts() {
   const [clicksProductId, setClicksProductId] = useState<string | null>(null);
   const [linkProduct, setLinkProduct] = useState<{ id: string; title: string } | null>(null);
   const [linkUrl, setLinkUrl] = useState("");
+  const [deleteProduct, setDeleteProduct] = useState<{ id: string; title: string } | null>(null);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -84,6 +87,14 @@ export default function AdminProducts() {
     onSuccess: () => {
       setLinkProduct(null);
       setLinkUrl("");
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
+    },
+  });
+
+  const deleteProductMutation = useMutation({
+    mutationFn: () => adminProductsService.deleteProduct!(deleteProduct!.id),
+    onSuccess: () => {
+      setDeleteProduct(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
     },
   });
@@ -263,6 +274,10 @@ export default function AdminProducts() {
                             <Link2Off className="h-4 w-4 mr-2" /> Fix Affiliate Link
                           </DropdownMenuItem>
                         ) : null}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="text-destructive" onClick={() => setDeleteProduct({ id: p.id, title: p.title })}>
+                          <X className="h-4 w-4 mr-2" /> Delete Product
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -272,6 +287,24 @@ export default function AdminProducts() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={!!deleteProduct} onOpenChange={(v) => { if (!v) setDeleteProduct(null); }}>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Delete Product</DialogTitle>
+            <DialogDescription className="srOnly">Confirm product deletion</DialogDescription>
+          </DialogHeader>
+          <div className="py-2 text-sm font-body text-muted-foreground">
+            Are you sure you want to delete <span className="font-medium text-foreground">{deleteProduct?.title}</span>? This action cannot be undone.
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDeleteProduct(null)}>Cancel</Button>
+            <Button variant="destructive" size="sm" disabled={deleteProductMutation.isPending} onClick={() => deleteProductMutation.mutate()}>
+              {deleteProductMutation.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!linkProduct} onOpenChange={(v) => { if (!v) { setLinkProduct(null); setLinkUrl(""); } }}>
         <DialogContent className="sm:max-w-md">

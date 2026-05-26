@@ -69,6 +69,14 @@ export const adminProductsService = {
     return apiClient.patch<{ success: boolean }>(`/api/admin/products/${productId}/link`, { json: { affiliateUrl } } as RequestInit);
   },
 
+  deleteProduct: async (productId: string): Promise<{ success: boolean }> => {
+    if (!apiConfig.useMockApi) {
+      const { error } = await supabase.from("products").delete().eq("id", productId);
+      return { success: !error };
+    }
+    return apiClient.delete<{ success: boolean }>(`/api/admin/products/${productId}`);
+  },
+
   getClicks: async (productId: string): Promise<AdminProductClick[]> => {
     if (!apiConfig.useMockApi) {
       const { data } = await supabase

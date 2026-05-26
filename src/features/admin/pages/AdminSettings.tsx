@@ -1,6 +1,12 @@
 import { adminSettingsService } from "@/features/admin/services/admin-settings.service";
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   Label,
   Separator,
@@ -12,13 +18,19 @@ import {
 } from "@/shared/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Save } from "lucide-react";
+import { Key, Save, Shield, Wrench } from "lucide-react";
 
 export default function AdminSettings() {
   const queryClient = useQueryClient();
   const [toggles, setToggles] = useState<{ key: string; enabled: boolean }[]>([]);
   const [platformName, setPlatformName] = useState("");
   const [supportEmail, setSupportEmail] = useState("");
+  const [editTemplateName, setEditTemplateName] = useState<string | null>(null);
+  const [templateContent, setTemplateContent] = useState("");
+  const [apiConnectName, setApiConnectName] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState("");
+  const [editRole, setEditRole] = useState<{ role: string; users: number; access: string } | null>(null);
+  const [rolePermissions, setRolePermissions] = useState("read");
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin", "settings"],
@@ -55,6 +67,7 @@ export default function AdminSettings() {
     setToggles((prev) => prev.map((t) => (t.key === key ? { ...t, enabled: !t.enabled } : t)));
 
   return (
+    <>
     <div className="space-y-6 max-w-4xl">
       <div>
         <h1 className="text-2xl font-semibold text-foreground font-body">Settings</h1>
@@ -154,7 +167,7 @@ export default function AdminSettings() {
                   <p className="text-sm font-medium font-body">{t}</p>
                   <p className="text-xs text-muted-foreground font-body">Last edited 3 days ago</p>
                 </div>
-                <Button variant="outline" size="sm" className="text-xs">Edit Template</Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => { setEditTemplateName(t); setTemplateContent(""); }}>Edit Template</Button>
               </div>
             ))}
           </div>
@@ -172,7 +185,7 @@ export default function AdminSettings() {
                     <p className="text-xs text-muted-foreground font-body">{api.status}</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="text-xs">{api.status === "Connected" ? "Configure" : "Connect"}</Button>
+                <Button variant="outline" size="sm" className="text-xs" onClick={() => { setApiConnectName(api.name); setApiKey(""); }}>{api.status === "Connected" ? "Configure" : "Connect"}</Button>
               </div>
             ))}
           </div>
@@ -189,7 +202,7 @@ export default function AdminSettings() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground font-body">{r.users} user{r.users > 1 ? "s" : ""}</span>
-                  <Button variant="outline" size="sm" className="text-xs">Edit</Button>
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => { setEditRole({ role: r.role, users: r.users, access: r.access }); setRolePermissions("read"); }}>Edit</Button>
                 </div>
               </div>
             ))}
@@ -197,5 +210,78 @@ export default function AdminSettings() {
         </TabsContent>
       </Tabs>
     </div>
+
+      <Dialog open={!!editTemplateName} onOpenChange={(v) => { if (!v) setEditTemplateName(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Template: {editTemplateName}</DialogTitle>
+            <DialogDescription className="srOnly">Edit notification template content</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-body text-foreground">Template Content</Label>
+              <textarea value={templateContent} onChange={(e) => setTemplateContent(e.target.value)} rows={6} className="w-full px-3 py-2 rounded-md border border-border bg-background font-body text-sm resize-none" placeholder="Enter template content with placeholders like {{name}}, {{email}}..." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setEditTemplateName(null)}>Cancel</Button>
+            <Button size="sm" onClick={() => setEditTemplateName(null)}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!apiConnectName} onOpenChange={(v) => { if (!v) { setApiConnectName(null); setApiKey(""); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{apiConnectName}</DialogTitle>
+            <DialogDescription className="srOnly">Configure API integration</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex items-center gap-3 p-3 bg-muted/40 border border-border rounded-md">
+              <Key className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-body text-muted-foreground">Enter your API key to connect to {apiConnectName}</span>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-body text-foreground">API Key</Label>
+              <Input value={apiKey} onChange={(e) => setApiKey(e.target.value)} type="password" placeholder="sk-..." className="h-9 font-mono text-sm" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => { setApiConnectName(null); setApiKey(""); }}>Cancel</Button>
+            <Button size="sm" disabled={!apiKey} onClick={() => { setApiConnectName(null); setApiKey(""); }}>Connect</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editRole} onOpenChange={(v) => { if (!v) setEditRole(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Role: {editRole?.role}</DialogTitle>
+            <DialogDescription className="srOnly">Edit admin role permissions</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex items-center gap-2 text-sm font-body text-muted-foreground mb-2">
+              <Shield className="h-4 w-4" />
+              <span>{editRole?.users} user{editRole?.users !== 1 ? "s" : ""} with this role</span>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-body text-foreground">Module Access Level</Label>
+              <div className="flex gap-2">
+                {["read", "write", "admin"].map((lvl) => (
+                  <Button key={lvl} variant={rolePermissions === lvl ? "default" : "outline"} size="sm" className="text-xs capitalize" onClick={() => setRolePermissions(lvl)}>
+                    {lvl}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground font-body">Current access: {editRole?.access}</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setEditRole(null)}>Cancel</Button>
+            <Button size="sm" onClick={() => setEditRole(null)}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

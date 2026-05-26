@@ -37,6 +37,7 @@ export interface Database {
       device_tokens: DeviceTokensTable;
       notifications: NotificationsTable;
       notification_logs: NotificationLogsTable;
+      user_notification_preferences: UserNotificationPreferencesTable;
       user_reports: UserReportsTable;
       report_actions: ReportActionsTable;
       blocked_keywords: BlockedKeywordsTable;
@@ -50,9 +51,22 @@ export interface Database {
       outfit_items: OutfitItemsTable;
       user_activity_log: UserActivityLogTable;
     };
-    Views: {};
-    Functions: {};
-    Enums: {};
+    Views: Record<string, never>;
+    Functions: {
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      is_admin_user: {
+        Args: Record<string, never>;
+        Returns: AdminUser[];
+      };
+      delete_my_account: {
+        Args: Record<string, never>;
+        Returns: void;
+      };
+    };
+    Enums: Record<string, never>;
   };
 }
 
@@ -88,7 +102,7 @@ type AdminAuditLogsTable = TableDef<AdminAuditLog>;
 
 // --- 2. Profiles ---
 export interface Profile {
-  id: string; email: string; display_name: string | null; avatar_url: string | null; style_dna: Json | null; favorite_colors: string[] | null; quiz_completed: boolean; is_banned: boolean; ban_reason: string | null; created_at: Timestamp; updated_at: Timestamp;
+  id: string; email: string; display_name: string | null; avatar_url: string | null; style_dna: Json | null; favorite_colors: string[] | null; quiz_completed: boolean; is_banned: boolean; ban_reason: string | null; body_size: Json | null; preferred_styles: string[]; preferred_occasions: string[]; budget_min: number | null; budget_max: number | null; fashion_preferences: Json; two_factor_enabled: boolean; created_at: Timestamp; updated_at: Timestamp;
 }
 type ProfilesTable = TableDef<Profile>;
 
@@ -254,6 +268,11 @@ export interface NotificationLog {
   id: string; notification_id: string; user_id: string; channel: string; status: string; error_message: string | null; clicked_at: Timestamp | null; created_at: Timestamp;
 }
 type NotificationLogsTable = TableDef<NotificationLog>;
+
+export interface UserNotificationPreference {
+  id: string; user_id: string; trend_alerts: boolean; outfit_suggestions: boolean; promotions: boolean; subscription_reminders: boolean; push_enabled: boolean; email_enabled: boolean; created_at: Timestamp; updated_at: Timestamp;
+}
+type UserNotificationPreferencesTable = TableDef<UserNotificationPreference>;
 
 // --- 11. Reports & Moderation ---
 export interface UserReport {

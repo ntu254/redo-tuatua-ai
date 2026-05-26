@@ -1,6 +1,12 @@
 import { adminNotificationsService } from "@/features/admin/services/admin-notifications.service";
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   Input,
   Label,
   Separator,
@@ -20,11 +26,13 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bell,
+  Eye,
   Mail,
   Megaphone,
   MessageSquare,
   Save,
   Send,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -34,6 +42,8 @@ export default function AdminNotifications() {
   const [target, setTarget] = useState("all");
   const [emailSettings, setEmailSettings] = useState<{ key: string; enabled: boolean }[]>([]);
   const [pushSettings, setPushSettings] = useState<{ key: string; enabled: boolean }[]>([]);
+  const [editTemplate, setEditTemplate] = useState<{ id: string; name: string; channel: string; trigger: string; status: string } | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -84,6 +94,7 @@ export default function AdminNotifications() {
     setPushSettings((prev) => prev.map((s) => s.key === key ? { ...s, enabled: !s.enabled } : s));
 
   return (
+    <>
     <div className="space-y-8 max-w-7xl">
       <div>
         <h1 className="text-2xl font-semibold text-foreground font-body">Notifications</h1>
@@ -124,7 +135,11 @@ export default function AdminNotifications() {
                         {t.status}
                       </span>
                     </TableCell>
-                    <TableCell><Button variant="outline" size="sm" className="text-xs h-7">Edit</Button></TableCell>
+                    <TableCell>
+                      <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setEditTemplate({ id: t.id, name: t.name, channel: t.channel, trigger: t.trigger, status: t.status })}>
+                        Edit
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 )) ?? (
                   <TableRow><TableCell colSpan={5} className="text-center py-12 text-sm text-muted-foreground font-body">No templates</TableCell></TableRow>
@@ -162,7 +177,7 @@ export default function AdminNotifications() {
                   Will be sent as push notification + email digest
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <Button variant="outline" size="sm" className="text-xs">Preview</Button>
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => setShowPreview(true)}>Preview</Button>
                   <Button size="sm" className="gap-1.5 text-xs" onClick={() => sendMutation.mutate()} disabled={!sendTitle || !sendBody}>
                     <Send className="h-3.5 w-3.5" /> Send Broadcast
                   </Button>
@@ -221,5 +236,78 @@ export default function AdminNotifications() {
         </TabsContent>
       </Tabs>
     </div>
+
+      <Dialog open={!!editTemplate} onOpenChange={(v) => { if (!v) setEditTemplate(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Template: {editTemplate?.name}</DialogTitle>
+            <DialogDescription className="srOnly">Edit notification template</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-body text-foreground">Template Name</Label>
+              <Input value={editTemplate?.name ?? ""} readOnly className="h-9 font-body text-sm" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-body text-foreground">Channel</Label>
+                <Input value={editTemplate?.channel ?? ""} readOnly className="h-9 font-body text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-body text-foreground">Trigger</Label>
+                <Input value={editTemplate?.trigger ?? ""} readOnly className="h-9 font-body text-sm font-mono" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-body text-foreground">Status</Label>
+              <select className="w-full h-10 px-3 rounded-md border border-border bg-background font-body text-sm">
+                <option value="Active" selected={editTemplate?.status === "Active"}>Active</option>
+                <option value="Draft" selected={editTemplate?.status === "Draft"}>Draft</option>
+                <option value="Paused" selected={editTemplate?.status === "Paused"}>Paused</option>
+              </select>
+            </div>
+            <p className="text-xs text-muted-foreground font-body">Template body editing coming soon. Use the notification templates section in settings for full content customization.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setEditTemplate(null)}>Close</Button>
+            <Button size="sm" onClick={() => setEditTemplate(null)}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Broadcast Preview</DialogTitle>
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowPreview(false)}><X className="h-4 w-4" /></Button>
+            </div>
+            <DialogDescription className="srOnly">Preview broadcast notification</DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="bg-card border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Bell className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium text-muted-foreground font-body uppercase tracking-wide">Push Notification</span>
+              </div>
+              <p className="text-sm font-semibold font-body">{sendTitle || "Notification Title"}</p>
+              <p className="text-sm text-muted-foreground font-body mt-1">{sendBody || "Notification message body will appear here."}</p>
+            </div>
+            <div className="bg-card border border-border rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Mail className="h-4 w-4 text-accent" />
+                <span className="text-xs font-medium text-muted-foreground font-body uppercase tracking-wide">Email Digest</span>
+              </div>
+              <p className="text-sm font-semibold font-body">{sendTitle || "Email Subject"}</p>
+              <p className="text-sm text-muted-foreground font-body mt-1">{sendBody || "Email body content will be sent as digest."}</p>
+            </div>
+            <p className="text-xs text-muted-foreground font-body">Target: <span className="font-medium text-foreground">{target === "all" ? "All Users" : target}</span></p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowPreview(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

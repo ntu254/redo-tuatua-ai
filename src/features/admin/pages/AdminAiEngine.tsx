@@ -44,6 +44,7 @@ import {
   RotateCcw,
   Search,
   Shield,
+  Trash2,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -80,6 +81,8 @@ export default function AdminAiEngine() {
   const [editingPrompt, setEditingPrompt] = useState<{ id: string; name: string; template: string; system_prompt: string } | null>(null);
   const [configuringModel, setConfiguringModel] = useState<{ id: string; name: string } | null>(null);
   const [viewingLogs, setViewingLogs] = useState<string | null>(null);
+  const [deleteModelItem, setDeleteModelItem] = useState<{ id: string; name: string } | null>(null);
+  const [deletePromptItem, setDeletePromptItem] = useState<{ id: string; name: string } | null>(null);
   const queryClient = useQueryClient();
 
   const [promptForm, setPromptForm] = useState({ name: "", category: "outfit_generation", template: "", system_prompt: "" });
@@ -131,6 +134,22 @@ export default function AdminAiEngine() {
   const rollbackMutation = useMutation({
     mutationFn: (id: string) => adminAiService.rollbackPrompt(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin", "ai"] }),
+  });
+
+  const deleteModelMutation = useMutation({
+    mutationFn: () => adminAiService.deleteModel!(deleteModelItem!.id),
+    onSuccess: () => {
+      setDeleteModelItem(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "ai"] });
+    },
+  });
+
+  const deletePromptMutation = useMutation({
+    mutationFn: () => adminAiService.deletePrompt!(deletePromptItem!.id),
+    onSuccess: () => {
+      setDeletePromptItem(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "ai"] });
+    },
   });
 
   if (isLoading) {
@@ -277,6 +296,10 @@ export default function AdminAiEngine() {
                       <DropdownMenuItem onClick={() => setViewingLogs(m.id)}>
                         <Activity className="h-4 w-4 mr-2" /> View Logs
                       </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive" onClick={() => setDeleteModelItem({ id: m.id, name: m.name })}>
+                        <Trash2 className="h-4 w-4 mr-2" /> Delete Model
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -335,6 +358,10 @@ export default function AdminAiEngine() {
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => rollbackMutation.mutate(p.id)}>
                         <RotateCcw className="h-4 w-4 mr-2" /> Rollback
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive" onClick={() => setDeletePromptItem({ id: p.id, name: p.name })}>
+                        <Trash2 className="h-4 w-4 mr-2" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -504,6 +531,42 @@ export default function AdminAiEngine() {
         </Table>
       </div>
     </div>
+
+      <Dialog open={!!deleteModelItem} onOpenChange={(v) => { if (!v) setDeleteModelItem(null); }}>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Delete Model</DialogTitle>
+            <DialogDescription className="srOnly">Confirm model deletion</DialogDescription>
+          </DialogHeader>
+          <div className="py-2 text-sm font-body text-muted-foreground">
+            Are you sure you want to delete <span className="font-medium text-foreground">{deleteModelItem?.name}</span>? This action cannot be undone.
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDeleteModelItem(null)}>Cancel</Button>
+            <Button variant="destructive" size="sm" disabled={deleteModelMutation.isPending} onClick={() => deleteModelMutation.mutate()}>
+              {deleteModelMutation.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deletePromptItem} onOpenChange={(v) => { if (!v) setDeletePromptItem(null); }}>
+        <DialogContent className="sm:max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Delete Prompt</DialogTitle>
+            <DialogDescription className="srOnly">Confirm prompt deletion</DialogDescription>
+          </DialogHeader>
+          <div className="py-2 text-sm font-body text-muted-foreground">
+            Are you sure you want to delete <span className="font-medium text-foreground">{deletePromptItem?.name}</span>? This action cannot be undone.
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDeletePromptItem(null)}>Cancel</Button>
+            <Button variant="destructive" size="sm" disabled={deletePromptMutation.isPending} onClick={() => deletePromptMutation.mutate()}>
+              {deletePromptMutation.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={showNewPrompt} onOpenChange={setShowNewPrompt}>
         <DialogContent className="sm:max-w-[600px]">

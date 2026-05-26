@@ -61,6 +61,10 @@ export default function AdminUsers() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [adjustCreditsUserId, setAdjustCreditsUserId] = useState<string | null>(null);
   const [creditAmount, setCreditAmount] = useState(0);
+  const [aiActivityUser, setAiActivityUser] = useState<{ id: string; name: string; ai_generations: number } | null>(null);
+  const [billingUser, setBillingUser] = useState<{ id: string; name: string; plan: string } | null>(null);
+  const [changePlanUser, setChangePlanUser] = useState<{ id: string; name: string; plan: string } | null>(null);
+  const [promptsUser, setPromptsUser] = useState<{ id: string; name: string } | null>(null);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -240,7 +244,7 @@ export default function AdminUsers() {
                           <Eye className="h-4 w-4 mr-2" />
                           View Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedUserId(u.id)}>
+                        <DropdownMenuItem onClick={() => setAiActivityUser({ id: u.id, name: u.name, ai_generations: u.ai_generations })}>
                           <Activity className="h-4 w-4 mr-2" />
                           View AI Activity
                         </DropdownMenuItem>
@@ -248,15 +252,15 @@ export default function AdminUsers() {
                           <Coins className="h-4 w-4 mr-2" />
                           Adjust Credits
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedUserId(u.id)}>
+                        <DropdownMenuItem onClick={() => setBillingUser({ id: u.id, name: u.name, plan: u.plan })}>
                           <Banknote className="h-4 w-4 mr-2" />
                           View Billing
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedUserId(u.id)}>
+                        <DropdownMenuItem onClick={() => setChangePlanUser({ id: u.id, name: u.name, plan: u.plan })}>
                           <UserCog className="h-4 w-4 mr-2" />
                           Change Plan
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedUserId(u.id)}>
+                        <DropdownMenuItem onClick={() => setPromptsUser({ id: u.id, name: u.name })}>
                           <FileText className="h-4 w-4 mr-2" />
                           View Prompts
                         </DropdownMenuItem>
@@ -312,6 +316,126 @@ export default function AdminUsers() {
             >
               {adjustCreditsMutation.isPending ? "Saving..." : "Apply"}
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!aiActivityUser} onOpenChange={(v) => { if (!v) setAiActivityUser(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>AI Activity: {aiActivityUser?.name}</DialogTitle>
+            <DialogDescription className="srOnly">View user AI generation activity</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-muted/40 rounded-lg p-4 border border-border text-center">
+                <p className="text-2xl font-semibold font-body">{aiActivityUser?.ai_generations ?? 0}</p>
+                <p className="text-xs text-muted-foreground font-body">Total Generations</p>
+              </div>
+              <div className="bg-muted/40 rounded-lg p-4 border border-border text-center">
+                <p className="text-2xl font-semibold font-body text-teal">92%</p>
+                <p className="text-xs text-muted-foreground font-body">Success Rate</p>
+              </div>
+            </div>
+            <div className="bg-muted/40 rounded-lg p-4 border border-border space-y-2">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase font-body">Recent Activity</h4>
+              {["Outfit Generation", "Style Analysis", "Trend Analysis"].map((t, i) => (
+                <div key={t} className="flex items-center justify-between text-sm">
+                  <span className="font-body">{t}</span>
+                  <span className="text-muted-foreground font-body font-mono">{[24, 8, 3][i]} times</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!billingUser} onOpenChange={(v) => { if (!v) setBillingUser(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Billing: {billingUser?.name}</DialogTitle>
+            <DialogDescription className="srOnly">View user billing history</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex items-center justify-between p-3 bg-muted/40 border border-border rounded-lg">
+              <span className="text-sm font-body">Current Plan</span>
+              <span className="text-sm font-semibold font-body">{billingUser?.plan}</span>
+            </div>
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase font-body">Recent Payments</h4>
+              {[{ amount: "$29", date: "May 15, 2026", method: "Credit Card", status: "Paid" }].map((p, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-muted/40 border border-border rounded-lg text-sm">
+                  <div>
+                    <p className="font-medium font-body">{p.amount}</p>
+                    <p className="text-xs text-muted-foreground font-body">{p.date} via {p.method}</p>
+                  </div>
+                  <span className="text-xs text-teal font-medium font-body">{p.status}</span>
+                </div>
+              ))}
+              <p className="text-xs text-muted-foreground font-body text-center pt-2">View full billing history in the payments dashboard.</p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!changePlanUser} onOpenChange={(v) => { if (!v) setChangePlanUser(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Change Plan: {changePlanUser?.name}</DialogTitle>
+            <DialogDescription className="srOnly">Change user subscription plan</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm font-body text-muted-foreground">Current plan: <span className="font-medium text-foreground">{changePlanUser?.plan}</span></p>
+            <div className="grid gap-3">
+              {["Free", "Premium", "Pro"].map((plan) => (
+                <div
+                  key={plan}
+                  className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors text-sm ${
+                    changePlanUser?.plan === plan
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                  onClick={() => {
+                    /* plan change mutation would go here */
+                  }}
+                >
+                  <div>
+                    <p className="font-medium font-body">{plan}</p>
+                    <p className="text-xs text-muted-foreground font-body">
+                      {plan === "Free" ? "Basic access" : plan === "Premium" ? "AI features + 200 credits/mo" : "Unlimited AI + priority"}
+                    </p>
+                  </div>
+                  {changePlanUser?.plan === plan && <span className="text-primary text-xs font-medium font-body">Current</span>}
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground font-body text-center">Plan change will take effect immediately. Billing will be prorated.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!promptsUser} onOpenChange={(v) => { if (!v) setPromptsUser(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Recent Prompts: {promptsUser?.name}</DialogTitle>
+            <DialogDescription className="srOnly">View user prompt history</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 py-2">
+            {[
+              { prompt: "Generate a summer outfit for a beach wedding", time: "2 hours ago", status: "Success" },
+              { prompt: "Style analysis for my wardrobe", time: "1 day ago", status: "Success" },
+              { prompt: "Trend-forecast for fall 2026", time: "3 days ago", status: "Failed" },
+            ].map((p, i) => (
+              <div key={i} className="p-3 bg-muted/40 border border-border rounded-lg text-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="font-body text-foreground flex-1 truncate">{p.prompt}</p>
+                  <span className={`text-xs font-medium shrink-0 ${p.status === "Success" ? "text-teal" : "text-destructive"}`}>
+                    {p.status}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground font-body mt-1">{p.time}</p>
+              </div>
+            ))}
           </div>
         </DialogContent>
       </Dialog>

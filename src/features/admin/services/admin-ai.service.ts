@@ -154,6 +154,22 @@ export const adminAiService = {
     return apiClient.post<{ success: boolean }>(`/api/admin/ai/prompts/${id}/rollback`);
   },
 
+  deleteModel: async (modelId: string): Promise<{ success: boolean }> => {
+    if (!apiConfig.useMockApi) {
+      const { error } = await supabase.from("ai_models").delete().eq("id", modelId);
+      return { success: !error };
+    }
+    return apiClient.delete<{ success: boolean }>(`/api/admin/ai/models/${modelId}`);
+  },
+
+  deletePrompt: async (promptId: string): Promise<{ success: boolean }> => {
+    if (!apiConfig.useMockApi) {
+      const { error } = await supabase.from("prompt_templates").delete().eq("id", promptId);
+      return { success: !error };
+    }
+    return apiClient.delete<{ success: boolean }>(`/api/admin/ai/prompts/${promptId}`);
+  },
+
   getModelLogs: async (modelId: string) => {
     if (!apiConfig.useMockApi) {
       const { data } = await supabase

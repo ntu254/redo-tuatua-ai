@@ -1,7 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Login from "@/features/auth/pages/LoginPage";
+import ForgotPassword from "@/features/auth/pages/ForgotPasswordPage";
+import ResetPassword from "@/features/auth/pages/ResetPasswordPage";
 import SignUp from "@/features/auth/pages/SignUpPage";
+import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 import Index from "@/features/landing/pages";
 import Profile from "@/features/profile/pages/ProfilePage";
 import Quiz from "@/features/quiz/pages";
@@ -39,7 +42,9 @@ export function AppRoutes() {
         <Route path="/style-profile" element={<StyleProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
         <Route path="/admin/login" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
         <Route path="/admin" element={<AdminAuthProvider><AdminAuthGuard><AdminLayout /></AdminAuthGuard></AdminAuthProvider>}>

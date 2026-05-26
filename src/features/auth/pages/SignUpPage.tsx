@@ -5,19 +5,26 @@ import { motion } from "framer-motion";
 import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { authService } from "../services/auth.service";
+import { authService, type SocialProvider } from "../services/auth.service";
+import { useAuth } from "../hooks/useAuth";
 
 const styleTags = ["Minimal", "Streetwear", "Office", "Date Night"];
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const { signup } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const signupMutation = useMutation({
-    mutationFn: () => authService.signup(email, password, name),
+    mutationFn: () => signup(email, password, name),
+    onSuccess: () => navigate("/quiz"),
+  });
+
+  const socialMutation = useMutation({
+    mutationFn: (provider: SocialProvider) => authService.loginWithProvider(provider),
     onSuccess: () => navigate("/quiz"),
   });
 
@@ -194,6 +201,8 @@ const SignUpPage = () => {
               <Button
                 variant="outline"
                 className="flex-1 h-11 font-body gap-2 text-sm"
+                onClick={() => socialMutation.mutate("google")}
+                disabled={socialMutation.isPending}
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -218,6 +227,8 @@ const SignUpPage = () => {
               <Button
                 variant="outline"
                 className="flex-1 h-11 font-body gap-2 text-sm"
+                onClick={() => socialMutation.mutate("apple")}
+                disabled={socialMutation.isPending}
               >
                 <svg
                   className="w-4 h-4"

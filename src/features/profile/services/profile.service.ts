@@ -12,6 +12,13 @@ export interface Profile {
   quiz_completed: boolean;
   is_banned: boolean;
   ban_reason: string | null;
+  body_size: Record<string, unknown> | null;
+  preferred_styles: string[];
+  preferred_occasions: string[];
+  budget_min: number | null;
+  budget_max: number | null;
+  fashion_preferences: Record<string, unknown>;
+  two_factor_enabled: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -22,6 +29,26 @@ export interface ProfileUpdate {
   style_dna?: Record<string, number>;
   favorite_colors?: string[];
   quiz_completed?: boolean;
+  body_size?: Record<string, unknown> | null;
+  preferred_styles?: string[];
+  preferred_occasions?: string[];
+  budget_min?: number | null;
+  budget_max?: number | null;
+  fashion_preferences?: Record<string, unknown>;
+  two_factor_enabled?: boolean;
+}
+
+export interface UserNotificationPreferences {
+  id: string;
+  user_id: string;
+  trend_alerts: boolean;
+  outfit_suggestions: boolean;
+  promotions: boolean;
+  subscription_reminders: boolean;
+  push_enabled: boolean;
+  email_enabled: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export const profileService = {
@@ -64,5 +91,107 @@ export const profileService = {
       return apiClient.post<Profile>("/api/profile/quiz-complete", { json: { styleDna } });
     }
     return profileService.updateProfile(userId, { style_dna: styleDna, quiz_completed: true });
+  },
+
+  resetPersonalization: async (userId: string) => {
+    if (apiConfig.useMockApi) {
+      return apiClient.post<Profile>("/api/profile/reset-personalization");
+    }
+    const { error: eventsError } = await supabase
+      .from("analytics_events")
+      .delete()
+      .eq("user_id", userId)
+      .in("event_type", ["outfit_generate", "save_outfit", "quiz_complete", "trend_view"]);
+    if (eventsError) throw eventsError;
+
+    return profileService.updateProfile(userId, {
+      style_dna: {},
+      favorite_colors: [],
+      preferred_styles: [],
+      preferred_occasions: [],
+      fashion_preferences: {},
+      quiz_completed: false,
+    });
+  },
+
+  uploadAvatar: async (userId: string, file: File) => {
+    if (apiConfig.useMockApi) {
+      return URL.createObjectURL(file);
+    }
+    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const path = `${userId}/avatar-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { cacheControl: "3600", upsert: true });
+    if (error) throw error;
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    await profileService.updateProfile(userId, { avatar_url: data.publicUrl });
+    return data.publicUrl;
+  },
+
+  getNotificationPreferences: async (userId: string) => {
+    if (apiConfig.useMockApi) {
+      return apiClient.get<UserNotificationPreferences>("/api/profile/notification-preferences");
+    }
+    const { data, error } = await supabase
+      .from("user_notification_preferences")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) throw error;
+    if (data) return data as UserNotificationPreferences;
+
+    const { data: created, error: insertError } = await supabase
+      .from("user_notification_preferences")
+      .insert({ user_id: userId })
+      .select()
+      .single();
+    if (insertError) throw insertError;
+    return created as UserNotificationPreferences;
+  },
+
+  updateNotificationPreferences: async (
+    userId: string,
+    updates: Partial<Omit<UserNotificationPreferences, "id" | "user_id" | "created_at" | "updated_at">>,
+  ) => {
+    if (apiConfig.useMockApi) {
+      return apiClient.patch<UserNotificationPreferences>("/api/profile/notification-preferences", { json: updates });
+    }
+    const { data, error } = await supabase
+      .from("user_notification_preferences")
+      .upsert({ user_id: userId, ...updates, updated_at: new Date().toISOString() }, { onConflict: "user_id" })
+      .select()
+      .single();
+    if (error) throw error;
+    return data as UserNotificationPreferences;
+  },
+
+  listPayments: async (userId: string) => {
+    if (apiConfig.useMockApi) {
+      return apiClient.get<Array<{ id: string; amount: number; currency: string; status: string; paid_at: string | null; created_at: string }>>("/api/profile/payments");
+    }
+    const { data, error } = await supabase
+      .from("payments")
+      .select("id, amount, currency, status, paid_at, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    if (error) throw error;
+    return data ?? [];
+  },
+
+  listInvoices: async (userId: string) => {
+    if (apiConfig.useMockApi) {
+      return apiClient.get<Array<{ id: string; invoice_number: string; amount: number; currency: string; status: string; pdf_url: string | null; created_at: string }>>("/api/profile/invoices");
+    }
+    const { data, error } = await supabase
+      .from("invoices")
+      .select("id, invoice_number, amount, currency, status, pdf_url, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    if (error) throw error;
+    return data ?? [];
   },
 };

@@ -61,8 +61,55 @@ const shuffle = <T,>(arr: T[]): T[] => {
 const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
 
 let items = [...wardrobeItems];
+let mockProfile = { ...styleProfileMock } as typeof styleProfileMock & Record<string, unknown>;
+let mockNotificationPreferences = {
+  id: "notif-pref-1",
+  user_id: "mock-user-1",
+  trend_alerts: true,
+  outfit_suggestions: true,
+  promotions: false,
+  subscription_reminders: true,
+  push_enabled: true,
+  email_enabled: true,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
 
 export const mockHandlers: Record<string, MockHandler> = {
+  "/api/auth/login": (options) => {
+    const body = typeof options.json === "string"
+      ? JSON.parse(options.json)
+      : (options.json || {});
+    return {
+      user: { id: "mock-user-1", email: body.email || "demo@redo.ai" },
+      token: "mock-user-token-12345",
+    };
+  },
+  "/api/auth/signup": (options) => {
+    const body = typeof options.json === "string"
+      ? JSON.parse(options.json)
+      : (options.json || {});
+    mockProfile = {
+      ...mockProfile,
+      id: "mock-user-1",
+      email: body.email || "demo@redo.ai",
+      display_name: body.displayName || "Demo User",
+    };
+    return {
+      user: { id: "mock-user-1", email: body.email || "demo@redo.ai" },
+      token: "mock-user-token-12345",
+    };
+  },
+  "/api/auth/logout": () => ({ success: true }),
+  "/api/auth/password-reset": () => ({ success: true }),
+  "/api/auth/update-password": () => ({ success: true }),
+  "/api/auth/delete-account": () => ({ success: true }),
+  "/api/auth/export-data": () => ({
+    exportedAt: new Date().toISOString(),
+    profile: mockProfile,
+    wardrobeItems: items,
+    outfits: allOutfits,
+  }),
   "/api/wardrobe/items": () => items,
   "/api/wardrobe/overview": () => ({
     ...wardrobeOverviewMock,
@@ -100,6 +147,86 @@ export const mockHandlers: Record<string, MockHandler> = {
   "/api/trends/next": () => nextTrendsMock,
   "/api/trends/personalized": () => personalizedTrendsMock,
   "/api/trends/wardrobe-matches": () => wardrobeMatchesMock,
+  "/api/profile": (options) => {
+    if (options.method === "PATCH" || options.method === "patch") {
+      const body = typeof options.json === "string"
+        ? JSON.parse(options.json)
+        : (options.json || {});
+      mockProfile = { ...mockProfile, ...body, updated_at: new Date().toISOString() };
+    }
+    return mockProfile;
+  },
+  "/api/profile/style-preferences": (options) => {
+    const body = typeof options.json === "string"
+      ? JSON.parse(options.json)
+      : (options.json || {});
+    mockProfile = {
+      ...mockProfile,
+      style_dna: body.styleDna,
+      favorite_colors: body.favoriteColors,
+      updated_at: new Date().toISOString(),
+    };
+    return mockProfile;
+  },
+  "/api/profile/quiz-complete": (options) => {
+    const body = typeof options.json === "string"
+      ? JSON.parse(options.json)
+      : (options.json || {});
+    mockProfile = {
+      ...mockProfile,
+      style_dna: body.styleDna,
+      quiz_completed: true,
+      updated_at: new Date().toISOString(),
+    };
+    return mockProfile;
+  },
+  "/api/profile/reset-personalization": () => {
+    mockProfile = {
+      ...mockProfile,
+      style_dna: {},
+      favorite_colors: [],
+      preferred_styles: [],
+      preferred_occasions: [],
+      fashion_preferences: {},
+      quiz_completed: false,
+      updated_at: new Date().toISOString(),
+    };
+    return mockProfile;
+  },
+  "/api/profile/notification-preferences": (options) => {
+    if (options.method === "PATCH" || options.method === "patch") {
+      const body = typeof options.json === "string"
+        ? JSON.parse(options.json)
+        : (options.json || {});
+      mockNotificationPreferences = {
+        ...mockNotificationPreferences,
+        ...body,
+        updated_at: new Date().toISOString(),
+      };
+    }
+    return mockNotificationPreferences;
+  },
+  "/api/profile/payments": () => [
+    {
+      id: "pay_mock_1",
+      amount: 199000,
+      currency: "VND",
+      status: "completed",
+      paid_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    },
+  ],
+  "/api/profile/invoices": () => [
+    {
+      id: "inv_mock_1",
+      invoice_number: "INV-DEMO-001",
+      amount: 199000,
+      currency: "VND",
+      status: "paid",
+      pdf_url: null,
+      created_at: new Date().toISOString(),
+    },
+  ],
   "/api/style-profile": () => styleProfileMock,
   "/api/style-profile/recommendations": () => styleRecommendationsMock,
   "/api/recommender/outfits": () => allOutfits,
