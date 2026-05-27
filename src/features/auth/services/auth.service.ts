@@ -92,6 +92,9 @@ export const authService = {
       },
     });
     if (error) throw error;
+    if (data.user && !data.session) {
+      throw new Error("Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập.");
+    }
     if (data.user) {
       await supabase.from("profiles").upsert({
         id: data.user.id,
@@ -141,7 +144,18 @@ export const authService = {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) throw error;
+    return { success: true };
+  },
+
+  linkProvider: async (provider: SocialProvider) => {
+    const { error } = await supabase.auth.linkIdentity({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?linking=true`,
       },
     });
     if (error) throw error;

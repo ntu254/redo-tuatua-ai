@@ -21,6 +21,16 @@ export interface WardrobeUploadAnalysis {
   suggestion: Array<{ role: string; name: string; color: string }>;
 }
 
+export interface CreateItemPayload {
+  name: string;
+  imageBase64: string;
+  mimeType: string;
+  category: string;
+  type: string;
+  color: string;
+  tags: string[];
+}
+
 export interface ItemUpdatePayload {
   name?: string;
   category?: string;
@@ -29,19 +39,64 @@ export interface ItemUpdatePayload {
   season?: string;
 }
 
-const UUID_TO_ID = (uuid: string): number =>
-  Number.parseInt(uuid.replace(/-/g, "").slice(0, 8), 16);
+const UUID_TO_ID = (uuid: string): number => {
+  let hash = 0;
+  for (let i = 0; i < uuid.length; i++) {
+    hash = ((hash << 5) - hash) + uuid.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
 
 const CATEGORY_LABELS: Record<string, string> = {
   "Tops": "Áo", "Bottoms": "Quần", "Shoes": "Giày",
   "Outerwear": "Áo khoác", "Accessories": "Phụ kiện", "Dresses": "Đầm",
 };
 
+const CATEGORY_UUIDS: Record<string, string> = {
+  "Tops": "2e2271a7-64a2-42d3-9c82-d3db616b6c22",
+  "Bottoms": "e2f65ada-0b9c-4579-a2bc-87b85b70cc8a",
+  "Outerwear": "cb8ead0b-dd40-4605-b84a-dc864a669039",
+  "Dresses": "9419a87c-ec80-45bf-a682-92d7cac82fe1",
+  "Shoes": "9353a533-4270-4e84-9eae-c608247ce823",
+  "Accessories": "31d71323-cd53-49ee-a0c3-d98892bc5db7",
+};
+
+const UUID_TO_CATEGORY = Object.fromEntries(
+  Object.entries(CATEGORY_UUIDS).map(([k, v]) => [v, k])
+);
+
+async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function base64ToBlob(base64: string, mimeType: string): Blob {
+  const byteChars = atob(base64);
+  const byteArrays: Uint8Array[] = [];
+  for (let offset = 0; offset < byteChars.length; offset += 512) {
+    const slice = byteChars.slice(offset, offset + 512);
+    const byteNums = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNums[i] = slice.charCodeAt(i);
+    }
+    byteArrays.push(new Uint8Array(byteNums));
+  }
+  return new Blob(byteArrays, { type: mimeType });
+}
+
 function mapDbItem(w: DbWardrobeItem): WardrobeItem {
   return {
     id: UUID_TO_ID(w.id),
     name: w.name,
-    category: w.category_id ?? "Khác",
+    category: (w.category_id && UUID_TO_CATEGORY[w.category_id]) ?? "Khác",
     color: w.color ?? "Khác",
     tags: [],
     image: w.image_url ?? undefined,
@@ -139,20 +194,54 @@ export const wardrobeService = {
 
   analyzeUpload: async (file?: File): Promise<WardrobeUploadAnalysis> => {
     if (!apiConfig.useMockApi && file) {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(",")[1]);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      const base64 = await fileToBase64(file);
 
       const edgeResult = await callEdgeAnalyzeUpload(base64, file.type);
       if (edgeResult) return edgeResult;
     }
     return { detectedName: "New Item", detectedCategory: "Tops", detectedType: "Áo", detectedColor: "Khác", detectedTags: [], suggestion: [] };
+  },
+
+  addItem: async (payload: CreateItemPayload): Promise<WardrobeItem | null> => {
+    if (!apiConfig.useMockApi) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      let imageUrl: string | null = null;
+      if (payload.imageBase64) {
+        const ext = payload.mimeType.split("/")[1] || "png";
+        const fileName = `${user.id}/${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from("wardrobe")
+          .upload(fileName, base64ToBlob(payload.imageBase64, payload.mimeType), {
+            contentType: payload.mimeType,
+            upsert: false,
+          });
+        if (!uploadError) {
+          const { data: { publicUrl } } = supabase.storage
+            .from("wardrobe")
+            .getPublicUrl(fileName);
+          imageUrl = publicUrl;
+        }
+      }
+
+      const { data, error } = await supabase
+        .from("wardrobe_items")
+        .insert({
+          user_id: user.id,
+          name: payload.name,
+          color: payload.color,
+          image_url: imageUrl,
+          category_id: CATEGORY_UUIDS[payload.category] ?? null,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      if (data) return mapDbItem(data);
+      return null;
+    }
+    return apiClient.post<WardrobeItem>("/api/wardrobe/items", { json: payload });
   },
 
   getAnalysis: async (): Promise<WardrobeAnalysis> => {

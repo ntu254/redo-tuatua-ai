@@ -1,11 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { generateJson } from "../_shared/gemini.ts";
+import { withCreditCheck, CreditError } from "../_shared/credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info, x-supabase-auth-referer",
 };
 
 serve(async (req) => {
@@ -15,7 +16,7 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { global: { headers: { Authorization: authHeader } } },
     );
 
@@ -43,14 +44,17 @@ Chỉ trả JSON.`;
 
     const userPrompt = `Danh sách items:\n${JSON.stringify(items, null, 2)}`;
 
-    const analysis = await generateJson<any>(userPrompt, systemPrompt);
+    const analysis = await withCreditCheck(supabase, user.id, "analysis", "gemini-2.0-flash", async () => {
+      return await generateJson<any>(userPrompt, systemPrompt);
+    });
 
     return new Response(JSON.stringify(analysis), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
+    const status = err instanceof CreditError ? 402 : 400;
     return new Response(JSON.stringify({ error: err.message }), {
-      status: 400,
+      status,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

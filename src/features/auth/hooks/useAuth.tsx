@@ -56,7 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = useCallback(async (email: string, password: string, displayName?: string) => {
     const nextSession = await authService.signup(email, password, displayName);
-    setSession(nextSession);
+    if (nextSession?.session?.access_token) {
+      setSession(nextSession);
+    }
     return nextSession;
   }, []);
 

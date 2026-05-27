@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info, x-supabase-auth-referer",
 };
 
 serve(async (req) => {
@@ -79,6 +79,7 @@ serve(async (req) => {
     const result = await response.json();
     if (!response.ok) throw new Error(result.desc || "PayOS error");
 
+    const paymentLinkId = String(result.data?.paymentLinkId || orderCode);
     await supabase.from("payments").insert({
       user_id: user.id,
       amount,
@@ -86,7 +87,10 @@ serve(async (req) => {
       status: "pending",
       payment_method: "payos",
       provider: "payos",
-      provider_payment_id: String(result.data?.paymentLinkId || orderCode),
+      provider_payment_id: paymentLinkId,
+      order_code: orderCode,
+      plan_id: planId,
+      billing_cycle: billingCycle,
     });
 
     return new Response(JSON.stringify({

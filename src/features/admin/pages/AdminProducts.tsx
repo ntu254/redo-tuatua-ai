@@ -31,6 +31,7 @@ import {
   EyeOff,
   Link2,
   Link2Off,
+  Loader2,
   MoreHorizontal,
   MousePointerClick,
   Package,
@@ -69,7 +70,7 @@ export default function AdminProducts() {
     queryFn: () => adminProductsService.getData(),
   });
 
-  const clicksProductId = dialog.type === "clicks" ? dialog.productId : null;
+  const clicksProductId = dialog.type === "clicks" ? (dialog as any).productId : null;
 
   const { data: clickData } = useQuery({
     queryKey: ["admin", "products", "clicks", clicksProductId],
@@ -301,7 +302,7 @@ export default function AdminProducts() {
             <DialogDescription className="srOnly">Confirm product deletion</DialogDescription>
           </DialogHeader>
           <div className="py-2 text-sm font-body text-muted-foreground">
-            Are you sure you want to delete <span className="font-medium text-foreground">{dialog.type === "delete" ? dialog.title : ""}</span>? This action cannot be undone.
+            Are you sure you want to delete <span className="font-medium text-foreground">{dialog.type === "delete" ? (dialog as any).title : ""}</span>? This action cannot be undone.
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" size="sm" onClick={() => setDialog({ type: null })}>Cancel</Button>
@@ -316,10 +317,10 @@ export default function AdminProducts() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Update Affiliate Link</DialogTitle>
-            <DialogDescription className="srOnly">Update affiliate link for {dialog.type === "link" ? dialog.title : ""}</DialogDescription>
+            <DialogDescription className="srOnly">Update affiliate link for {dialog.type === "link" ? (dialog as any).title : ""}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-sm font-body text-muted-foreground">Product: <span className="text-foreground font-medium">{dialog.type === "link" ? dialog.title : ""}</span></p>
+            <p className="text-sm font-body text-muted-foreground">Product: <span className="text-foreground font-medium">{dialog.type === "link" ? (dialog as any).title : ""}</span></p>
             <div className="space-y-1.5">
               <Label className="text-xs font-body text-foreground">Affiliate URL</Label>
               <Input value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://..." className="h-9 font-body text-sm" />

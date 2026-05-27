@@ -1,19 +1,74 @@
+import { useQuery } from "@tanstack/react-query";
+import { Bell, Crown, LogOut, Sparkles, User } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { supabase } from "@/shared/lib";
 import { Button } from "@/shared/ui";
 
 const navLinks = [
   { label: "Trang chủ", href: "/" },
   { label: "Phối đồ", href: "/recommender" },
+  { label: "AI Outfit", href: "/outfit-builder" },
   { label: "Tủ đồ", href: "/wardrobe" },
   { label: "Hồ sơ phong cách", href: "/style-profile" },
   { label: "Xu hướng", href: "/trends" },
+  { label: "Gói Premium", href: "/pricing" },
 ];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { user, loading: authLoading, logout } = useAuth();
+
+  const userId = user?.id ?? "";
+
+  const { data: credits } = useQuery({
+    queryKey: ["navbar-credits", userId],
+    queryFn: async () => {
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("plans(ai_generations_limit)")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const { data: uc } = await supabase
+        .from("user_credits")
+        .select("balance")
+        .eq("user_id", userId)
+        .maybeSingle();
+      return {
+        balance: uc?.balance ?? 0,
+        limit: sub?.plans?.ai_generations_limit ?? 10,
+      };
+    },
+    enabled: !!userId,
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ["navbar-profile", userId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("id", userId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!userId,
+  });
+
+  const displayName = profile?.display_name ?? user?.email?.split("@")[0] ?? "User";
+  const initial = displayName[0].toUpperCase();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -53,17 +108,80 @@ const Navbar = () => {
         </div>
 
         <div className="hidden xl:flex items-center gap-3">
-          <Button
-            asChild
-            variant={location.pathname === "/login" ? "secondary" : "outline"}
-            size="sm"
-            className="rounded-full"
-          >
-            <Link to="/login">Đăng nhập</Link>
-          </Button>
-          <Button asChild variant="accent" size="sm" className="rounded-full">
-            <Link to="/signup">Đăng ký</Link>
-          </Button>
+          {user ? (
+            <>
+              <div className="flex items-center gap-1.5 border border-border/60 bg-background/80 px-3 py-1.5 text-xs font-body font-medium text-foreground/70">
+                <Sparkles className="w-3 h-3 text-accent" />
+                <span>
+                  {credits?.balance ?? 0}/{credits?.limit ?? 10}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="relative w-8 h-8 flex items-center justify-center border border-border/60 bg-background/80 text-foreground/50 hover:text-foreground hover:border-accent/30 transition-colors"
+              >
+                <Bell className="w-4 h-4" />
+              </button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="w-8 h-8 rounded-full border border-border/60 overflow-hidden hover:border-accent/50 transition-colors"
+                  >
+                    <Avatar className="w-full h-full">
+                      <AvatarImage src={profile?.avatar_url ?? ""} />
+                      <AvatarFallback className="text-xs font-semibold bg-secondary">{initial}</AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuLabel>
+                    <p className="truncate font-body text-sm font-semibold">{displayName}</p>
+                    <p className="text-[11px] font-body text-foreground/50 truncate">{user.email}</p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+                      <User className="w-4 h-4" />
+                      Hồ sơ
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/pricing" className="flex items-center gap-2 cursor-pointer">
+                      <Crown className="w-4 h-4" />
+                      Gói Premium
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logout()}
+                    className="flex items-center gap-2 text-destructive focus:text-destructive cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Đăng xuất
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : authLoading ? (
+            <div className="w-5 h-5 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />
+          ) : (
+            <>
+              <Button
+                asChild
+                variant={location.pathname === "/login" ? "secondary" : "outline"}
+                size="sm"
+                className="rounded-full"
+              >
+                <Link to="/login">Đăng nhập</Link>
+              </Button>
+              <Button asChild variant="accent" size="sm" className="rounded-full">
+                <Link to="/signup">Đăng ký</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>

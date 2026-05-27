@@ -45,7 +45,12 @@ export interface Outfit {
   aiConfidence?: { label: string; positive: boolean }[];
 }
 
-export type AIAction = "regenerate" | "more_casual" | "more_luxury" | "cheaper" | "more_korean";
+export type AIAction =
+  | "regenerate"
+  | "more_casual"
+  | "more_luxury"
+  | "cheaper"
+  | "more_korean";
 
 export interface ChatMessage {
   role: "user" | "ai";

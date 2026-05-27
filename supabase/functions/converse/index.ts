@@ -1,11 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { generateJson } from "../_shared/gemini.ts";
+import { withCreditCheck, CreditError } from "../_shared/credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info, x-supabase-auth-referer",
 };
 
 serve(async (req) => {
@@ -17,7 +18,7 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
       { global: { headers: { Authorization: authHeader } } },
     );
 
@@ -62,18 +63,21 @@ Trả về 2-4 outfits. Giá tiền theo VND thực tế.`;
 ${history?.length ? `Lịch sử: ${JSON.stringify(history)}` : ""}
 Hãy tạo outfit phù hợp.`;
 
-    const result = await generateJson<{
-      reply: string;
-      outfits: any[];
-      suggestions: { label: string; prompt: string }[];
-    }>(userPrompt, systemPrompt);
+    const result = await withCreditCheck(supabase, user.id, "generation", "gemini-2.0-flash", async () => {
+      return await generateJson<{
+        reply: string;
+        outfits: any[];
+        suggestions: { label: string; prompt: string }[];
+      }>(userPrompt, systemPrompt);
+    });
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
+    const status = err instanceof CreditError ? 402 : 400;
     return new Response(JSON.stringify({ error: err.message }), {
-      status: 400,
+      status,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

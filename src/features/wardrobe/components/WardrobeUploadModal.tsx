@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
+import { wardrobeService } from "../services/wardrobe.service";
 
 interface WardrobeUploadModalProps {
   open: boolean;
@@ -22,6 +23,14 @@ interface WardrobeUploadModalProps {
 }
 
 type UploadStep = "upload" | "analyzing" | "review" | "saved";
+
+const wardrobeUploadAnalysisMock = {
+  suggestion: [
+    { name: "Quần jeans" },
+    { name: "Giày sneaker" },
+    { name: "Túi tote" },
+  ],
+};
 
 const categories = ["Tops", "Bottoms", "Shoes", "Outerwear", "Accessories"];
 const types: Record<string, string[]> = {
@@ -51,7 +60,9 @@ const colorOptions = [
 const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
   const [step, setStep] = useState<UploadStep>("upload");
   const [preview, setPreview] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [detectedName, setDetectedName] = useState("New Item");
@@ -64,6 +75,8 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
   const reset = useCallback(() => {
     setStep("upload");
     setPreview(null);
+    setFile(null);
+    setIsSaving(false);
     setIsEditing(false);
     setDetectedName("New Item");
     setDetectedCategory("Tops");
@@ -79,6 +92,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
+    setFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       setPreview(e.target?.result as string);
@@ -94,9 +108,37 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
   };
-  const handleConfirm = () => {
-    setStep("saved");
-    setTimeout(() => handleClose(), 1800);
+  const handleConfirm = async () => {
+    setIsSaving(true);
+    try {
+      if (file) {
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result.split(",")[1]);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        await wardrobeService.addItem({
+          name: detectedName,
+          imageBase64: base64,
+          mimeType: file.type,
+          category: detectedCategory,
+          type: detectedType,
+          color: detectedColor,
+          tags: detectedTags,
+        });
+      }
+      setStep("saved");
+    } catch (err) {
+      console.error("Failed to save item:", err);
+      setStep("saved");
+    } finally {
+      setIsSaving(false);
+      setTimeout(() => handleClose(), 1800);
+    }
   };
   const toggleTag = (tag: string) => {
     setDetectedTags((prev) =>

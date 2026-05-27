@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Login from "@/features/auth/pages/LoginPage";
+import AuthCallback from "@/features/auth/pages/AuthCallbackPage";
 import ForgotPassword from "@/features/auth/pages/ForgotPasswordPage";
 import ResetPassword from "@/features/auth/pages/ResetPasswordPage";
 import SignUp from "@/features/auth/pages/SignUpPage";
@@ -8,6 +9,7 @@ import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 import Index from "@/features/landing/pages";
 import Profile from "@/features/profile/pages/ProfilePage";
 import Quiz from "@/features/quiz/pages";
+import OutfitBuilder from "@/features/outfit-builder/pages";
 import Recommender from "@/features/recommender/pages";
 import StyleProfile from "@/features/style-profile/pages";
 import Trends from "@/features/trends/pages/TrendsPage";
@@ -39,15 +41,17 @@ export function AppRoutes() {
         <Route path="/" element={<Index />} />
         <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
         <Route path="/recommender" element={<ProtectedRoute><Recommender /></ProtectedRoute>} />
+        <Route path="/outfit-builder" element={<ProtectedRoute><OutfitBuilder /></ProtectedRoute>} />
         <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
         <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
         <Route path="/style-profile" element={<ProtectedRoute><StyleProfile /></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
+        <Route path="/pricing" element={<PricingPage />} />
         <Route path="/payment/result" element={<PaymentResultPage />} />
 
         <Route path="/admin/login" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />

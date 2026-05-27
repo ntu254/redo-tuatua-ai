@@ -251,12 +251,7 @@ export default function AdminTrends() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogDescription className="srOnly">Create a new fashion trend</DialogDescription>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-base font-semibold font-body">New Trend</DialogTitle>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setCreateOpen(false)}>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+            <DialogTitle className="text-base font-semibold font-body">New Trend</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
             <div className="space-y-1.5">

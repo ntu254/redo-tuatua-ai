@@ -3,10 +3,11 @@ import heroImg from "@/assets/hero-fashion-1.jpg";
 import { Button, Input, Label } from "@/shared/ui";
 import { motion } from "framer-motion";
 import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService, type SocialProvider } from "../services/auth.service";
 import { useAuth } from "../hooks/useAuth";
+import { cn } from "@/lib/utils";
 
 const styleTags = ["Minimal", "Streetwear", "Office", "Date Night"];
 
@@ -14,9 +15,23 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const { signup } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const validationError = useMemo(() => {
+    if (!name.trim()) return "";
+    if (!email.trim()) return "";
+    if (password && confirmPassword && password !== confirmPassword) {
+      return "Mật khẩu xác nhận không khớp";
+    }
+    if (password && password.length < 6) {
+      return "Mật khẩu phải có ít nhất 6 ký tự";
+    }
+    return "";
+  }, [name, email, password, confirmPassword]);
 
   const signupMutation = useMutation({
     mutationFn: () => signup(email, password, name),
@@ -30,6 +45,7 @@ const SignUpPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (validationError) return;
     signupMutation.mutate();
   };
 
@@ -116,7 +132,7 @@ const SignUpPage = () => {
             {signupMutation.isError && (
               <div className="flex items-center gap-2 p-3 mb-5 bg-destructive/5 border border-destructive/20 text-destructive text-sm font-body">
                 <AlertCircle className="w-4 h-4 shrink-0" />
-                {(signupMutation.error as Error)?.message ?? "Đăng ký thất bại"}
+                {(signupMutation.error as Error)?.message ?? "Đăng ký thất bại. Vui lòng thử lại."}
               </div>
             )}
 
@@ -158,6 +174,7 @@ const SignUpPage = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="h-11 font-body border-border bg-background/88 pr-10"
                     required
+                    minLength={6}
                   />
                   <button
                     type="button"
@@ -173,12 +190,49 @@ const SignUpPage = () => {
                 </div>
               </div>
 
+              <div className="space-y-1.5">
+                <Label className="font-body text-[11px] font-semibold uppercase tracking-wider text-foreground/55">
+                  Xác nhận mật khẩu
+                </Label>
+                <div className="relative">
+                  <Input
+                    type={showConfirm ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={cn(
+                      "h-11 font-body border-border bg-background/88 pr-10",
+                      confirmPassword && password !== confirmPassword && "border-destructive"
+                    )}
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/35 hover:text-foreground transition-colors"
+                  >
+                    {showConfirm ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="flex items-center gap-1 text-[11px] text-destructive mt-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Mật khẩu xác nhận không khớp
+                  </p>
+                )}
+              </div>
+
               <div className="pt-1">
                 <Button
                   variant="accent"
                   size="lg"
                   className="w-full h-11 font-body font-semibold gap-2"
-                  disabled={signupMutation.isPending}
+                  disabled={signupMutation.isPending || !!validationError}
                 >
                   {signupMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

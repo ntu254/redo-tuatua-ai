@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Crown, Check, Loader2, ArrowLeft } from "lucide-react";
+import { Crown, Check, Loader2, ArrowLeft, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { subscriptionService } from "../services/subscription.service";
@@ -20,6 +20,8 @@ const FEATURES: Record<string, { label: string; included: (plan: any) => boolean
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [networkError, setNetworkError] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const navigate = useNavigate();
 
   const { data: plans = [], isLoading } = useQuery({
@@ -27,15 +29,33 @@ export default function PricingPage() {
     queryFn: subscriptionService.getPlans,
   });
 
-  const handleSelect = async (planId: string) => {
+  const handleSelect = async (planId: string, planSlug?: string) => {
     setLoadingId(planId);
+    setNetworkError(null);
+
+    timeoutRef.current = setTimeout(() => {
+      setNetworkError("Kết nối đến cổng thanh toán quá lâu. Vui lòng kiểm tra mạng và thử lại.");
+      setLoadingId(null);
+    }, 15000);
+
     try {
       const result = await subscriptionService.createCheckout(planId, billingCycle);
+      clearTimeout(timeoutRef.current);
       if (result.checkoutUrl) {
         window.location.href = result.checkoutUrl;
+      } else {
+        navigate(`/payment/result?status=error&planName=${planSlug || ""}`);
       }
-    } catch {
-      navigate("/payment/result?status=error");
+    } catch (err) {
+      clearTimeout(timeoutRef.current);
+      const msg = (err as Error)?.message || "";
+      if (msg.includes("network") || msg.includes("fetch") || msg.includes("Network") || msg.includes("Failed to fetch")) {
+        setNetworkError("Không thể kết nối đến máy chủ thanh toán. Kiểm tra kết nối mạng và thử lại.");
+      } else if (msg.includes("timeout") || msg.includes("Timeout")) {
+        setNetworkError("Kết nối quá hạn. Vui lòng thử lại.");
+      } else {
+        navigate(`/payment/result?status=error&planName=${planSlug || ""}`);
+      }
     } finally {
       setLoadingId(null);
     }
@@ -63,6 +83,17 @@ export default function PricingPage() {
           <h1 className="text-4xl font-heading font-bold text-foreground mb-3">Chọn gói phù hợp với bạn</h1>
           <p className="text-foreground/60 max-w-xl mx-auto">Mở khóa toàn bộ tính năng AI styling, phân tích nâng cao và trải nghiệm thời trang cá nhân hóa.</p>
         </div>
+
+        {networkError && (
+          <div className="max-w-md mx-auto mb-6 flex items-start gap-3 border border-red-500/20 bg-red-500/5 p-4 text-sm font-body text-red-600">
+            <WifiOff className="w-4 h-4 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-semibold">Lỗi kết nối</p>
+              <p className="text-red-500/80 mt-0.5">{networkError}</p>
+            </div>
+            <button type="button" onClick={() => setNetworkError(null)} className="ml-auto text-red-400 hover:text-red-600">✕</button>
+          </div>
+        )}
 
         <div className="flex justify-center gap-2 mb-10">
           <button
@@ -99,7 +130,7 @@ export default function PricingPage() {
                   {!isFree && <span className="text-xs text-foreground/50 ml-1">/{billingCycle === "yearly" ? "năm" : "tháng"}</span>}
                 </div>
                 <Button
-                  onClick={() => handleSelect(plan.id)}
+                  onClick={() => handleSelect(plan.id, plan.slug)}
                   disabled={loadingId !== null || isFree}
                   variant={plan.sort_order === 2 ? "accent" : "outline"}
                   className="w-full mb-6"

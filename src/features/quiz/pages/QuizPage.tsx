@@ -417,10 +417,10 @@ const QuizPage = () => {
     else {
       quizService.completeQuiz(user?.id ?? "", {
         gender: (answers.gender ?? [])[0],
-        styles: answers.style_preset ?? [],
+        styles: answers.style ?? [],
         occasions: answers.occasion ?? [],
         budget: (answers.budget ?? [])[0],
-        colors: answers.color ?? [],
+        colors: answers.colors ?? [],
       }).catch(() => {});
       setPhase("analyzing");
     }

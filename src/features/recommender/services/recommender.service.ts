@@ -12,6 +12,15 @@ export interface GenerateRequest {
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80";
 
+function uuidToId(uuid: string): number {
+  let hash = 0;
+  for (let i = 0; i < uuid.length; i++) {
+    hash = ((hash << 5) - hash) + uuid.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 interface EdgeResponse {
   reply: string;
   outfits: Outfit[];
@@ -59,7 +68,7 @@ async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
     .limit(10);
 
   const mapped: Outfit[] = (outfits ?? []).map((o: any) => ({
-    id: Number(o.id.replace(/-/g, "").slice(0, 8)),
+    id: uuidToId(o.id),
     title: o.name ?? "Gợi ý từ tủ đồ",
     emoji: "✨",
     image: o.image_url || FALLBACK_IMAGE,
@@ -93,7 +102,7 @@ async function fallbackGenerate(_req: GenerateRequest): Promise<Outfit[]> {
     .limit(5);
 
   const mapped: Outfit[] = (outfits ?? []).map((o: any) => ({
-    id: Number(o.id.replace(/-/g, "").slice(0, 8)),
+    id: uuidToId(o.id),
     title: o.name ?? "Generated Outfit",
     emoji: "✨",
     image: o.image_url || FALLBACK_IMAGE,
@@ -122,7 +131,7 @@ export const recommenderService = {
       if (error) throw error;
       if (outfits && outfits.length > 0) {
         return outfits.map((o) => ({
-          id: Number(o.id.replace(/-/g, "").slice(0, 8)),
+          id: uuidToId(o.id),
           title: o.name ?? "Generated Outfit",
           emoji: "✨",
           image: o.image_url || FALLBACK_IMAGE,
@@ -177,5 +186,35 @@ export const recommenderService = {
       return fallbackGenerate({ prompt: action });
     }
     return apiClient.post("/api/recommender/action", { json: { outfitId, action } });
+  },
+
+  toggleSave: async (id: number, saved: boolean): Promise<boolean> => {
+    if (!apiConfig.useMockApi) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+      const { data: outfits } = await supabase
+        .from("outfits")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(100);
+      const dbOutfit = outfits?.find((o) => uuidToId(o.id) === id);
+      if (dbOutfit) {
+        const { error } = await supabase
+          .from("outfits")
+          .update({ is_saved: saved })
+          .eq("id", dbOutfit.id);
+        if (!error) {
+          await supabase.from("user_activity_log").insert({
+            user_id: user.id,
+            activity_type: "outfit_saved",
+            description: saved ? `Đã lưu outfit` : `Đã bỏ lưu outfit`,
+            metadata: { outfit_id: dbOutfit.id }
+          });
+          return true;
+        }
+      }
+      return false;
+    }
+    return true;
   },
 };
