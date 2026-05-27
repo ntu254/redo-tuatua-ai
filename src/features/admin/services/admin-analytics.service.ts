@@ -3,8 +3,8 @@ import { apiConfig } from "@/shared/api/config";
 import { supabase } from "@/shared/lib/supabase";
 import type { AdminAnalyticsData, TopPrompt, FailedDetection } from "../types";
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+const MONTHS = ["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"];
 
 export const adminAnalyticsService = {
   getData: async (): Promise<AdminAnalyticsData> => {

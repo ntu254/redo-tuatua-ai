@@ -9,7 +9,7 @@ export const adminPlansService = {
       const [plansRes, subsRes, paymentsRes] = await Promise.all([
         supabase.from("plans").select("*").order("sort_order"),
         supabase.from("subscriptions").select("plan_id, status, created_at"),
-        supabase.from("payments").select("amount, status, created_at, user_id").limit(100),
+        supabase.from("payments").select("id, amount, status, created_at, user_id").limit(100),
       ]);
       const plans = plansRes.data ?? [];
       const subs = subsRes.data ?? [];

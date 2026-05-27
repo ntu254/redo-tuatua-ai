@@ -96,15 +96,15 @@ export default function AdminNotifications() {
     <>
     <div className="space-y-8 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground font-body">Notifications</h1>
-        <p className="text-sm text-muted-foreground font-body mt-1">Manage notification templates and send broadcasts to users</p>
+        <h1 className="text-2xl font-semibold text-foreground font-body">Thông Báo</h1>
+        <p className="text-sm text-muted-foreground font-body mt-1">Quản lý mẫu thông báo và gửi phát sóng đến người dùng</p>
       </div>
 
       <Tabs defaultValue="templates" className="w-full">
         <TabsList className="bg-muted">
-          <TabsTrigger value="templates" className="font-body text-xs gap-1.5"><Bell className="h-3.5 w-3.5" /> Templates</TabsTrigger>
-          <TabsTrigger value="broadcast" className="font-body text-xs gap-1.5"><Megaphone className="h-3.5 w-3.5" /> Send Broadcast</TabsTrigger>
-          <TabsTrigger value="settings" className="font-body text-xs gap-1.5"><Mail className="h-3.5 w-3.5" /> Channel Settings</TabsTrigger>
+          <TabsTrigger value="templates" className="font-body text-xs gap-1.5"><Bell className="h-3.5 w-3.5" /> Mẫu thông báo</TabsTrigger>
+          <TabsTrigger value="broadcast" className="font-body text-xs gap-1.5"><Megaphone className="h-3.5 w-3.5" /> Gửi phát sóng</TabsTrigger>
+          <TabsTrigger value="settings" className="font-body text-xs gap-1.5"><Mail className="h-3.5 w-3.5" /> Cài đặt kênh</TabsTrigger>
         </TabsList>
 
         <TabsContent value="templates" className="mt-6">
@@ -112,11 +112,11 @@ export default function AdminNotifications() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-body">Template</TableHead>
-                  <TableHead className="font-body">Channel</TableHead>
-                  <TableHead className="font-body">Trigger</TableHead>
-                  <TableHead className="font-body">Status</TableHead>
-                  <TableHead className="font-body w-24">Actions</TableHead>
+                  <TableHead className="font-body">Mẫu</TableHead>
+                  <TableHead className="font-body">Kênh</TableHead>
+                  <TableHead className="font-body">Kích hoạt bởi</TableHead>
+                  <TableHead className="font-body">Trạng thái</TableHead>
+                  <TableHead className="font-body w-24">Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -135,8 +135,8 @@ export default function AdminNotifications() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setEditTemplate({ id: t.id, name: t.name, channel: t.channel, trigger: t.trigger, status: t.status })}>
-                        Edit
+                    <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setEditTemplate({ id: t.id, name: t.name, channel: t.channel, trigger: t.trigger, status: t.status })}>
+                        Chỉnh sửa
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -151,34 +151,34 @@ export default function AdminNotifications() {
         <TabsContent value="broadcast" className="mt-6">
           <div className="bg-card border border-border rounded-lg p-6 max-w-2xl space-y-5">
             <div>
-              <h3 className="text-sm font-semibold font-body mb-4">Compose Broadcast</h3>
+              <h3 className="text-sm font-semibold font-body mb-4">Soạn thông báo</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="font-body text-sm">Target Audience</Label>
+                  <Label className="font-body text-sm">Nhóm đối tượng</Label>
                   <div className="flex gap-2">
-                    {["all", "premium", "free", "active"].map((t) => (
+                    {[("all"), ("premium"), ("free"), ("active")].map((t) => (
                       <Button key={t} variant={target === t ? "default" : "outline"} size="sm" className="text-xs capitalize" onClick={() => setTarget(t)}>
-                        {t === "all" ? "All Users" : t}
+                        {t === "all" ? "Tất cả" : t === "premium" ? "Premium" : t === "free" ? "Miễn phí" : "Đang hoạt động"}
                       </Button>
                     ))}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-body text-sm">Title</Label>
-                  <Input value={sendTitle} onChange={(e) => setSendTitle(e.target.value)} placeholder="Notification title..." className="font-body text-sm" />
+                  <Label className="font-body text-sm">Tiêu đề</Label>
+                  <Input value={sendTitle} onChange={(e) => setSendTitle(e.target.value)} placeholder="Tiêu đề thông báo..." className="font-body text-sm" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-body text-sm">Message</Label>
-                  <Textarea value={sendBody} onChange={(e) => setSendBody(e.target.value)} placeholder="Write your notification message..." className="font-body text-sm min-h-[100px]" />
+                  <Label className="font-body text-sm">Nội dung</Label>
+                  <Textarea value={sendBody} onChange={(e) => setSendBody(e.target.value)} placeholder="Viết nội dung thông báo..." className="font-body text-sm min-h-[100px]" />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground font-body">
                   <MessageSquare className="h-3.5 w-3.5" />
-                  Will be sent as push notification + email digest
+                  Sẽ gửi qua push notification và email digest
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <Button variant="outline" size="sm" className="text-xs" onClick={() => setShowPreview(true)}>Preview</Button>
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => setShowPreview(true)}>Xem trước</Button>
                   <Button size="sm" className="gap-1.5 text-xs" onClick={() => sendMutation.mutate()} disabled={!sendTitle || !sendBody}>
-                    <Send className="h-3.5 w-3.5" /> Send Broadcast
+                    <Send className="h-3.5 w-3.5" /> Gửi phát sóng
                   </Button>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export default function AdminNotifications() {
         <TabsContent value="settings" className="mt-6">
           <div className="bg-card border border-border rounded-lg p-6 max-w-2xl space-y-6">
             <div>
-              <h3 className="text-sm font-semibold font-body mb-4">Email Settings</h3>
+              <h3 className="text-sm font-semibold font-body mb-4">Cài đặt Email</h3>
               <div className="space-y-4">
                 {data?.emailSettings.map((s) => {
                   const local = emailSettings.find((e) => e.key === s.key);
@@ -209,7 +209,7 @@ export default function AdminNotifications() {
             <Separator />
 
             <div>
-              <h3 className="text-sm font-semibold font-body mb-4">Push Notification Settings</h3>
+              <h3 className="text-sm font-semibold font-body mb-4">Cài đặt Push Notification</h3>
               <div className="space-y-4">
                 {data?.pushSettings.map((s) => {
                   const local = pushSettings.find((e) => e.key === s.key);
@@ -228,7 +228,7 @@ export default function AdminNotifications() {
 
             <div className="flex justify-end">
               <Button className="gap-2 text-xs" onClick={() => saveMutation.mutate()}>
-                <Save className="h-3.5 w-3.5" /> Save Settings
+                <Save className="h-3.5 w-3.5" /> Lưu cài đặt
               </Button>
             </div>
           </div>

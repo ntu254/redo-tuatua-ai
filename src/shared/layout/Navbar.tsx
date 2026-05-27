@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Bell, Crown, LogOut, Sparkles, User } from "lucide-react";
+import { Crown, LogOut, Sparkles, User } from "lucide-react";
+import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -117,12 +118,7 @@ const Navbar = () => {
                 </span>
               </div>
 
-              <button
-                type="button"
-                className="relative w-8 h-8 flex items-center justify-center border border-border/60 bg-background/80 text-foreground/50 hover:text-foreground hover:border-accent/30 transition-colors"
-              >
-                <Bell className="w-4 h-4" />
-              </button>
+              <NotificationBell />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

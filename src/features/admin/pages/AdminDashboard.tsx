@@ -43,22 +43,22 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-semibold text-foreground font-body">Dashboard</h1>
-        <p className="text-sm text-muted-foreground font-body mt-1">Overview of your platform performance</p>
+        <h1 className="text-2xl font-semibold text-foreground font-body">Tổng Quan</h1>
+        <p className="text-sm text-muted-foreground font-body mt-1">Hiệu suất tổng thể của nền tảng</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <StatCard label="Total Users" value={data.totalUsers.toLocaleString()} change="12% vs last month" trend="up" icon={Users} />
-        <StatCard label="Active Today" value={data.activeToday.toLocaleString()} change="8% vs yesterday" trend="up" icon={Activity} />
-        <StatCard label="Outfits Generated" value={data.outfitsGenerated.toLocaleString()} change="23% this week" trend="up" icon={Sparkles} />
-        <StatCard label="Wardrobe Uploads" value={data.wardrobeUploads.toLocaleString()} change="5% this week" trend="up" icon={Upload} />
-        <StatCard label="Saved Outfits" value={data.savedOutfits.toLocaleString()} change="18% this month" trend="up" icon={Heart} />
-        <StatCard label="Affiliate Clicks" value={data.affiliateClicks.toLocaleString()} change="3% vs last week" trend="down" icon={MousePointerClick} />
+        <StatCard label="Tổng người dùng" value={data.totalUsers.toLocaleString()} change="+12% tháng trước" trend="up" icon={Users} />
+        <StatCard label="Hoạt động hôm nay" value={data.activeToday.toLocaleString()} change="+8% hôm qua" trend="up" icon={Activity} />
+        <StatCard label="Outfit đã tạo" value={data.outfitsGenerated.toLocaleString()} change="+23% tuần này" trend="up" icon={Sparkles} />
+        <StatCard label="Upload tủ đồ" value={data.wardrobeUploads.toLocaleString()} change="+5% tuần này" trend="up" icon={Upload} />
+        <StatCard label="Outfit đã lưu" value={data.savedOutfits.toLocaleString()} change="+18% tháng này" trend="up" icon={Heart} />
+        <StatCard label="Click liên kết" value={data.affiliateClicks.toLocaleString()} change="-3% tuần trước" trend="down" icon={MousePointerClick} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 bg-card border border-border rounded-lg p-5">
-          <h3 className="text-sm font-semibold text-foreground font-body mb-4">User Growth</h3>
+          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Tăng trưởng người dùng</h3>
           <div className="flex items-end gap-3 h-[220px]">
             {data.userGrowth.map((d) => (
               <div key={d.month} className="flex-1 flex flex-col items-center gap-2">
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Outfit Categories</h3>
+          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Danh mục outfit</h3>
           <div className="space-y-4 mt-6">
             {data.outfitCategories.map((c) => (
               <div key={c.name}>
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
 
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Top Styles</h3>
+          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Phong cách hàng đầu</h3>
           <div className="space-y-3">
             {data.topStyles.map((s) => (
               <div key={s.style}>
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Recent Activity</h3>
+          <h3 className="text-sm font-semibold text-foreground font-body mb-4">Hoạt động gần đây</h3>
           <div className="space-y-3">
             {data.recentActivity.map((a, i) => (
               <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
