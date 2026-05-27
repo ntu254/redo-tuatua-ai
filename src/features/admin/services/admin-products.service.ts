@@ -7,7 +7,7 @@ export const adminProductsService = {
   getData: async (): Promise<AdminProductsData> => {
     if (!apiConfig.useMockApi) {
       const [productsRes, catsRes, srcsRes] = await Promise.all([
-        supabase.from("products").select("id, name, price, currency, is_active, is_featured, is_hidden, link_status, image_url, category_id, source_id"),
+        supabase.from("products").select("id, name, price, currency, is_active, is_featured, is_hidden, link_status, image_url, category_id, source_id, click_count"),
         supabase.from("product_categories").select("id, name"),
         supabase.from("product_sources").select("id, platform"),
       ]);
@@ -18,13 +18,14 @@ export const adminProductsService = {
       const srcMap = Object.fromEntries(srcs.map((s) => [s.id, s.platform]));
       const activeProducts = products.filter((p) => p.is_active);
       const brokenLinks = products.filter((p) => p.link_status === "broken").length;
+      const totalClicks = products.reduce((s, p) => s + (p.click_count || 0), 0);
 
       return {
         stats: {
           totalProducts: products.length,
           activeAffiliates: activeProducts.length,
           brokenLinks,
-          totalClicks: 0,
+          totalClicks,
         },
         products: products.map((p) => ({
           id: p.id,
@@ -34,7 +35,7 @@ export const adminProductsService = {
           affiliate: p.is_active ? "Active" : "Inactive",
           linkHealth: p.link_status === "broken" ? "Broken" : "Healthy",
           featured: p.is_featured,
-          clicks: 0,
+          clicks: p.click_count || 0,
           commission: 0,
           image_url: p.image_url,
         })),

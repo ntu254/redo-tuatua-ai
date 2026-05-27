@@ -22,6 +22,7 @@ export interface MissingItem {
 
 export interface Outfit {
   id: number;
+  dbId?: string;
   title: string;
   emoji: string;
   image: string;

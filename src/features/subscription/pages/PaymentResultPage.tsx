@@ -14,23 +14,48 @@ export default function PaymentResultPage() {
   const statusParam = searchParams.get("status");
   const orderCode = searchParams.get("orderCode");
   const planName = searchParams.get("planName");
+  const planId = searchParams.get("planId");
 
   const [pageStatus, setPageStatus] = useState<"processing" | "success" | "cancelled" | "failed" | "timeout">(
     statusParam === "cancelled" ? "cancelled" : "processing",
   );
 
-  const { data: plan } = useQuery({
-    queryKey: ["payment-plan", planName],
+  const { data: plan } = useQuery<any>({
+    queryKey: ["payment-plan", planId || planName],
     queryFn: async () => {
-      if (!planName) return null;
-      const { data } = await supabase.from("plans").select("name, price_monthly, price_yearly, credits_per_month").eq("slug", planName.toLowerCase()).maybeSingle();
-      return data;
+      if (planId) {
+        const { data } = await (supabase as any).from("plans").select("name, price_monthly, price_yearly, credits_per_month").eq("id", planId).maybeSingle();
+        return data;
+      }
+      if (planName) {
+        const { data } = await (supabase as any).from("plans").select("name, price_monthly, price_yearly, credits_per_month").eq("slug", planName.toLowerCase()).maybeSingle();
+        return data;
+      }
+      return null;
     },
-    enabled: !!planName,
+    enabled: !!planId || !!planName,
   });
 
   useEffect(() => {
     if (statusParam !== "success" || !orderCode) return;
+
+    // Call verify-payment Edge Function immediately to trigger verification fallback
+    const triggerVerify = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("verify-payment", {
+          body: { orderCode: Number(orderCode) },
+        });
+        if (error) throw error;
+        if (data?.status === "completed") {
+          setPageStatus("success");
+        } else if (["failed", "expired", "refunded"].includes(data?.status ?? "")) {
+          setPageStatus("failed");
+        }
+      } catch (err) {
+        console.error("verify-payment fallback error:", err);
+      }
+    };
+    triggerVerify();
 
     const channel = supabase
       .channel(`payment-${orderCode}`)
@@ -44,19 +69,20 @@ export default function PaymentResultPage() {
     let attempts = 0;
     const interval = setInterval(async () => {
       attempts++;
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("payments")
         .select("status")
         .eq("order_code", orderCode)
         .maybeSingle();
 
-      if (data?.status === "completed") {
+      const status = (data as any)?.status;
+      if (status === "completed") {
         setPageStatus("success");
         clearInterval(interval);
         channel.unsubscribe();
         return;
       }
-      if (["failed", "expired", "refunded"].includes(data?.status ?? "")) {
+      if (["failed", "expired", "refunded"].includes(status ?? "")) {
         setPageStatus("failed");
         clearInterval(interval);
         channel.unsubscribe();
@@ -124,7 +150,7 @@ export default function PaymentResultPage() {
             <XCircle className="w-16 h-16 text-amber-500 mx-auto mb-6" />
             <h1 className="text-2xl font-heading font-bold text-foreground mb-2">Đã hủy thanh toán</h1>
             <p className="text-foreground/60 mb-2">Bạn đã hủy giao dịch. Không có khoản phí nào được tính.</p>
-            {planName && <p className="text-foreground/40 text-sm mb-8">Gói {plan?.name || planName} chưa được kích hoạt.</p>}
+            {(planId || planName) && <p className="text-foreground/40 text-sm mb-8">Gói {plan?.name || planName || "Premium"} chưa được kích hoạt.</p>}
             <div className="flex gap-3 justify-center">
               <Button onClick={() => navigate("/pricing")} variant="outline">Thử lại</Button>
               <Button onClick={() => navigate("/profile")} variant="ghost">Về trang cá nhân</Button>

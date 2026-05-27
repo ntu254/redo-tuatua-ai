@@ -8,7 +8,7 @@ export const adminTrendsService = {
     if (!apiConfig.useMockApi) {
       const { data } = await supabase
         .from("fashion_trends")
-        .select("id, title, category, season, is_published, created_at, growth_pct")
+        .select("id, title, category, season, year, is_published, created_at, growth_pct")
         .order("created_at", { ascending: false });
       const trends = data ?? [];
       return {

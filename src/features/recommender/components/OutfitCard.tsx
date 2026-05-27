@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/shared/lib";
 
 const platformStyles: Record<string, { bg: string; text: string; icon: string }> = {
   Shopee: { bg: "bg-shopee/8", text: "text-shopee", icon: "🟠" },
@@ -62,6 +63,21 @@ const OutfitCard = ({ outfit, index, onSave, onLike, onHide, onReport, onAction,
   const [copied, setCopied] = useState(false);
 
   if (outfit.userHidden) return null;
+
+  const trackAffiliateClick = async (productId?: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await (supabase as any).from("clicks").insert({
+        user_id: user?.id || null,
+        product_id: productId || null,
+        outfit_id: outfit.dbId || null,
+        source: "affiliate",
+        traffic_source: "direct",
+      });
+    } catch (err) {
+      console.warn("Click tracking failed:", err);
+    }
+  };
 
   const handleCopyLook = () => {
     const text = `${outfit.title} ${outfit.emoji}\n${outfit.aiComment}\n\nItems:\n${outfit.products.map((p) => `• ${p.name} — ${p.price} (${p.platform})`).join("\n")}\n\nTổng: ${outfit.totalPrice}`;
@@ -195,7 +211,13 @@ const OutfitCard = ({ outfit, index, onSave, onLike, onHide, onReport, onAction,
             <motion.a href={p.affiliateUrl || "#"} target="_blank" rel="noopener noreferrer"
               whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
               className="p-2 rounded-xl bg-accent text-accent-foreground opacity-0 hover:opacity-100 transition-opacity shrink-0 shadow-sm"
-              onClick={(e) => { if (!p.affiliateUrl) e.preventDefault(); }}
+              onClick={(e) => { 
+                if (!p.affiliateUrl) {
+                  e.preventDefault(); 
+                } else {
+                  trackAffiliateClick();
+                }
+              }}
             >
               <ExternalLink className="w-3 h-3" />
             </motion.a>
@@ -252,7 +274,14 @@ const OutfitCard = ({ outfit, index, onSave, onLike, onHide, onReport, onAction,
             <Button variant="outline" size="sm" className="text-[10px] rounded-xl h-9 px-3 gap-1" onClick={() => setCompareOpen(true)}>
               <ShoppingCart className="w-3 h-3" /> So sánh
             </Button>
-            <Button variant="accent" size="sm" className="text-xs rounded-xl px-4 h-9 gap-1.5 shadow-sm shadow-accent/20">
+            <Button variant="accent" size="sm" className="text-xs rounded-xl px-4 h-9 gap-1.5 shadow-sm shadow-accent/20"
+              onClick={() => {
+                trackAffiliateClick();
+                outfit.products.forEach((p) => {
+                  if (p.affiliateUrl) window.open(p.affiliateUrl, "_blank");
+                });
+              }}
+            >
               <ShoppingCart className="w-3 h-3" /> Mua ngay
             </Button>
           </div>
@@ -342,7 +371,12 @@ const OutfitCard = ({ outfit, index, onSave, onLike, onHide, onReport, onAction,
                     <span className="text-sm font-body font-extrabold text-accent">{p.price}</span>
                     {p.oldPrice && <span className="text-[10px] text-muted-foreground line-through block mt-0.5">{p.oldPrice}</span>}
                   </div>
-                  <Button size="sm" className="h-8 rounded-lg text-[10px] px-3 gap-1 shadow-sm mt-3" variant="accent" onClick={() => window.open(p.affiliateUrl || "#", "_blank")}>
+                  <Button size="sm" className="h-8 rounded-lg text-[10px] px-3 gap-1 shadow-sm mt-3" variant="accent" 
+                    onClick={() => {
+                      trackAffiliateClick();
+                      window.open(p.affiliateUrl || "#", "_blank");
+                    }}
+                  >
                     Mua ngay <ExternalLink className="w-2.5 h-2.5" />
                   </Button>
                 </div>

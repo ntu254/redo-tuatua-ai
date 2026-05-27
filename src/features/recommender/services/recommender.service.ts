@@ -61,7 +61,7 @@ async function callEdgeGenerate(req: GenerateRequest): Promise<Outfit[] | null> 
 }
 
 async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
-  const { data: outfits } = await supabase
+  const { data: outfits } = await (supabase as any)
     .from("outfits")
     .select("*")
     .order("created_at", { ascending: false })
@@ -95,7 +95,7 @@ async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
 }
 
 async function fallbackGenerate(_req: GenerateRequest): Promise<Outfit[]> {
-  const { data: outfits } = await supabase
+  const { data: outfits } = await (supabase as any)
     .from("outfits")
     .select("*")
     .order("created_at", { ascending: false })
@@ -123,7 +123,7 @@ async function fallbackGenerate(_req: GenerateRequest): Promise<Outfit[]> {
 export const recommenderService = {
   listOutfits: async (): Promise<Outfit[]> => {
     if (!apiConfig.useMockApi) {
-      const { data: outfits, error } = await supabase
+      const { data: outfits, error } = await (supabase as any)
         .from("outfits")
         .select("id, name, image_url, is_saved, source, created_at, style_preset_id")
         .order("created_at", { ascending: false })
@@ -132,6 +132,7 @@ export const recommenderService = {
       if (outfits && outfits.length > 0) {
         return outfits.map((o) => ({
           id: uuidToId(o.id),
+          dbId: o.id,
           title: o.name ?? "Generated Outfit",
           emoji: "✨",
           image: o.image_url || FALLBACK_IMAGE,
@@ -158,9 +159,9 @@ export const recommenderService = {
     if (!apiConfig.useMockApi) {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
+        await (supabase as any)
           .from("outfits")
-          .insert({ user_id: user.id, name: req.prompt.slice(0, 100), source: "ai" });
+          .insert({ user_id: user.id, name: req.prompt.slice(0, 100), source: "ai" } as any);
       }
       const edgeResult = await callEdgeGenerate(req);
       if (edgeResult) return edgeResult;
@@ -192,24 +193,24 @@ export const recommenderService = {
     if (!apiConfig.useMockApi) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
-      const { data: outfits } = await supabase
+      const { data: outfits } = await (supabase as any)
         .from("outfits")
         .select("id")
         .eq("user_id", user.id)
         .limit(100);
-      const dbOutfit = outfits?.find((o) => uuidToId(o.id) === id);
+      const dbOutfit = outfits?.find((o: any) => uuidToId(o.id) === id);
       if (dbOutfit) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from("outfits")
-          .update({ is_saved: saved })
-          .eq("id", dbOutfit.id);
+          .update({ is_saved: saved } as any)
+          .eq("id", (dbOutfit as any).id);
         if (!error) {
-          await supabase.from("user_activity_log").insert({
+          await (supabase as any).from("user_activity_log").insert({
             user_id: user.id,
             activity_type: "outfit_saved",
             description: saved ? `Đã lưu outfit` : `Đã bỏ lưu outfit`,
-            metadata: { outfit_id: dbOutfit.id }
-          });
+            metadata: { outfit_id: (dbOutfit as any).id }
+          } as any);
           return true;
         }
       }

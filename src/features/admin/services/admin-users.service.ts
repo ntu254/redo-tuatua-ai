@@ -144,23 +144,50 @@ export const adminUsersService = {
 
   createUser: async (data: { email: string; password: string; display_name: string; plan: string }): Promise<{ success: boolean }> => {
     if (!apiConfig.useMockApi) {
-      const { error } = await supabase.from("profiles").insert({
-        id: crypto.randomUUID(),
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
-        display_name: data.display_name || null,
-        is_banned: false,
-        quiz_completed: false,
+        password: data.password,
+        options: {
+          data: {
+            display_name: data.display_name,
+          }
+        }
       });
-      return { success: !error };
+      if (signUpError) throw signUpError;
+
+      if (authData?.user && data.plan) {
+        const { data: plans } = await supabase.from("plans").select("id").eq("slug", data.plan.toLowerCase()).limit(1);
+        const plan = plans?.[0];
+        if (plan) {
+          const now = new Date();
+          const endDate = new Date(now);
+          endDate.setMonth(endDate.getMonth() + 1);
+          await supabase.from("subscriptions").insert({
+            user_id: authData.user.id,
+            plan_id: plan.id,
+            status: "active",
+            billing_cycle: "monthly",
+            current_period_start: now.toISOString(),
+            current_period_end: endDate.toISOString()
+          });
+        }
+      }
+      return { success: true };
     }
     return apiClient.post<{ success: boolean }>("/api/admin/users", { json: data } as RequestInit);
   },
 
   changeRole: async (userId: string, roleId: string): Promise<{ success: boolean }> => {
     if (!apiConfig.useMockApi) {
-      const { data: adminUser } = await supabase.from("admin_users").select("id").eq("user_id", userId).single();
+      const { data: adminUser } = await supabase.from("admin_users").select("id").eq("user_id", userId).maybeSingle();
       if (adminUser) {
-        await supabase.from("admin_users").update({ role_id: roleId }).eq("user_id", userId);
+        await supabase.from("admin_users").update({ role_id: roleId, updated_at: new Date().toISOString() }).eq("user_id", userId);
+      } else {
+        await supabase.from("admin_users").insert({
+          user_id: userId,
+          role_id: roleId,
+          is_active: true,
+        });
       }
       return { success: true };
     }

@@ -9,7 +9,7 @@ interface WardrobeItemCardProps {
   selected?: boolean;
   onToggleSelect?: (id: number) => void;
   onEdit: (item: WardrobeItem) => void;
-  onDelete: (id: number) => void;
+  onDelete: (item: WardrobeItem) => void;
   onSuggestOutfit: (item: WardrobeItem) => void;
 }
 
@@ -117,7 +117,7 @@ const WardrobeItemCard = forwardRef<HTMLDivElement, WardrobeItemCardProps>(
                   title="Xóa"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(item.id);
+                    onDelete(item);
                   }}
                 >
                   <Trash2 className="w-3 h-3 text-destructive" />

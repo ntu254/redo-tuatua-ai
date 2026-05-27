@@ -78,12 +78,17 @@ export default function OutfitBuilderPage() {
   };
 
   const trackClick = async (productId: string) => {
-    await supabase.from("clicks").insert({
-      product_id: productId,
-      user_id: undefined,
-      source: "affiliate",
-      traffic_source: trafficRef,
-    }).catch(() => {});
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await (supabase as any).from("clicks").insert({
+        product_id: productId,
+        user_id: user?.id || null,
+        source: "affiliate",
+        traffic_source: trafficRef,
+      } as any);
+    } catch (err) {
+      console.warn("Click tracking failed:", err);
+    }
   };
 
   const sortedItems = [...(outfit?.items || [])].sort(

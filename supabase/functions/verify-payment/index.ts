@@ -24,8 +24,7 @@ serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
-    const { data: isAdmin } = await supabase.rpc("is_admin_user");
-    if (!isAdmin) throw new Error("Admin only");
+    const { data: isAdmin } = await supabase.rpc("is_admin_user").catch(() => ({ data: false }));
 
     const { orderCode } = await req.json();
     if (!orderCode) throw new Error("Missing orderCode");
@@ -51,6 +50,10 @@ serve(async (req) => {
       .limit(1);
     const payment = payments?.[0];
     if (!payment) throw new Error("Payment not found");
+
+    if (payment.user_id !== user.id && !isAdmin) {
+      throw new Error("Unauthorized");
+    }
 
     if (payment.status === "completed") {
       return new Response(JSON.stringify({ status: "completed" }), {

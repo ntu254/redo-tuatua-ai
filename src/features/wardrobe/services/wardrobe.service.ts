@@ -290,14 +290,17 @@ export const wardrobeService = {
     if (!apiConfig.useMockApi) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: items } = await supabase
+      const { data: items, error: selectError } = await supabase
         .from("wardrobe_items")
         .select("id")
         .eq("user_id", user.id)
         .limit(100);
+      if (selectError) throw selectError;
+
       const dbItem = items?.find((item) => UUID_TO_ID(item.id) === id);
       if (dbItem) {
-        await supabase.from("wardrobe_items").delete().eq("id", dbItem.id);
+        const { error: deleteError } = await supabase.from("wardrobe_items").delete().eq("id", dbItem.id);
+        if (deleteError) throw deleteError;
       }
       return;
     }
@@ -308,17 +311,21 @@ export const wardrobeService = {
     if (!apiConfig.useMockApi) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { id, ...payload } as WardrobeItem;
-      const { data: items } = await supabase
+      const { data: items, error: selectError } = await supabase
         .from("wardrobe_items")
         .select("id")
         .eq("user_id", user.id)
         .limit(100);
+      if (selectError) throw selectError;
+
       const dbItem = items?.find((item) => UUID_TO_ID(item.id) === id);
       if (dbItem) {
-        await supabase.from("wardrobe_items").update({
+        const { error: updateError } = await supabase.from("wardrobe_items").update({
           name: payload.name,
           color: payload.color,
-        }).eq("id", dbItem.id);
+          category_id: payload.category ? (CATEGORY_UUIDS[payload.category] ?? null) : undefined,
+        } as any).eq("id", dbItem.id);
+        if (updateError) throw updateError;
       }
       return { id, ...payload } as WardrobeItem;
     }

@@ -79,7 +79,7 @@ export const adminAnalyticsService = {
         stats: {
           totalGenerations: totalGens >= 1000 ? `${Math.round(totalGens / 1000)}K` : String(totalGens),
           detectionAccuracy: `${Math.round((successCount / totalGenLogs) * 100)}%`,
-          avgConfidence: `${Math.round(avgConf * 100)}%`,
+          avgConfidence: `${Math.round(avgConf > 1 ? avgConf : avgConf * 100)}%`,
           topStyle: "Casual",
           mostSaved: String(Math.round(totalGens * 0.15)),
           failedDetections: String(failedCount),

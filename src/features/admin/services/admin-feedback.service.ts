@@ -8,7 +8,7 @@ export const adminFeedbackService = {
     if (!apiConfig.useMockApi) {
       const { data } = await supabase
         .from("user_reports")
-        .select("id, report_type, reason, description, status, created_at")
+        .select("id, reporter_id, report_type, reason, description, status, created_at")
         .order("created_at", { ascending: false })
         .limit(50);
       const reports = data ?? [];
