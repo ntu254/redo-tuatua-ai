@@ -12,6 +12,8 @@ import Recommender from "@/features/recommender/pages";
 import StyleProfile from "@/features/style-profile/pages";
 import Trends from "@/features/trends/pages/TrendsPage";
 import Wardrobe from "@/features/wardrobe/pages";
+import PricingPage from "@/features/subscription/pages/PricingPage";
+import PaymentResultPage from "@/features/subscription/pages/PaymentResultPage";
 import NotFound from "@/pages/NotFound";
 
 import { AdminAuthProvider } from "@/features/admin/hooks/useAdminAuth";
@@ -45,6 +47,8 @@ export function AppRoutes() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
+        <Route path="/payment/result" element={<PaymentResultPage />} />
 
         <Route path="/admin/login" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
         <Route path="/admin" element={<AdminAuthProvider><AdminAuthGuard><AdminLayout /></AdminAuthGuard></AdminAuthProvider>}>

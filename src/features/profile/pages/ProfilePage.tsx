@@ -690,7 +690,7 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
           <p className="font-body text-sm text-foreground/60 mb-5">
             {planName === "Free" ? "Nâng cấp để mở khóa toàn bộ tính năng AI styling." : `Gói ${planName} đang hoạt động.`}
           </p>
-          <Button variant="accent" className="gap-2 font-body">
+          <Button variant="accent" className="gap-2 font-body" onClick={() => window.location.href = "/pricing"}>
             <Crown className="w-4 h-4" /> {planName === "Free" ? "Nâng cấp Premium" : "Quản lý gói"}
           </Button>
         </Card>

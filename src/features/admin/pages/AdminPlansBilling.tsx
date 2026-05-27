@@ -32,7 +32,6 @@ import {
   Search,
   TrendingUp,
   Users,
-  X,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -310,22 +309,9 @@ export default function AdminPlansBilling() {
               <span className="text-sm font-body text-muted-foreground">Total Subscribers</span>
               <span className="text-lg font-semibold font-body">{viewPlanSubs?.users ?? 0}</span>
             </div>
-            <div className="space-y-2">
+             <div className="space-y-2">
               {(viewPlanSubs?.users ?? 0) > 0 ? (
-                Array.from({ length: Math.min(viewPlanSubs?.users ?? 0, 8) }).map((_, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 border border-border rounded-lg text-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center text-xs font-semibold">
-                        {String.fromCharCode(65 + i)}
-                      </div>
-                      <div>
-                        <p className="font-medium font-body">user_{i + 1}@email.com</p>
-                        <p className="text-xs text-muted-foreground font-body">Subscribed May {10 + i}, 2026</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-teal font-medium font-body">Active</span>
-                  </div>
-                ))
+                <p className="text-sm text-muted-foreground font-body text-center py-4">{viewPlanSubs?.users} subscribers on this plan</p>
               ) : (
                 <p className="text-sm text-muted-foreground font-body text-center py-4">No active subscribers on this plan</p>
               )}

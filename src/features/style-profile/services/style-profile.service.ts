@@ -3,67 +3,70 @@ import { apiClient } from "@/shared/api";
 import { apiConfig } from "@/shared/api/config";
 import type { StyleProfile, StyleRecommendation } from "../types";
 
-const MOCK_PROFILE: StyleProfile = {
-  styleDna: [
-    { style: "Minimal", value: 70 },
-    { style: "Streetwear", value: 15 },
-    { style: "Casual", value: 10 },
-    { style: "Elegant", value: 5 },
-    { style: "Athleisure", value: 8 },
-    { style: "Classic", value: 12 },
-  ],
-  favoriteColors: [
-    { name: "White", hex: "#FFFFFF", pct: 35 },
-    { name: "Beige", hex: "#F5F0E8", pct: 25 },
-    { name: "Black", hex: "#1C1C1C", pct: 20 },
-    { name: "Navy", hex: "#1B2A4A", pct: 12 },
-    { name: "Sage Green", hex: "#9CAF88", pct: 8 },
-  ],
-  outfitTypeDistribution: [
-    { name: "Casual", value: 42, color: "hsl(0 0% 75%)" },
-    { name: "Office", value: 28, color: "hsl(0 0% 45%)" },
-    { name: "Streetwear", value: 15, color: "hsl(0 100% 70%)" },
-    { name: "Party", value: 10, color: "hsl(0 0% 25%)" },
-    { name: "Sport", value: 5, color: "hsl(166 65% 50%)" },
-  ],
-  aiInsight: {
-    summary: "Phong cách thiên hướng tối giản hiện đại",
-    description: "Bạn ưu tiên tông trung tính với các outfit linh hoạt giữa công sở và đời thường.",
-  },
-  insights: [
-    "Tông màu trung tính chiếm ưu thế trong tủ đồ của bạn",
-    "Bạn có xu hướng chọn đồ basic và phối layer",
-  ],
-  wardrobeFavorites: [
-    { name: "White T-shirt", image: "", worn: 47 },
-    { name: "Blue Jeans", image: "", worn: 38 },
-  ],
-  evolution: [
-    { month: "Jan", Minimal: 30, Casual: 50, Office: 20 },
-    { month: "Feb", Minimal: 35, Casual: 45, Office: 20 },
-    { month: "Mar", Minimal: 50, Casual: 30, Office: 20 },
-    { month: "Apr", Minimal: 55, Casual: 25, Office: 20 },
-    { month: "May", Minimal: 60, Casual: 20, Office: 20 },
-    { month: "Jun", Minimal: 70, Casual: 10, Office: 20 },
-  ],
-  trendSummary: [
-    { label: "Minimal", change: "+40%", positive: true },
-    { label: "Casual", change: "-40%", positive: false },
-  ],
-  keyMoments: [
-    { month: "Mar 2026", event: "Bắt đầu ưu tiên phong cách tối giản" },
-  ],
-  suggestedStyles: [
-    { name: "Quiet Luxury", image: "", desc: "Sang trọng thầm lặng" },
-    { name: "Soft Minimal", image: "", desc: "Tối giản mềm mại" },
-  ],
-  missingEssentials: [
-    { item: "Áo blazer trung tính", reason: "Thiếu item layering công sở", priority: "high" },
-    { item: "Giày loafer", reason: "Đa năng cho cả công sở và đi chơi", priority: "medium" },
-  ],
-  consistencyScore: 72,
-  dominantStyles: ["Minimal", "Casual"],
-};
+async function callEdgeRecommendations(styleDna: any, favoriteColors: string[], wardrobeItems: any[]): Promise<StyleRecommendation[] | null> {
+  try {
+    const { data, error } = await supabase.functions.invoke("style-recommendations", {
+      body: { styleDna, favoriteColors, wardrobeItems },
+    });
+    if (error) throw error;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function buildProfileFallback(dna: Record<string, number>, colors: string[], styles: string[]): StyleProfile {
+  const DNA = Object.entries(dna).map(([style, value]) => ({ style, value }));
+  const colorList = colors.map((c, i) => ({
+    name: c,
+    hex: ["#FFFFFF", "#F5F0E8", "#1C1C1C", "#1B2A4A", "#9CAF88"][i % 5],
+    pct: Math.round(100 / Math.max(colors.length, 1)),
+  }));
+  const topStyle = DNA.sort((a, b) => b.value - a.value)[0]?.style ?? "Casual";
+
+  return {
+    styleDna: DNA.length > 0 ? DNA : [{ style: "Casual", value: 100 }],
+    favoriteColors: colorList.length > 0 ? colorList : [{ name: "White", hex: "#FFFFFF", pct: 100 }],
+    outfitTypeDistribution: [
+      { name: "Casual", value: 42, color: "hsl(0 0% 75%)" },
+      { name: "Office", value: 28, color: "hsl(0 0% 45%)" },
+      { name: "Streetwear", value: 15, color: "hsl(0 100% 70%)" },
+      { name: "Party", value: 10, color: "hsl(0 0% 25%)" },
+      { name: "Sport", value: 5, color: "hsl(166 65% 50%)" },
+    ],
+    aiInsight: {
+      summary: `Phong cách thiên hướng ${topStyle}`,
+      description: `Phong cách ${topStyle} chiếm ưu thế trong tủ đồ của bạn.`,
+    },
+    insights: [
+      `Tông màu ${colors[0] ?? "trung tính"} chiếm ưu thế`,
+      "Bạn có xu hướng chọn đồ basic và phối layer",
+    ],
+    wardrobeFavorites: [],
+    evolution: MONTHS.slice(0, 6).map((m, i) => ({
+      month: m,
+      [topStyle]: 30 + i * 10,
+      Casual: 50 - i * 5,
+      Office: 20 - i * 5,
+    })),
+    trendSummary: [
+      { label: topStyle, change: `+${DNA[0]?.value ?? 50}%`, positive: true },
+    ],
+    keyMoments: [{ month: `${MONTHS[new Date().getMonth()]} 2026`, event: "Cập nhật phong cách gần đây" }],
+    suggestedStyles: [
+      { name: "Quiet Luxury", image: "", desc: "Sang trọng thầm lặng" },
+      { name: "Soft Minimal", image: "", desc: "Tối giản mềm mại" },
+    ],
+    missingEssentials: [
+      { item: "Áo blazer trung tính", reason: "Thiếu item layering công sở", priority: "high" as const },
+      { item: "Giày loafer", reason: "Đa năng cho cả công sở và đi chơi", priority: "medium" as const },
+    ],
+    consistencyScore: Math.min(85, DNA.length * 15),
+    dominantStyles: styles.length > 0 ? styles : [topStyle],
+  };
+}
 
 export const styleProfileService = {
   getProfile: async (userId: string): Promise<StyleProfile> => {
@@ -73,36 +76,74 @@ export const styleProfileService = {
         .select("style_dna, favorite_colors, preferred_styles, quiz_completed")
         .eq("id", userId)
         .single();
-      if (profile?.style_dna && typeof profile.style_dna === "object") {
+
+      if (profile?.style_dna) {
         const dna = profile.style_dna as Record<string, number>;
-        const styles = Object.entries(dna).map(([style, value]) => ({ style, value }));
-        const colors = (profile.favorite_colors ?? []).map((c: string, i: number) => ({
-          name: c,
-          hex: ["#FFFFFF", "#F5F0E8", "#1C1C1C", "#1B2A4A", "#9CAF88"][i % 5],
-          pct: Math.round(100 / Math.max(profile.favorite_colors?.length ?? 1, 1)),
-        }));
-        return {
-          ...MOCK_PROFILE,
-          styleDna: styles.length > 0 ? styles : MOCK_PROFILE.styleDna,
-          favoriteColors: colors.length > 0 ? colors : MOCK_PROFILE.favoriteColors,
-          dominantStyles: (profile.preferred_styles ?? []).length > 0
-            ? (profile.preferred_styles as string[])
-            : MOCK_PROFILE.dominantStyles,
-        };
+        const colors = (profile.favorite_colors ?? []) as string[];
+        const styles = (profile.preferred_styles ?? []) as string[];
+        return buildProfileFallback(dna, colors, styles);
       }
-      return MOCK_PROFILE;
+      const { data: fallbackProfile } = await supabase
+        .from("profiles")
+        .select("style_dna, favorite_colors, preferred_styles")
+        .eq("id", userId)
+        .single();
+
+      const fdna = (fallbackProfile?.style_dna ?? { Casual: 100 }) as Record<string, number>;
+      const fcolors = (fallbackProfile?.favorite_colors ?? ["Trắng", "Đen"]) as string[];
+      const fstyles = (fallbackProfile?.preferred_styles ?? ["Casual"]) as string[];
+      return buildProfileFallback(fdna, fcolors, fstyles);
     }
     return apiClient.get<StyleProfile>(`/api/style-profile/${userId}`);
   },
 
-  getRecommendations: async (_userId: string): Promise<StyleRecommendation[]> => {
+  getRecommendations: async (userId: string): Promise<StyleRecommendation[]> => {
     if (!apiConfig.useMockApi) {
-      return [
-        { prompt: "Gợi ý outfit công sở thanh lịch", label: "Công sở", style: "Office" },
-        { prompt: "Outfit cuối tuần thoải mái", label: "Cuối tuần", style: "Casual" },
-        { prompt: "Phối đồ layer mùa lạnh", label: "Layer", style: "Minimal" },
-      ];
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("style_dna, favorite_colors, preferred_styles")
+        .eq("id", userId)
+        .single();
+
+      try {
+        const edgeResult = await callEdgeRecommendations(
+          profile?.style_dna ?? {},
+          (profile?.favorite_colors ?? []) as string[],
+          [],
+        );
+        if (edgeResult) return edgeResult;
+      } catch {
+        // edge function unavailable, fallback to local computation
+      }
+
+      const dna = profile?.style_dna as Record<string, number> ?? {};
+      const topStyle = Object.entries(dna).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "Casual";
+
+      const recommendations: Record<string, StyleRecommendation[]> = {
+        Minimal: [
+          { prompt: "Gợi ý outfit tối giản thanh lịch", label: "Minimal", style: "Minimal" },
+          { prompt: "Office layer tông trung tính", label: "Công sở", style: "Office" },
+        ],
+        Streetwear: [
+          { prompt: "Streetwear cá tính layer áo khoác", label: "Streetwear", style: "Streetwear" },
+          { prompt: "Oversized thoải mái cuối tuần", label: "Cuối tuần", style: "Casual" },
+        ],
+        Casual: [
+          { prompt: "Casual sang trọng cho ngày mới", label: "Casual", style: "Casual" },
+          { prompt: "Hẹn hò cuối tuần thanh lịch", label: "Hẹn hò", style: "Party" },
+        ],
+        Office: [
+          { prompt: "Office look chuyên nghiệp", label: "Công sở", style: "Office" },
+          { prompt: "Smart casual sau giờ làm", label: "Sau 5h", style: "Casual" },
+        ],
+        Party: [
+          { prompt: "Dạ tiệc sang trọng", label: "Dạ tiệc", style: "Party" },
+          { prompt: "Date night quyến rũ", label: "Hẹn hò", style: "Party" },
+        ],
+      };
+
+      return recommendations[topStyle] ?? recommendations.Casual;
     }
-    return apiClient.get<StyleRecommendation[]>(`/api/style-profile/${_userId}/recommendations`);
+    return apiClient.get<StyleRecommendation[]>(`/api/style-profile/${userId}/recommendations`);
   },
 };

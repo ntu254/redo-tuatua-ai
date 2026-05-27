@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { wardrobeUploadAnalysisMock } from "@/shared/api/mock-fixtures";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -55,32 +54,22 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [detectedName, setDetectedName] = useState(
-    wardrobeUploadAnalysisMock.detectedName,
-  );
-  const [detectedCategory, setDetectedCategory] = useState(
-    wardrobeUploadAnalysisMock.detectedCategory,
-  );
-  const [detectedType, setDetectedType] = useState(
-    wardrobeUploadAnalysisMock.detectedType,
-  );
-  const [detectedColor, setDetectedColor] = useState(
-    wardrobeUploadAnalysisMock.detectedColor,
-  );
-  const [detectedTags, setDetectedTags] = useState<string[]>(
-    wardrobeUploadAnalysisMock.detectedTags,
-  );
+  const [detectedName, setDetectedName] = useState("New Item");
+  const [detectedCategory, setDetectedCategory] = useState("Tops");
+  const [detectedType, setDetectedType] = useState("Áo");
+  const [detectedColor, setDetectedColor] = useState("Khác");
+  const [detectedTags, setDetectedTags] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
   const reset = useCallback(() => {
     setStep("upload");
     setPreview(null);
     setIsEditing(false);
-    setDetectedName(wardrobeUploadAnalysisMock.detectedName);
-    setDetectedCategory(wardrobeUploadAnalysisMock.detectedCategory);
-    setDetectedType(wardrobeUploadAnalysisMock.detectedType);
-    setDetectedColor(wardrobeUploadAnalysisMock.detectedColor);
-    setDetectedTags(wardrobeUploadAnalysisMock.detectedTags);
+    setDetectedName("New Item");
+    setDetectedCategory("Tops");
+    setDetectedType("Áo");
+    setDetectedColor("Khác");
+    setDetectedTags([]);
   }, []);
 
   const handleClose = () => {

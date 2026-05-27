@@ -6,28 +6,39 @@ import type { AdminUsersResponse, UserDetail } from "../types";
 export const adminUsersService = {
   listUsers: async (): Promise<AdminUsersResponse> => {
     if (!apiConfig.useMockApi) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id, email, display_name, avatar_url, is_banned, created_at, updated_at")
-        .limit(50);
-      const profiles = data ?? [];
+      const [profilesRes, subsRes, creditsRes] = await Promise.all([
+        supabase.from("profiles").select("id, email, display_name, avatar_url, is_banned, created_at, updated_at").limit(50),
+        supabase.from("subscriptions").select("user_id, plan_id, status, plans(name)"),
+        supabase.from("user_credits").select("user_id, balance"),
+      ]);
+      const profiles = profilesRes.data ?? [];
+      const subs = subsRes.data ?? [];
+      const credits = creditsRes.data ?? [];
+
+      const subMap = new Map(subs.map((s) => [s.user_id, s]));
+      const creditMap = new Map(credits.map((c) => [c.user_id, c]));
+
       return {
-        users: profiles.map((p) => ({
-          id: p.id,
-          name: p.display_name ?? p.email.split("@")[0],
-          email: p.email,
-          avatar_url: p.avatar_url,
-          date: p.created_at.slice(0, 10),
-          plan: "Free",
-          status: p.is_banned ? "Suspended" : "Active",
-          credits_balance: 0,
-          is_banned: p.is_banned,
-          ai_generations: Math.floor(Math.random() * 200),
-          last_active: p.updated_at?.slice(0, 10) ?? p.created_at.slice(0, 10),
-          revenue: 0,
-          high_ai_usage: Math.random() > 0.8,
-          suspicious: Math.random() > 0.95,
-        })),
+        users: profiles.map((p) => {
+          const userSub = subMap.get(p.id);
+          const userCredits = creditMap.get(p.id);
+          return {
+            id: p.id,
+            name: p.display_name ?? p.email.split("@")[0],
+            email: p.email,
+            avatar_url: p.avatar_url,
+            date: p.created_at.slice(0, 10),
+            plan: (userSub?.plans as any)?.name ?? "Free",
+            status: p.is_banned ? "Suspended" : "Active",
+            credits_balance: userCredits?.balance ?? 0,
+            is_banned: p.is_banned,
+            ai_generations: Math.floor(Math.random() * 200),
+            last_active: p.updated_at?.slice(0, 10) ?? p.created_at.slice(0, 10),
+            revenue: 0,
+            high_ai_usage: Math.random() > 0.8,
+            suspicious: Math.random() > 0.95,
+          };
+        }),
         total: profiles.length,
         page: 1,
         page_size: 50,
@@ -36,14 +47,22 @@ export const adminUsersService = {
     return apiClient.get<AdminUsersResponse>("/api/admin/users");
   },
 
-  getUserDetail: async (_userId: string): Promise<UserDetail> => {
+  getUserDetail: async (userId: string): Promise<UserDetail> => {
     if (!apiConfig.useMockApi) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", _userId)
-        .single();
+      const [profileRes, subRes, creditsRes, jobsRes] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", userId).single(),
+        supabase.from("subscriptions").select("*, plans(name, slug)").eq("user_id", userId).maybeSingle(),
+        supabase.from("user_credits").select("*, credit_transactions(*)").eq("user_id", userId).maybeSingle(),
+        supabase.from("ai_jobs").select("id, job_type, status, created_at").eq("user_id", userId).limit(20),
+      ]);
+
+      const profile = profileRes.data;
       if (!profile) throw new Error("User not found");
+      const sub = subRes.data;
+      const creds = creditsRes.data;
+      const jobs = jobsRes.data ?? [];
+      const txns = (creds as any)?.credit_transactions ?? [];
+
       return {
         profile: {
           id: profile.id,
@@ -58,12 +77,41 @@ export const adminUsersService = {
           created_at: profile.created_at,
           updated_at: profile.updated_at,
         },
-        subscription: null,
-        credits: { balance: 0, lifetime_earned: 0, lifetime_spent: 0, recent_transactions: [] },
-        ai_usage: { total_jobs: 0, successful: 0, failed: 0, avg_confidence: null, recent_jobs: [] },
+        subscription: sub ? {
+          plan_name: (sub.plans as any)?.name ?? "Unknown",
+          status: sub.status,
+          billing_cycle: sub.billing_cycle,
+          current_period_start: sub.current_period_start,
+          current_period_end: sub.current_period_end,
+          trial_end: sub.trial_end,
+        } : null,
+        credits: {
+          balance: creds?.balance ?? 0,
+          lifetime_earned: creds?.lifetime_earned ?? 0,
+          lifetime_spent: creds?.lifetime_spent ?? 0,
+          recent_transactions: txns.slice(0, 10).map((t: any) => ({
+            id: t.id,
+            amount: t.amount,
+            type: t.type,
+            description: t.description,
+            created_at: t.created_at,
+          })),
+        },
+        ai_usage: {
+          total_jobs: jobs.length,
+          successful: jobs.filter((j) => j.status === "completed").length,
+          failed: jobs.filter((j) => j.status === "failed").length,
+          avg_confidence: null,
+          recent_jobs: jobs.slice(0, 10).map((j) => ({
+            id: j.id,
+            job_type: j.job_type,
+            status: j.status,
+            created_at: j.created_at,
+          })),
+        },
       };
     }
-    return apiClient.get<UserDetail>(`/api/admin/users/${_userId}`);
+    return apiClient.get<UserDetail>(`/api/admin/users/${userId}`);
   },
 
   suspendUser: async (userId: string, reason?: string): Promise<{ success: boolean }> => {
@@ -108,14 +156,14 @@ export const adminUsersService = {
     return apiClient.post<{ success: boolean }>("/api/admin/users", { json: data } as RequestInit);
   },
 
-  changeRole: async (_userId: string, _roleId: string): Promise<{ success: boolean }> => {
+  changeRole: async (userId: string, roleId: string): Promise<{ success: boolean }> => {
     if (!apiConfig.useMockApi) {
-      const { data: adminUser } = await supabase.from("admin_users").select("id").eq("user_id", _userId).single();
+      const { data: adminUser } = await supabase.from("admin_users").select("id").eq("user_id", userId).single();
       if (adminUser) {
-        await supabase.from("admin_users").update({ role_id: _roleId }).eq("user_id", _userId);
+        await supabase.from("admin_users").update({ role_id: roleId }).eq("user_id", userId);
       }
       return { success: true };
     }
-    return apiClient.post<{ success: boolean }>(`/api/admin/users/${_userId}/role`, { json: { roleId: _roleId } } as RequestInit);
+    return apiClient.post<{ success: boolean }>(`/api/admin/users/${userId}/role`, { json: { roleId } } as RequestInit);
   },
 };

@@ -1,6 +1,7 @@
 import { UserDetailModal } from "@/features/admin/components";
 import { StatusBadge } from "@/features/admin/components";
 import { adminUsersService } from "@/features/admin/services/admin-users.service";
+import { supabase } from "@/shared/lib/supabase";
 import {
   Badge,
   Button,
@@ -28,11 +29,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Activity,
   AlertTriangle,
-  Ban,
   Banknote,
   Coins,
-  CreditCard,
-  DollarSign,
   Eye,
   FileText,
   Loader2,
@@ -107,6 +105,36 @@ export default function AdminUsers() {
       setDialog({ type: null });
       setNewUserForm({ email: "", password: "", display_name: "", plan: "Free" });
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+
+  const changePlanMutation = useMutation({
+    mutationFn: async ({ userId, planName }: { userId: string; planName: string }) => {
+      const { data: plan } = await supabase.from("plans").select("id").eq("name", planName).maybeSingle();
+      if (!plan) throw new Error("Plan not found");
+      const { data: existing } = await supabase.from("subscriptions").select("id").eq("user_id", userId).maybeSingle();
+      if (existing) {
+        await supabase.from("subscriptions").update({ plan_id: plan.id, status: "active" }).eq("id", existing.id);
+      } else {
+        await supabase.from("subscriptions").insert({
+          user_id: userId, plan_id: plan.id, status: "active",
+          billing_cycle: "monthly",
+          current_period_start: new Date().toISOString(),
+          current_period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
+        });
+      }
+    },
+    onSuccess: () => {
+      setDialog({ type: null });
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+    },
+  });
+
+  const { data: plans = [] } = useQuery({
+    queryKey: ["admin", "plans"],
+    queryFn: async () => {
+      const { data } = await supabase.from("plans").select("name").eq("is_active", true).order("sort_order");
+      return data ?? [];
     },
   });
 
@@ -410,7 +438,7 @@ export default function AdminUsers() {
           <div className="space-y-4 py-2">
             <p className="text-sm font-body text-muted-foreground">Current plan: <span className="font-medium text-foreground">{dialog.type === "change_plan" ? dialog.plan : ""}</span></p>
             <div className="grid gap-3">
-              {["Free", "Premium", "Pro"].map((plan) => (
+              {(plans.length > 0 ? plans.map((p) => p.name) : ["Free", "Premium", "Pro"]).map((plan) => (
                 <div
                   key={plan}
                   className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors text-sm ${
@@ -419,7 +447,9 @@ export default function AdminUsers() {
                       : "border-border hover:border-primary/50"
                   }`}
                   onClick={() => {
-                    /* plan change mutation would go here */
+                    if (dialog.type === "change_plan" && dialog.plan !== plan) {
+                      changePlanMutation.mutate({ userId: dialog.userId, planName: plan });
+                    }
                   }}
                 >
                   <div>

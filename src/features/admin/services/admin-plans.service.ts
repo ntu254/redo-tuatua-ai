@@ -6,34 +6,50 @@ import type { AdminPlansData } from "../types";
 export const adminPlansService = {
   getData: async (): Promise<AdminPlansData> => {
     if (!apiConfig.useMockApi) {
-      const [plansRes, subsRes] = await Promise.all([
+      const [plansRes, subsRes, paymentsRes] = await Promise.all([
         supabase.from("plans").select("*").order("sort_order"),
-        supabase.from("subscriptions").select("plan_id, status"),
+        supabase.from("subscriptions").select("plan_id, status, created_at"),
+        supabase.from("payments").select("amount, status, created_at, user_id").limit(100),
       ]);
       const plans = plansRes.data ?? [];
       const subs = subsRes.data ?? [];
+      const payments = paymentsRes.data ?? [];
 
       const payingSubs = subs.filter((s) => s.status === "active" || s.status === "trialing");
       const payingUsers = payingSubs.length;
-      const totalPlans = plans.length;
+      const totalRevenue = payments
+        .filter((p) => p.status === "completed")
+        .reduce((s, p) => s + (p.amount ?? 0), 0);
+      const totalUsers = (await supabase.from("profiles").select("id", { count: "exact", head: true })).count ?? 0;
 
       return {
         stats: {
-          monthlyRevenue: `$${(payingUsers * 9.99).toLocaleString()}`,
+          monthlyRevenue: `${totalRevenue.toLocaleString("vi-VN")}₫`,
           payingUsers,
-          avgRevenuePerUser: payingUsers > 0 ? `$${(payingUsers * 9.99 / payingUsers).toFixed(2)}` : "$0",
-          conversionRate: payingUsers > 0 ? `${((payingUsers / Math.max(payingUsers * 3, 1)) * 100).toFixed(1)}%` : "0%",
+          avgRevenuePerUser: payingUsers > 0 ? `${Math.round(totalRevenue / payingUsers).toLocaleString("vi-VN")}₫` : "0₫",
+          conversionRate: totalUsers > 0 ? `${((payingUsers / totalUsers) * 100).toFixed(1)}%` : "0%",
         },
         plans: plans.map((p) => ({
           id: p.id,
           name: p.name,
-          price: p.price_monthly === 0 ? "$0" : `$${(p.price_monthly / 100).toFixed(2)}/mo`,
+          price: p.price_monthly === 0 ? "Miễn phí" : `${p.price_monthly.toLocaleString("vi-VN")}₫/tháng`,
           users: payingSubs.filter((s) => s.plan_id === p.id).length,
-          revenue: `$${(payingSubs.filter((s) => s.plan_id === p.id).length * (p.price_monthly / 100)).toFixed(0)}`,
+          revenue: `${(payingSubs.filter((s) => s.plan_id === p.id).length * p.price_monthly).toLocaleString("vi-VN")}₫`,
           credits: p.credits_per_month,
-          status: p.is_active ? "Active" : "Inactive",
+          status: p.is_active ? "Hoạt động" : "Tạm dừng",
         })),
-        transactions: [],
+        transactions: payments
+          .filter((p) => p.status === "completed")
+          .slice(0, 10)
+          .map((p) => ({
+            id: p.id,
+            user: p.user_id?.slice(0, 8) ?? "—",
+            plan: "—",
+            amount: `${(p.amount ?? 0).toLocaleString("vi-VN")}₫`,
+            method: "PayOS",
+            date: p.created_at.slice(0, 10),
+            status: "Hoàn thành",
+          })),
       };
     }
     return apiClient.get<AdminPlansData>("/api/admin/plans");
