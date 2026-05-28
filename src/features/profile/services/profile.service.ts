@@ -60,9 +60,31 @@ export const profileService = {
       .from("profiles")
       .select("*")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
     if (error) throw error;
-    return data as Profile;
+    if (data) return data as Profile;
+
+    const { data: user } = await supabase.auth.getUser();
+    const email = user?.user?.email ?? "";
+    const displayName = user?.user?.user_metadata?.full_name
+      ?? user?.user?.user_metadata?.name
+      ?? email.split("@")[0]
+      ?? "";
+
+    const { data: created, error: insertError } = await supabase
+      .from("profiles")
+      .upsert({
+        id: userId,
+        email,
+        display_name: displayName,
+        preferred_styles: [],
+        preferred_occasions: [],
+        fashion_preferences: {},
+      })
+      .select()
+      .single();
+    if (insertError) throw insertError;
+    return created as Profile;
   },
 
   updateProfile: async (userId: string, updates: ProfileUpdate) => {

@@ -12,6 +12,13 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     let cancelled = false;
 
+    const oauthError = searchParams.get("error") || searchParams.get("error_code");
+    if (oauthError) {
+      const desc = searchParams.get("error_description") || "Đăng nhập đã bị hủy hoặc hết hạn.";
+      navigate("/login", { replace: true, state: { oauthError: desc } });
+      return;
+    }
+
     const handleCallback = async () => {
       try {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
