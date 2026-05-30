@@ -94,6 +94,12 @@ export const authService = {
       },
     });
     if (error) throw error;
+
+    // Supabase returns an empty identities array if the user already exists (when email enumeration protection is ON)
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      throw new Error("Email này đã được sử dụng");
+    }
+
     if (data.user && !data.session) {
       return {
         user: { id: data.user.id, email: data.user.email ?? "" },

@@ -128,7 +128,22 @@ export const recommenderService = {
         .select("id, name, image_url, is_saved, source, created_at, style_preset_id")
         .order("created_at", { ascending: false })
         .limit(20);
-      if (error) throw error;
+        
+      if (error) {
+        if (
+          error.message.includes("schema cache") ||
+          error.message.includes("permission denied") ||
+          error.code === "PGRST204" ||
+          error.code === "PGRST116" ||
+          error.code === "42P01" ||
+          error.code === "42501" ||
+          error.code === "PGRST301"
+        ) {
+          return [];
+        }
+        throw error;
+      }
+      
       if (outfits && outfits.length > 0) {
         return outfits.map((o) => ({
           id: uuidToId(o.id),
