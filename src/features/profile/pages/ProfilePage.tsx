@@ -803,7 +803,6 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
                 </div>
               ))
             )}
-          )}
         </Card>
       </div>
 
