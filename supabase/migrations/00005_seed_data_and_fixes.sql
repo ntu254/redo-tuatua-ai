@@ -50,9 +50,6 @@ where slug = 'quiet-luxury-continues';
 update products set
   affiliate_url = case source_id
     when '3873d9d5-cd89-4a88-83ca-907ba56972ef' then 'https://shopee.vn/search?keyword=' || replace(lower(name), ' ', '-')
-    when '7fd01dff-045f-4922-ae62-7f7d67485f81' then 'https://www.lazada.vn/catalog/?q=' || replace(lower(name), ' ', '+')
-    when '4edbe8de-2b76-4813-85a0-e1f97b3bcb9e' then 'https://tiki.vn/search?q=' || replace(lower(name), ' ', '+')
-    when '2470c4ab-4b5c-4cb2-a158-1ef382b9bd7f' then 'https://www.zalora.vn/search?q=' || replace(lower(name), ' ', '+')
     when '99eec136-9c6f-48ff-a521-53cad2be3206' then 'https://shop.tiktok.com/search?q=' || replace(lower(name), ' ', '+')
     else null
   end,

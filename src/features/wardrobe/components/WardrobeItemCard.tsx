@@ -1,6 +1,12 @@
 import type { WardrobeItem } from "@/features/wardrobe/types";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { Pencil, Shirt, Sparkles, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Shirt, Sparkles, Trash2 } from "lucide-react";
 import { forwardRef, useState } from "react";
 
 interface WardrobeItemCardProps {
@@ -14,12 +20,12 @@ interface WardrobeItemCardProps {
 }
 
 const tagColors: Record<string, string> = {
-  Casual: "bg-teal-light text-teal",
+  Casual: "bg-secondary text-foreground/70",
   Office: "bg-secondary text-foreground/70",
-  Streetwear: "bg-accent/10 text-accent",
+  Streetwear: "bg-secondary text-foreground/70",
   Minimal: "bg-muted text-muted-foreground",
-  Party: "bg-accent/12 text-accent",
-  Sporty: "bg-teal-light text-teal",
+  Party: "bg-secondary text-foreground/70",
+  Sporty: "bg-secondary text-foreground/70",
 };
 
 const WardrobeItemCard = forwardRef<HTMLDivElement, WardrobeItemCardProps>(
@@ -33,10 +39,10 @@ const WardrobeItemCard = forwardRef<HTMLDivElement, WardrobeItemCardProps>(
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.035, duration: 0.35 }}
         layout
-        className={`group relative rounded-xl border overflow-hidden bg-card transition-all duration-300 cursor-pointer ${
+        className={`group relative rounded-xl overflow-hidden bg-card transition-all duration-300 cursor-pointer ${
           selected
-            ? "ring-2 ring-accent border-accent shadow-md"
-            : "border-border shadow-sm hover:shadow-lg hover:-translate-y-0.5"
+            ? "ring-2 ring-foreground/20"
+            : "hover:shadow-sm hover:-translate-y-0.5"
         }`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
@@ -75,56 +81,26 @@ const WardrobeItemCard = forwardRef<HTMLDivElement, WardrobeItemCardProps>(
             </div>
           )}
 
-          <AnimatePresence>
-            {hovered && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="absolute inset-0 bg-foreground/40 backdrop-blur-[2px] flex items-center justify-center gap-2"
-              >
-                <motion.button
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  className="w-8 h-8 rounded-full bg-background/90 flex items-center justify-center hover:bg-background shadow-sm transition-colors"
-                  title="Chỉnh sửa"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(item);
-                  }}
-                >
-                  <Pencil className="w-3 h-3 text-foreground" />
-                </motion.button>
-                <motion.button
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.04 }}
-                  className="w-8 h-8 rounded-full bg-accent flex items-center justify-center hover:bg-accent/80 shadow-sm transition-colors"
-                  title="Tạo outfit từ item này"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSuggestOutfit(item);
-                  }}
-                >
-                  <Sparkles className="w-3 h-3 text-accent-foreground" />
-                </motion.button>
-                <motion.button
-                  initial={{ scale: 0.8 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.08 }}
-                  className="w-8 h-8 rounded-full bg-background/90 flex items-center justify-center hover:bg-destructive/10 shadow-sm transition-colors"
-                  title="Xóa"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(item);
-                  }}
-                >
-                  <Trash2 className="w-3 h-3 text-destructive" />
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="absolute top-2.5 right-2.5">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <button className="w-7 h-7 rounded-md bg-background/80 flex items-center justify-center hover:bg-background transition-colors">
+                  <MoreVertical className="w-3.5 h-3.5 text-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="text-xs">
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(item); }}>
+                  <Pencil className="w-3.5 h-3.5 mr-2" /> Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onSuggestOutfit(item); }}>
+                  <Sparkles className="w-3.5 h-3.5 mr-2" /> Tạo outfit
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(item); }}>
+                  <Trash2 className="w-3.5 h-3.5 mr-2 text-destructive" /> Xóa
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="p-3">

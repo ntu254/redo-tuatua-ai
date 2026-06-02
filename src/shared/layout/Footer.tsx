@@ -14,9 +14,6 @@ const cols = [
     title: "Nền tảng",
     links: [
       { label: "Shopee", href: "#" },
-      { label: "Lazada", href: "#" },
-      { label: "Tiki", href: "#" },
-      { label: "Zalora", href: "#" },
       { label: "TikTok Shop", href: "#" },
     ],
   },

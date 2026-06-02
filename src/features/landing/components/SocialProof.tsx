@@ -41,7 +41,7 @@ const SocialProof = () => (
           transition={{ delay: i * 0.1, type: "spring", damping: 20 }}
           className="py-14 text-center group cursor-default"
         >
-          <p className="font-heading text-4xl md:text-5xl font-semibold text-foreground group-hover:text-accent transition-colors duration-500">
+          <p className="font-heading text-4xl md:text-5xl font-semibold text-foreground group-hover:text-foreground transition-colors">
             {s.value}
           </p>
           <p className="editorial-label mt-3">{s.label}</p>
@@ -78,9 +78,9 @@ const SocialProof = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.12, type: "spring", damping: 20 }}
-            className="p-8 md:p-10 flex flex-col group hover:bg-secondary/30 transition-colors duration-500"
+            className="p-8 md:p-10 flex flex-col"
           >
-            <Quote className="w-6 h-6 text-accent/30 mb-5 group-hover:text-accent/60 transition-colors" />
+            <Quote className="w-6 h-6 text-foreground/10 mb-5" />
             <p className="text-sm font-body text-foreground leading-relaxed mb-6 flex-1">
               {t.text}
             </p>
@@ -93,7 +93,7 @@ const SocialProof = () => (
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 + j * 0.05 }}
                 >
-                  <Star className="w-3.5 h-3.5 fill-accent text-accent" />
+                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                 </motion.div>
               ))}
             </div>

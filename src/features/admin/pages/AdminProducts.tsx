@@ -44,13 +44,10 @@ import { useState } from "react";
 
 const platformColors: Record<string, string> = {
   Shopee: "bg-[#EE4D2D]",
-  Lazada: "bg-[#0F146D]",
-  Tiki: "bg-[#1A94FF]",
-  Zalora: "bg-foreground",
   "TikTok Shop": "bg-[#FF0050]",
 };
 
-type PlatformFilter = "all" | "Shopee" | "Lazada" | "Tiki" | "Zalora" | "TikTok Shop";
+type PlatformFilter = "all" | "Shopee" | "TikTok Shop";
 
 type DialogMode =
   | { type: null }
@@ -115,7 +112,7 @@ export default function AdminProducts() {
     return true;
   });
 
-  const platforms: PlatformFilter[] = ["all", "Shopee", "Lazada", "Tiki", "Zalora", "TikTok Shop"];
+  const platforms: PlatformFilter[] = ["all", "Shopee", "TikTok Shop"];
 
   const selectedProduct = products.find((p) => p.id === clicksProductId);
 

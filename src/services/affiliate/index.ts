@@ -4,8 +4,6 @@ import type { AffiliatePlatform, ClickEvent } from "./types";
 export { affiliateRegistry } from "./registry";
 export type { AffiliateProduct, AffiliatePlatform, ClickEvent, IAffiliatePlatform } from "./types";
 export { ShopeeClient } from "./shopee";
-export { LazadaClient } from "./lazada";
-export { TikiClient } from "./tiki";
 
 export function trackClick(productId: string, platform: AffiliatePlatform, source: ClickEvent["source"]): void {
   supabase.auth.getUser().then(({ data: { user } }) => {
@@ -28,9 +26,6 @@ export function formatPrice(price: number, currency = "VND"): string {
 export function getPlatformColor(platform: string): string {
   const colors: Record<string, string> = {
     Shopee: "bg-shopee/8 text-shopee border-shopee/20",
-    Lazada: "bg-lazada/8 text-lazada border-lazada/20",
-    Tiki: "bg-tiki/8 text-tiki border-tiki/20",
-    Zalora: "bg-zalora/8 text-zalora border-zalora/20",
     TikTokShop: "bg-tiktok/8 text-tiktok border-tiktok/20",
   };
   return colors[platform] ?? "bg-gray-100 text-gray-600 border-gray-200";

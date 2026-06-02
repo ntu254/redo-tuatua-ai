@@ -35,8 +35,8 @@ interface TrendDetailModalProps {
 
 const products = [
   { name: "Áo blazer linen", price: "890.000₫", platform: "Shopee" },
-  { name: "Quần ống rộng", price: "450.000₫", platform: "Lazada" },
-  { name: "Túi tote cói", price: "320.000₫", platform: "Tiki" },
+  { name: "Quần ống rộng", price: "450.000₫", platform: "Shopee" },
+  { name: "Túi tote cói", price: "320.000₫", platform: "Shopee" },
 ];
 
 const TrendDetailModal = ({ item, open, onClose }: TrendDetailModalProps) => {

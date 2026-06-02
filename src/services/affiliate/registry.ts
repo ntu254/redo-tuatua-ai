@@ -1,15 +1,11 @@
 import type { AffiliatePlatform, IAffiliatePlatform } from "./types";
 import { ShopeeClient } from "./shopee";
-import { LazadaClient } from "./lazada";
-import { TikiClient } from "./tiki";
 
 class AffiliateRegistry {
   private clients = new Map<AffiliatePlatform, IAffiliatePlatform>();
 
   constructor() {
     this.register(new ShopeeClient());
-    this.register(new LazadaClient());
-    this.register(new TikiClient());
   }
 
   register(client: IAffiliatePlatform): void {

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, BadgeCheck, Flame, Loader2, ShoppingBag, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -96,22 +96,23 @@ export default function OutfitBuilderPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-secondary/30 to-background">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 pt-24 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-10"
         >
-          <div className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4">
-            <Sparkles className="w-8 h-8 text-accent" />
-          </div>
-          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">
+          <p className="text-[11px] font-body font-semibold uppercase tracking-[0.18em] text-foreground/45 mb-3">
+            AI Styling
+          </p>
+          <h1 className="font-heading text-4xl md:text-5xl font-semibold tracking-tight text-foreground leading-[1.05] mb-3">
             Bạn muốn mặc gì hôm nay?
           </h1>
-          <p className="text-foreground/60 max-w-md mx-auto">
-            Mô tả phong cách, dịp hoặc tâm trạng — AI sẽ phối outfit hoàn hảo kèm link mua hàng.
+          <p className="text-foreground/65 font-body text-base max-w-md leading-relaxed">
+            Mô tả phong cách, dịp hoặc tâm trạng của bạn, AI sẽ phối một outfit hoàn chỉnh kèm link mua hàng.
           </p>
         </motion.div>
 
@@ -119,10 +120,10 @@ export default function OutfitBuilderPage() {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="VD: outfit đi chơi tối cá tính dưới 2 triệu..."
-            className="flex-1 h-12 px-5 rounded-xl border border-border bg-card text-foreground placeholder:text-foreground/40 text-sm outline-none focus:border-accent/50 focus:ring-2 focus:ring-accent/10 transition-all"
+            placeholder="VD: đi chơi tối cá tính, dưới 2 triệu"
+            className="flex-1 h-12 px-5 bg-card text-foreground placeholder:text-foreground/40 text-sm font-body outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
           />
-          <Button type="submit" disabled={isLoading || !input.trim()} variant="accent" className="h-12 px-6 gap-2 rounded-xl">
+          <Button type="submit" disabled={isLoading || !input.trim()} className="h-12 px-6 gap-2 rounded-md bg-foreground text-background hover:bg-foreground/92">
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             Tạo
           </Button>
@@ -134,7 +135,7 @@ export default function OutfitBuilderPage() {
               key={p.text}
               onClick={() => { setInput(p.text); buildOutfit(p.text); }}
               disabled={isLoading}
-              className="text-xs font-medium px-4 py-2 rounded-full border border-border bg-card text-foreground/70 hover:border-accent/30 hover:text-accent hover:bg-accent/5 transition-all disabled:opacity-50"
+              className="text-xs font-medium px-4 py-2 rounded-md bg-secondary/50 text-foreground/70 hover:bg-secondary hover:text-foreground transition-all disabled:opacity-50"
             >
               {p.label}
             </button>
@@ -151,11 +152,11 @@ export default function OutfitBuilderPage() {
               className="flex flex-col items-center py-20"
             >
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-2.5 h-2.5 rounded-full bg-accent/60 animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2.5 h-2.5 rounded-full bg-accent/60 animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-2.5 h-2.5 rounded-full bg-accent/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
-              <p className="text-sm text-foreground/50">AI đang phối outfit cho bạn...</p>
+              <p className="text-sm text-foreground/55 font-body">Đang phối đồ cho bạn.</p>
             </motion.div>
           )}
 
@@ -165,10 +166,12 @@ export default function OutfitBuilderPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="text-center py-10"
+              className="bg-destructive/5 p-5"
             >
-              <p className="text-sm text-destructive mb-4">{error}</p>
-              <Button onClick={() => buildOutfit(input)} variant="outline" size="sm">Thử lại</Button>
+              <p className="text-sm font-body text-foreground/85 mb-3">{error}</p>
+              <Button onClick={() => buildOutfit(input)} variant="outline" size="sm" className="h-9 text-xs">
+                Thử lại
+              </Button>
             </motion.div>
           )}
 
@@ -178,54 +181,58 @@ export default function OutfitBuilderPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="flex items-center gap-3 mb-6 flex-wrap">
-                <span className="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-accent/10 text-accent">
+              <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+                <h2 className="font-heading text-2xl font-semibold text-foreground tracking-tight">
                   {outfit.style}
-                </span>
+                </h2>
                 {outfit.trending && (
-                  <span className="flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full bg-orange-500/10 text-orange-600">
-                    <Flame className="w-3 h-3" /> Trending
+                  <span className="flex items-center gap-1 text-[10px] font-body font-semibold uppercase tracking-wider text-orange-600">
+                    <Flame className="w-3 h-3" /> Trending tuần này
                   </span>
                 )}
-                <span className="text-sm text-foreground/60">{outfit.description}</span>
               </div>
+              <p className="text-sm text-foreground/65 font-body leading-relaxed mb-8 max-w-2xl">
+                {outfit.description}
+              </p>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {sortedItems.map((item) => (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                {sortedItems.map((item, i) => (
                   <motion.div
                     key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:border-accent/20 transition-all"
+                    transition={{ duration: 0.4, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                    className="group bg-card overflow-hidden transition-colors duration-300 hover:shadow-sm"
                   >
-                    <div className="aspect-[3/4] bg-secondary/50 flex items-center justify-center overflow-hidden">
+                    <div className="aspect-[3/4] bg-secondary/50 flex items-center justify-center overflow-hidden relative">
                       {item.image_url ? (
                         <img
                           src={item.image_url}
                           alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                           loading="lazy"
                         />
                       ) : (
                         <ShoppingBag className="w-8 h-8 text-foreground/20" />
                       )}
                     </div>
-                    <div className="p-3">
-                      <span className="text-[10px] font-medium uppercase tracking-wider text-foreground/40">
+                    <div className="p-3.5">
+                      <span className="text-[10px] font-body font-semibold uppercase tracking-[0.12em] text-foreground/45">
                         {SLOT_LABELS[item.slot] || item.slot}
                       </span>
-                      <p className="text-sm font-medium text-foreground mt-0.5 line-clamp-1">{item.name}</p>
+                      <p className="text-sm font-body font-medium text-foreground mt-1 line-clamp-1">{item.name}</p>
                       {item.brand && (
-                        <p className="text-xs text-foreground/40 line-clamp-1">{item.brand}</p>
+                        <p className="text-xs text-foreground/45 font-body line-clamp-1 mt-0.5">{item.brand}</p>
                       )}
-                      <p className="text-sm font-semibold text-accent mt-1">
-                        {item.price > 0 ? `${item.price.toLocaleString()}đ` : "Liên hệ"}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1">
+                      <div className="flex items-baseline justify-between mt-2">
+                        <p className="text-sm font-body font-semibold text-foreground">
+                          {item.price > 0 ? `${item.price.toLocaleString()}đ` : "Liên hệ"}
+                        </p>
                         {item.click_count > 5 && (
-                          <span className="flex items-center gap-0.5 text-[10px] text-green-600">
-                            <BadgeCheck className="w-2.5 h-2.5" /> {item.click_count} đã mua
+                          <span className="flex items-center gap-0.5 text-[10px] text-foreground/55 font-body">
+                            <BadgeCheck className="w-2.5 h-2.5" /> {item.click_count}
                           </span>
                         )}
                       </div>
@@ -235,9 +242,9 @@ export default function OutfitBuilderPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => trackClick(item.id)}
-                          className="mt-2 w-full inline-flex items-center justify-center gap-1 text-xs h-8 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 transition-colors"
+                          className="mt-3 w-full inline-flex items-center justify-center gap-1.5 text-xs h-9 font-body font-medium bg-foreground text-background hover:bg-foreground/90 transition-colors"
                         >
-                          Mua ngay <ArrowRight className="w-3 h-3" />
+                          Xem sản phẩm <ArrowRight className="w-3 h-3" />
                         </a>
                       )}
                     </div>
@@ -246,16 +253,17 @@ export default function OutfitBuilderPage() {
               </div>
 
               {outfit.items.length > 0 && (
-                <div className="bg-card border border-border rounded-xl p-5 flex items-center justify-between">
+                <div className="flex items-center justify-between border-t border-border/30 pt-6 mt-2">
                   <div>
-                    <p className="text-xs text-foreground/40">Tổng outfit</p>
-                    <p className="text-xl font-bold text-foreground">
+                    <p className="text-[10px] font-body font-semibold uppercase tracking-[0.12em] text-foreground/45 mb-1">
+                      Tổng outfit
+                    </p>
+                    <p className="font-heading text-2xl font-semibold text-foreground tracking-tight">
                       {outfit.total_price.toLocaleString()}đ
                     </p>
                   </div>
                   <Button
-                    variant="accent"
-                    className="gap-2 rounded-xl"
+                    className="gap-2 h-11 px-5 font-body font-semibold bg-foreground text-background hover:bg-foreground/92"
                     onClick={() => {
                       outfit.items.forEach((item) => {
                         if (item.affiliate_url) {
@@ -266,7 +274,7 @@ export default function OutfitBuilderPage() {
                     }}
                   >
                     <ShoppingBag className="w-4 h-4" />
-                    Mua full outfit
+                    Mua cả outfit
                   </Button>
                 </div>
               )}

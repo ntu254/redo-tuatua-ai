@@ -10,7 +10,16 @@ export interface GenerateRequest {
   occasion?: string;
 }
 
-const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80";
+const FASHION_FALLBACKS = [
+  "https://images.unsplash.com/photo-1551803091-e20673f15770?w=600&q=80",
+  "https://images.unsplash.com/photo-1485518882345-15568b007407?w=600&q=80",
+  "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80",
+  "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80",
+  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
+  "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80",
+  "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80",
+  "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=600&q=80",
+];
 
 function uuidToId(uuid: string): number {
   let hash = 0;
@@ -19,6 +28,10 @@ function uuidToId(uuid: string): number {
     hash |= 0;
   }
   return Math.abs(hash);
+}
+
+function pickFallbackImage(id: string): string {
+  return FASHION_FALLBACKS[uuidToId(id) % FASHION_FALLBACKS.length];
 }
 
 interface EdgeResponse {
@@ -71,7 +84,7 @@ async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
     id: uuidToId(o.id),
     title: o.name ?? "Gợi ý từ tủ đồ",
     emoji: "✨",
-    image: o.image_url || FALLBACK_IMAGE,
+    image: o.image_url || pickFallbackImage(o.id),
     style: "Casual",
     styleTags: ["Casual"],
     aiMatch: true,
@@ -105,7 +118,7 @@ async function fallbackGenerate(_req: GenerateRequest): Promise<Outfit[]> {
     id: uuidToId(o.id),
     title: o.name ?? "Generated Outfit",
     emoji: "✨",
-    image: o.image_url || FALLBACK_IMAGE,
+    image: o.image_url || pickFallbackImage(o.id),
     style: "Casual",
     styleTags: ["Casual"],
     aiMatch: true,
@@ -135,7 +148,7 @@ export const recommenderService = {
           dbId: o.id,
           title: o.name ?? "Generated Outfit",
           emoji: "✨",
-          image: o.image_url || FALLBACK_IMAGE,
+          image: o.image_url || pickFallbackImage(o.id),
           style: "Casual",
           styleTags: ["Casual"],
           aiMatch: true,

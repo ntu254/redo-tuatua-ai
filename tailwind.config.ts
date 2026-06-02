@@ -69,9 +69,6 @@ export default {
         "off-white": "hsl(var(--off-white))",
         silver: "hsl(var(--silver))",
         shopee: "#EE4D2D",
-        lazada: "#0F146D",
-        tiki: "#1A94FF",
-        zalora: "#000000",
         tiktok: "#FF0050",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

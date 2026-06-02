@@ -70,23 +70,23 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground mb-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-background px-4 flex flex-col justify-center">
+      <div className="max-w-6xl mx-auto w-full">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground mb-4">
           <ArrowLeft className="w-4 h-4" /> Quay lại
         </button>
 
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
-            <Crown className="w-4 h-4" /> Nâng cấp Premium
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-3 py-1 rounded-full text-xs font-semibold mb-3">
+            <Crown className="w-3.5 h-3.5" /> Nâng cấp Premium
           </div>
-          <h1 className="text-4xl font-heading font-bold text-foreground mb-3">Chọn gói phù hợp với bạn</h1>
-          <p className="text-foreground/60 max-w-xl mx-auto">Mở khóa toàn bộ tính năng AI styling, phân tích nâng cao và trải nghiệm thời trang cá nhân hóa.</p>
+          <h1 className="text-3xl font-heading font-bold text-foreground mb-2">Chọn gói phù hợp với bạn</h1>
+          <p className="text-sm text-foreground/60 max-w-xl mx-auto">Mở khóa toàn bộ tính năng AI styling, phân tích nâng cao và trải nghiệm thời trang cá nhân hóa.</p>
         </div>
 
         {networkError && (
-          <div className="max-w-md mx-auto mb-6 flex items-start gap-3 border border-red-500/20 bg-red-500/5 p-4 text-sm font-body text-red-600">
-            <WifiOff className="w-4 h-4 mt-0.5 shrink-0" />
+          <div className="max-w-md mx-auto mb-4 flex items-start gap-3 border border-red-500/20 bg-red-500/5 p-3 text-xs font-body text-red-600">
+            <WifiOff className="w-3.5 h-3.5 mt-0.5 shrink-0" />
             <div>
               <p className="font-semibold">Lỗi kết nối</p>
               <p className="text-red-500/80 mt-0.5">{networkError}</p>
@@ -95,7 +95,7 @@ export default function PricingPage() {
           </div>
         )}
 
-        <div className="flex justify-center gap-2 mb-10">
+        <div className="flex justify-center gap-2 mb-6">
           <button
             onClick={() => setBillingCycle("monthly")}
             className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${billingCycle === "monthly" ? "bg-accent text-white" : "bg-secondary text-foreground/60 hover:text-foreground"}`}

@@ -15,7 +15,7 @@ export interface AffiliateProduct {
   metadata?: Record<string, any>;
 }
 
-export type AffiliatePlatform = "Shopee" | "Lazada" | "Tiki" | "Zalora" | "TikTokShop";
+export type AffiliatePlatform = "Shopee" | "TikTokShop";
 
 export interface PlatformConfig {
   platform: AffiliatePlatform;

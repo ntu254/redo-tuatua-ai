@@ -45,9 +45,6 @@ async function main() {
   if (!(await hasData("product_sources"))) {
     const { error } = await supabase.from("product_sources").insert([
       { platform: "Shopee", is_active: true, sync_interval_mins: 60 },
-      { platform: "Lazada", is_active: true, sync_interval_mins: 60 },
-      { platform: "Tiki", is_active: true, sync_interval_mins: 60 },
-      { platform: "Zalora", is_active: true, sync_interval_mins: 60 },
       { platform: "TikTok Shop", is_active: true, sync_interval_mins: 60 },
     ]);
     if (error) console.error("product_sources:", error.message);
@@ -63,13 +60,13 @@ async function main() {
 
     const products = [
       { name: "Classic White Tee", category_slug: "tops", platform: "Shopee", price: 299000, currency: "VND", is_active: true, is_featured: true },
-      { name: "Wide Leg Jeans", category_slug: "bottoms", platform: "Lazada", price: 599000, currency: "VND", is_active: true, is_featured: false },
-      { name: "Silk Midi Skirt", category_slug: "bottoms", platform: "Zalora", price: 899000, currency: "VND", is_active: true, is_featured: false },
-      { name: "Canvas Tote Bag", category_slug: "accessories", platform: "Tiki", price: 199000, currency: "VND", is_active: false, is_featured: false },
+      { name: "Wide Leg Jeans", category_slug: "bottoms", platform: "Shopee", price: 599000, currency: "VND", is_active: true, is_featured: false },
+      { name: "Silk Midi Skirt", category_slug: "bottoms", platform: "Shopee", price: 899000, currency: "VND", is_active: true, is_featured: false },
+      { name: "Canvas Tote Bag", category_slug: "accessories", platform: "TikTok Shop", price: 199000, currency: "VND", is_active: false, is_featured: false },
       { name: "Chunky Sneakers", category_slug: "shoes", platform: "TikTok Shop", price: 1299000, currency: "VND", is_active: true, is_featured: true },
       { name: "Oversized Blazer", category_slug: "outerwear", platform: "Shopee", price: 999000, currency: "VND", is_active: true, is_featured: false },
-      { name: "Sequin Party Dress", category_slug: "dresses", platform: "Lazada", price: 1499000, currency: "VND", is_active: true, is_featured: false },
-      { name: "Leather Belt", category_slug: "accessories", platform: "Tiki", price: 399000, currency: "VND", is_active: false, is_featured: false },
+      { name: "Sequin Party Dress", category_slug: "dresses", platform: "Shopee", price: 1499000, currency: "VND", is_active: true, is_featured: false },
+      { name: "Leather Belt", category_slug: "accessories", platform: "TikTok Shop", price: 399000, currency: "VND", is_active: false, is_featured: false },
     ].map((p) => ({
       name: p.name,
       category_id: catMap[p.category_slug],

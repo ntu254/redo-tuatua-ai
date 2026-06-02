@@ -81,7 +81,7 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-background/90 border-b border-border/80 backdrop-blur-xl shadow-[0_16px_40px_-28px_hsl(var(--primary)/0.26)]"
+          ? "bg-background/90 border-b border-border/80 backdrop-blur-xl"
           : "bg-background/76 backdrop-blur-xl"
       }`}
     >
@@ -92,15 +92,15 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <div className="flex flex-1 items-center justify-end gap-2 overflow-x-auto whitespace-nowrap pl-4 md:justify-center md:gap-3 lg:gap-5 xl:gap-6">
+        <div className="flex flex-1 items-center justify-end gap-1 overflow-x-auto whitespace-nowrap pl-4 md:justify-center md:gap-2 lg:gap-4 xl:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              className={`soft-chip shrink-0 border px-3 py-2 text-[10px] font-body font-medium uppercase tracking-[0.12em] transition-all md:px-4 md:text-[11px] ${
+              className={`shrink-0 text-xs font-body transition-colors md:text-[13px] ${
                 location.pathname === link.href
-                  ? "border-primary bg-primary text-primary-foreground shadow-[0_12px_24px_-14px_hsl(var(--primary)/0.8)]"
-                  : "border-border/80 bg-background/88 text-foreground/78 hover:border-accent/30 hover:bg-secondary/92 hover:text-foreground"
+                  ? "text-foreground font-medium"
+                  : "text-muted-foreground/60 hover:text-foreground"
               }`}
             >
               {link.label}
@@ -111,8 +111,8 @@ const Navbar = () => {
         <div className="hidden xl:flex items-center gap-3">
           {user ? (
             <>
-              <div className="flex items-center gap-1.5 border border-border/60 bg-background/80 px-3 py-1.5 text-xs font-body font-medium text-foreground/70">
-                <Sparkles className="w-3 h-3 text-accent" />
+              <div className="flex items-center gap-1.5 bg-secondary/60 px-3 py-1.5 text-xs font-body text-foreground/70">
+                <Sparkles className="w-3 h-3 text-foreground/50" />
                 <span>
                   {credits?.balance ?? 0}/{credits?.limit ?? 10}
                 </span>
@@ -124,7 +124,7 @@ const Navbar = () => {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="w-8 h-8 rounded-full border border-border/60 overflow-hidden hover:border-accent/50 transition-colors"
+                    className="w-8 h-8 rounded-md overflow-hidden hover:ring-2 hover:ring-foreground/20 transition-all"
                   >
                     <Avatar className="w-full h-full">
                       <AvatarImage src={profile?.avatar_url ?? ""} />
@@ -162,18 +162,18 @@ const Navbar = () => {
               </DropdownMenu>
             </>
           ) : authLoading ? (
-            <div className="w-5 h-5 rounded-full border-2 border-accent/30 border-t-accent animate-spin" />
+            <div className="w-5 h-5 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
           ) : (
             <>
               <Button
                 asChild
                 variant={location.pathname === "/login" ? "secondary" : "outline"}
                 size="sm"
-                className="rounded-full"
+                className="rounded-md"
               >
                 <Link to="/login">Đăng nhập</Link>
               </Button>
-              <Button asChild variant="accent" size="sm" className="rounded-full">
+              <Button asChild variant="default" size="sm" className="rounded-md">
                 <Link to="/signup">Đăng ký</Link>
               </Button>
             </>

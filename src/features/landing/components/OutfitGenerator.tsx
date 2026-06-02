@@ -1,7 +1,7 @@
 import outfitImg from "@/assets/outfit-flatlay-new.jpg";
 import { Button } from "@/shared/ui";
 import { motion } from "framer-motion";
-import { ArrowLeftRight, RefreshCcw, ShoppingCart, Star } from "lucide-react";
+import { RefreshCcw, ShoppingCart, Star } from "lucide-react";
 
 const items = [
   {
@@ -17,7 +17,7 @@ const items = [
     name: "Quần âu slim-fit xám",
     price: "380.000đ",
     originalPrice: "520.000đ",
-    platform: "Lazada",
+    platform: "Shopee",
     rating: 4.7,
   },
   {
@@ -25,7 +25,7 @@ const items = [
     name: "Sneaker trắng low-top",
     price: "329.000đ",
     originalPrice: "450.000đ",
-    platform: "Tiki",
+    platform: "TikTokShop",
     rating: 4.9,
   },
   {
@@ -40,8 +40,7 @@ const items = [
 
 const platformColors: Record<string, string> = {
   Shopee: "bg-shopee",
-  Lazada: "bg-lazada",
-  Tiki: "bg-tiki",
+  TikTokShop: "bg-tiktok",
 };
 
 const OutfitGenerator = () => (
@@ -65,7 +64,7 @@ const OutfitGenerator = () => (
           alt="Outfit do AI tạo"
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-6 left-6 bg-accent text-accent-foreground px-4 py-2">
+        <div className="absolute top-6 left-6 bg-secondary text-foreground px-4 py-2">
           <p className="text-[10px] font-body font-bold uppercase tracking-wider">
             AI tạo
           </p>
@@ -87,7 +86,7 @@ const OutfitGenerator = () => (
           <span className="font-semibold text-foreground">1.089.000đ</span>
         </p>
 
-        <div className="space-y-0 border-t border-border">
+        <div className="space-y-0 divide-y divide-border/30">
           {items.map((item, i) => (
             <motion.div
               key={item.name}
@@ -95,7 +94,7 @@ const OutfitGenerator = () => (
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="flex items-center gap-4 py-5 border-b border-border group"
+              className="flex items-center gap-4 py-5"
             >
               <div className="w-14 h-14 bg-secondary flex-shrink-0 flex items-center justify-center">
                 <span className="text-[9px] font-body font-bold uppercase tracking-wider text-muted-foreground">
@@ -103,18 +102,18 @@ const OutfitGenerator = () => (
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-body font-medium text-foreground truncate group-hover:text-accent transition-colors">
+                <p className="text-sm font-body font-medium text-foreground truncate">
                   {item.name}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm text-accent font-body font-semibold">
+                  <span className="text-sm text-foreground font-body font-semibold">
                     {item.price}
                   </span>
                   <span className="text-xs text-muted-foreground font-body line-through">
                     {item.originalPrice}
                   </span>
                   <div className="flex items-center gap-0.5 ml-2">
-                    <Star className="w-3 h-3 fill-accent text-accent" />
+                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                     <span className="text-[10px] font-body text-muted-foreground">
                       {item.rating}
                     </span>
@@ -123,22 +122,18 @@ const OutfitGenerator = () => (
               </div>
               <div className="flex flex-col items-end gap-2">
                 <span
-                  className={`${platformColors[item.platform]} text-accent-foreground text-[9px] font-body font-semibold px-2.5 py-1 uppercase tracking-wider`}
+                  className={`${platformColors[item.platform]} text-accent-foreground text-[10px] font-body font-semibold px-2.5 py-1 uppercase tracking-wider`}
                 >
                   {item.platform}
                 </span>
-                <ArrowLeftRight className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground cursor-pointer transition-colors" />
               </div>
             </motion.div>
           ))}
         </div>
 
         <div className="flex flex-wrap gap-3 mt-8">
-          <Button variant="accent" className="gap-2">
+          <Button className="gap-2 bg-foreground text-background">
             <ShoppingCart className="w-3.5 h-3.5" /> Mua tất cả
-          </Button>
-          <Button variant="outline" className="gap-2">
-            <ArrowLeftRight className="w-3.5 h-3.5" /> Thay sản phẩm
           </Button>
           <Button variant="outline" className="gap-2">
             <RefreshCcw className="w-3.5 h-3.5" /> Tạo lại

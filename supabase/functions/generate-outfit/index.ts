@@ -37,7 +37,7 @@ serve(async (req) => {
   "season": "spring|summer|fall|winter|all_year",
   "occasion": "office|casual|party|hangout|date",
   "mood": "tiếng Việt",
-  "products": [{"name": "", "price": "", "platform": "Shopee|Lazada|Tiki|Zalora", "badge": null, "rating": 0-5, "sold": "", "brand": ""}],
+  "products": [{"name": "", "price": "", "platform": "Shopee|TikTokShop", "badge": null, "rating": 0-5, "sold": "", "brand": ""}],
   "personalization": ["câu cá nhân hóa"],
   "aiConfidence": [{"label": "yếu tố", "positive": true/false}]
 }]`;

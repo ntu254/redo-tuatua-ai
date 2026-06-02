@@ -28,9 +28,6 @@ async function exec() {
   const products = await supabase.from('products').select('id, name, source_id');
   const platformMap = {
     '3873d9d5-cd89-4a88-83ca-907ba56972ef': 'shopee.vn',
-    '7fd01dff-045f-4922-ae62-7f7d67485f81': 'lazada.vn',
-    '4edbe8de-2b76-4813-85a0-e1f97b3bcb9e': 'tiki.vn',
-    '2470c4ab-4b5c-4cb2-a158-1ef382b9bd7f': 'zalora.vn',
     '99eec136-9c6f-48ff-a521-53cad2be3206': 'tiktok.com',
   };
   const imgMap = {

@@ -12,27 +12,17 @@ import {
   AlertCircle,
   AlertTriangle,
   Bell,
-  Calendar,
   Check,
-  Clock,
   Crown,
-  Download,
   Edit2,
   ExternalLink,
-  HelpCircle,
-  Info,
   KeyRound,
   Loader2,
   Lock,
   LogOut,
-  Palette,
-  RefreshCcw,
-  Shield,
   ShoppingBag,
   Sparkles,
   Trash2,
-  TrendingUp,
-  Upload,
   User,
   X,
 } from "lucide-react";
@@ -49,7 +39,7 @@ import {
 
 const tabs = [
   { id: "profile", label: "Hồ sơ", icon: User },
-  { id: "security", label: "Bảo mật", icon: Shield },
+  { id: "security", label: "Bảo mật", icon: Lock },
   { id: "platforms", label: "Nền tảng", icon: ExternalLink },
   { id: "notifications", label: "Thông báo", icon: Bell },
   { id: "subscription", label: "Đăng ký", icon: Crown },
@@ -58,9 +48,6 @@ const tabs = [
 
 const platformsList = [
   { name: "Shopee", connected: true, accent: "bg-orange-500" },
-  { name: "Lazada", connected: true, accent: "bg-blue-600" },
-  { name: "Tiki", connected: false, accent: "bg-sky-500" },
-  { name: "Zalora", connected: true, accent: "bg-foreground" },
   { name: "TikTok Shop", connected: false, accent: "bg-foreground" },
 ];
 
@@ -74,7 +61,7 @@ const Card = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <div className={`border border-border bg-card p-6 ${className}`}>{children}</div>;
+}) => <div className={`bg-card p-6 ${className}`}>{children}</div>;
 
 const SectionHead = ({
   icon: Icon,
@@ -87,10 +74,10 @@ const SectionHead = ({
 }) => (
   <div className="mb-5">
     <div className="flex items-center gap-2">
-      <Icon className="w-4 h-4 text-accent" />
+      <Icon className="w-4 h-4 text-foreground/40" />
       <h2 className="font-heading text-lg font-semibold text-foreground">{title}</h2>
     </div>
-    {sub && <p className="font-body text-xs text-foreground/50 mt-1 ml-6">{sub}</p>}
+    {sub && <p className="font-body text-xs text-foreground/50 mt-1">{sub}</p>}
   </div>
 );
 
@@ -103,15 +90,15 @@ const InfoCard = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <Card className="bg-secondary/40">
+  <div className="bg-secondary/40 p-6">
     <div className="flex items-center gap-2 mb-3">
-      <Icon className="w-3.5 h-3.5 text-foreground/40" />
+      <Icon className="w-3.5 h-3.5 text-foreground/30" />
       <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">
         {title}
       </p>
     </div>
     <div className="font-body text-sm text-foreground/60 leading-relaxed">{children}</div>
-  </Card>
+  </div>
 );
 
 const ToggleChip = ({
@@ -126,10 +113,10 @@ const ToggleChip = ({
   <button
     type="button"
     onClick={onClick}
-    className={`px-3 py-2 border text-xs font-body font-semibold transition-colors ${
+    className={`px-3 py-2 text-xs font-body font-semibold transition-colors ${
       active
-        ? "border-accent bg-accent/10 text-accent"
-        : "border-border bg-background text-foreground/55 hover:text-foreground"
+        ? "bg-foreground/10 text-foreground font-medium"
+        : "bg-secondary/50 text-foreground/55 hover:text-foreground hover:bg-secondary"
     }`}
   >
     {children}
@@ -365,7 +352,7 @@ const ProfilePanel = ({
                   exit={{ opacity: 0, height: 0 }}
                   className="flex flex-wrap gap-2 pt-1"
                 >
-                  <Button variant="accent" size="sm" className="gap-1.5 font-body text-xs" disabled={saving} onClick={save}>
+                  <Button variant="default" size="sm" className="gap-1.5 font-body text-xs bg-foreground text-background" disabled={saving} onClick={save}>
                     {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Lưu
                   </Button>
                   <Button variant="outline" size="sm" className="gap-1.5 font-body text-xs" onClick={() => setEditing(false)}>
@@ -381,7 +368,7 @@ const ProfilePanel = ({
       <div className="space-y-4">
         <Card>
           <div className="flex items-center gap-4 mb-4">
-            <motion.div className="w-16 h-16 bg-secondary border border-border flex items-center justify-center shrink-0 overflow-hidden" whileHover={{ scale: 1.05 }}>
+            <motion.div className="w-16 h-16 bg-secondary flex items-center justify-center shrink-0 overflow-hidden" whileHover={{ scale: 1.05 }}>
               {initial?.avatar_url ? (
                 <img src={initial.avatar_url} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -419,14 +406,14 @@ const ProfilePanel = ({
                 }
               }}
             />
-            <span className="inline-flex w-full items-center justify-center gap-2 h-9 px-4 border border-border bg-background/85 text-foreground hover:bg-secondary/90 font-body text-xs font-medium cursor-pointer">
-              {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} Upload avatar
+            <span className="inline-flex w-full items-center justify-center gap-2 h-9 px-4 bg-background/85 text-foreground hover:bg-secondary/90 font-body text-xs font-medium cursor-pointer">
+              {uploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <User className="w-3 h-3" />} Upload avatar
             </span>
           </label>
 
           <div className="space-y-2.5 text-sm font-body mt-4">
             <div className="flex items-center gap-2 text-foreground/60">
-              <Calendar className="w-3.5 h-3.5" />
+              <User className="w-3.5 h-3.5" />
               {initial?.created_at
                 ? `Tham gia ${new Date(initial.created_at).toLocaleDateString("vi-VN", { month: "long", year: "numeric" })}`
                 : "Thành viên mới"}
@@ -434,7 +421,7 @@ const ProfilePanel = ({
           </div>
           <Link to="/style-profile" className="block mt-4">
             <Button variant="outline" size="sm" className="w-full gap-1.5 font-body text-xs">
-              <TrendingUp className="w-3 h-3" /> Xem Style Profile
+              <ShoppingBag className="w-3 h-3" /> Xem Style Profile
             </Button>
           </Link>
           <Button
@@ -444,11 +431,11 @@ const ProfilePanel = ({
             onClick={onResetPersonalization}
             disabled={isResetting}
           >
-            {isResetting ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCcw className="w-3 h-3" />} Reset AI personalization
+            {isResetting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />} Reset AI personalization
           </Button>
         </Card>
 
-        <InfoCard icon={Info} title="Mẹo">
+        <InfoCard icon={Sparkles} title="Mẹo">
           Hoàn thiện hồ sơ giúp AI hiểu phong cách của bạn chính xác hơn và gợi ý outfit phù hợp hơn.
         </InfoCard>
       </div>
@@ -491,8 +478,8 @@ const SecurityPanel = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2 space-y-4">
-        <Card>
-          <SectionHead icon={Shield} title="Bảo mật" sub="Quản lý mật khẩu và xác thực" />
+        <Card className="divide-y divide-border/40">
+          <SectionHead icon={Lock} title="Bảo mật" sub="Quản lý mật khẩu và xác thực" />
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-secondary flex items-center justify-center">
@@ -510,12 +497,11 @@ const SecurityPanel = ({
             </Button>
           </div>
           {hasPassword && (
-            <div className="border-t border-border">
-              <div className="flex items-center justify-between py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-secondary flex items-center justify-center">
-                    <Shield className="w-4 h-4 text-foreground/40" />
-                  </div>
+            <div className="flex items-center justify-between py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-secondary flex items-center justify-center">
+                  <Lock className="w-4 h-4 text-foreground/40" />
+                </div>
                   <div>
                     <p className="font-body text-sm font-semibold text-foreground">Xác thực hai yếu tố</p>
                     <p className="font-body text-[11px] text-foreground/50">Lưu trạng thái sẵn sàng cho provider hỗ trợ 2FA</p>
@@ -534,7 +520,6 @@ const SecurityPanel = ({
                   }}
                 />
               </div>
-            </div>
           )}
         </Card>
 
@@ -586,16 +571,17 @@ const SecurityPanel = ({
         </Card>
       </div>
       <div className="space-y-4">
-        <InfoCard icon={Shield} title="Bảo mật tài khoản">
+        <InfoCard icon={Lock} title="Bảo mật tài khoản">
           {hasPassword
             ? "2FA hiện được lưu như preference trong hồ sơ. Khi bật provider MFA, preference này có thể dùng để mở luồng enroll."
             : "Liên kết Google giúp bạn đăng nhập nhanh mà không cần mật khẩu."}
         </InfoCard>
-        <InfoCard icon={Clock} title="Hoạt động gần đây">
-          <p className="mb-1">Phiên hiện tại:</p>
-          <p className="text-foreground font-semibold">Đang hoạt động</p>
-          <p className="text-xs mt-1">Trình duyệt hiện tại</p>
-        </InfoCard>
+        <div className="bg-secondary/40 p-6">
+          <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider mb-3">Hoạt động gần đây</p>
+          <p className="mb-1 text-sm text-foreground/60">Phiên hiện tại:</p>
+          <p className="text-foreground font-semibold text-sm">Đang hoạt động</p>
+          <p className="text-xs text-foreground/60 mt-1">Trình duyệt hiện tại</p>
+        </div>
       </div>
     </div>
   );
@@ -606,8 +592,9 @@ const PlatformsPanel = () => (
     <div className="lg:col-span-2">
       <Card>
         <SectionHead icon={ExternalLink} title="Nền tảng kết nối" sub="Kết nối tài khoản mua sắm" />
-        {platformsList.map((p, i) => (
-          <div key={p.name} className={`flex items-center justify-between py-3.5 ${i < platformsList.length - 1 ? "border-b border-border" : ""}`}>
+        <div className="divide-y divide-border/40">
+          {platformsList.map((p) => (
+          <div key={p.name} className="flex items-center justify-between py-3.5">
             <div className="flex items-center gap-3">
               <div className={`w-9 h-9 ${p.accent} flex items-center justify-center`}>
                 <span className="text-white text-xs font-body font-bold">{p.name[0]}</span>
@@ -624,6 +611,7 @@ const PlatformsPanel = () => (
             </Button>
           </div>
         ))}
+        </div>
       </Card>
     </div>
     <div className="space-y-4">
@@ -637,12 +625,12 @@ const PlatformsPanel = () => (
             <span className="text-foreground/60">Đã kết nối</span>
             <span className="font-semibold text-foreground">3 / 5</span>
           </div>
-          <div className="w-full h-1.5 bg-border">
-            <div className="h-full bg-accent" style={{ width: "60%" }} />
+          <div className="w-full h-1.5 bg-secondary">
+            <div className="h-full bg-foreground/20" style={{ width: "60%" }} />
           </div>
         </div>
       </Card>
-      <InfoCard icon={Info} title="Lợi ích kết nối">
+      <InfoCard icon={Sparkles} title="Lợi ích kết nối">
         Kết nối tài khoản mua sắm để nhận gợi ý sản phẩm phù hợp phong cách và theo dõi giá ưu đãi.
       </InfoCard>
     </div>
@@ -664,7 +652,7 @@ const NotificationsPanel = ({ userId }: { userId: string }) => {
   });
 
   const items = [
-    { key: "trend_alerts" as const, label: "Cập nhật xu hướng", desc: "Xu hướng thời trang mới nhất", icon: TrendingUp },
+    { key: "trend_alerts" as const, label: "Cập nhật xu hướng", desc: "Xu hướng thời trang mới nhất", icon: Sparkles },
     { key: "outfit_suggestions" as const, label: "Gợi ý outfit", desc: "AI gợi ý outfit phù hợp", icon: Sparkles },
     { key: "promotions" as const, label: "Ưu đãi mua sắm", desc: "Giảm giá từ sàn kết nối", icon: ShoppingBag },
     { key: "subscription_reminders" as const, label: "Nhắc gói đăng ký", desc: "Gia hạn, quota và hóa đơn", icon: Crown },
@@ -677,10 +665,10 @@ const NotificationsPanel = ({ userId }: { userId: string }) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2">
-        <Card>
+        <Card className="divide-y divide-border/40">
           <SectionHead icon={Bell} title="Thông báo" sub="Tùy chỉnh cách bạn nhận thông báo" />
-          {items.map((item, i) => (
-            <div key={item.key} className={`flex items-center justify-between py-4 ${i < items.length - 1 ? "border-b border-border" : ""}`}>
+          {items.map((item) => (
+            <div key={item.key} className="flex items-center justify-between py-4">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-secondary flex items-center justify-center">
                   <item.icon className="w-4 h-4 text-foreground/40" />
@@ -698,14 +686,14 @@ const NotificationsPanel = ({ userId }: { userId: string }) => {
             </div>
           ))}
 
-          <div className="border-t border-border py-4 flex items-center justify-between">
+          <div className="py-4 flex items-center justify-between">
             <div>
               <p className="font-body text-sm font-semibold text-foreground">Push notification</p>
               <p className="font-body text-[11px] text-foreground/50">Cho phép thông báo trên thiết bị</p>
             </div>
             <Switch checked={Boolean(prefs?.push_enabled)} onCheckedChange={(value) => updateMutation.mutate({ push_enabled: value })} />
           </div>
-          <div className="border-t border-border py-4 flex items-center justify-between">
+          <div className="py-4 flex items-center justify-between">
             <div>
               <p className="font-body text-sm font-semibold text-foreground">Email notification</p>
               <p className="font-body text-[11px] text-foreground/50">Nhận bản tin và nhắc nhở qua email</p>
@@ -765,40 +753,44 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
           <p className="font-body text-sm text-foreground/60 mb-5">
             {planName === "Free" ? "Nâng cấp để mở khóa toàn bộ tính năng AI styling." : `Gói ${planName} đang hoạt động.`}
           </p>
-          <Button variant="accent" className="gap-2 font-body" onClick={() => window.location.href = "/pricing"}>
+          <Button variant="default" className="gap-2 font-body bg-foreground text-background" onClick={() => window.location.href = "/pricing"}>
             <Crown className="w-4 h-4" /> {planName === "Free" ? "Nâng cấp Premium" : "Quản lý gói"}
           </Button>
         </Card>
 
-        <Card>
-          <SectionHead icon={Clock} title="Lịch sử thanh toán" />
-          <div className="space-y-3">
-            {payments.length === 0 ? (
-              <p className="font-body text-sm text-foreground/50">Chưa có giao dịch thanh toán.</p>
-            ) : (
-              payments.map((payment) => (
-                <div key={payment.id} className="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0">
-                  <div>
-                    <p className="font-body text-sm font-semibold text-foreground">{formatCurrency(payment.amount, payment.currency)}</p>
-                    <p className="font-body text-xs text-foreground/50">
-                      {payment.paid_at ? new Date(payment.paid_at).toLocaleDateString("vi-VN") : new Date(payment.created_at).toLocaleDateString("vi-VN")}
-                    </p>
-                  </div>
-                  <span className="text-xs font-body font-semibold text-foreground/55">{payment.status}</span>
-                </div>
-              ))
-            )}
+        <Card className="divide-y divide-border/40">
+          <div className="mb-5">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-foreground/40" />
+              <h2 className="font-heading text-lg font-semibold text-foreground">Lịch sử thanh toán</h2>
+            </div>
           </div>
+          {payments.length === 0 ? (
+            <p className="font-body text-sm text-foreground/50 py-4">Chưa có giao dịch thanh toán.</p>
+          ) : (
+            payments.map((payment) => (
+              <div key={payment.id} className="flex items-center justify-between py-4">
+                <div>
+                  <p className="font-body text-sm font-semibold text-foreground">{formatCurrency(payment.amount, payment.currency)}</p>
+                  <p className="font-body text-xs text-foreground/50">
+                    {payment.paid_at ? new Date(payment.paid_at).toLocaleDateString("vi-VN") : new Date(payment.created_at).toLocaleDateString("vi-VN")}
+                  </p>
+                </div>
+                <span className="text-xs font-body font-semibold text-foreground/55">{payment.status}</span>
+              </div>
+            ))
+          )}
         </Card>
 
-        <Card>
-          <SectionHead icon={Download} title="Hóa đơn" />
-          <div className="space-y-3">
-            {invoices.length === 0 ? (
-              <p className="font-body text-sm text-foreground/50">Chưa có hóa đơn.</p>
-            ) : (
-              invoices.map((invoice) => (
-                <div key={invoice.id} className="flex items-center justify-between border-b border-border pb-3 last:border-0 last:pb-0">
+        <Card className="divide-y divide-border/40">
+          <div className="mb-5">
+            <h2 className="font-heading text-lg font-semibold text-foreground">Hóa đơn</h2>
+          </div>
+          {invoices.length === 0 ? (
+            <p className="font-body text-sm text-foreground/50 py-4">Chưa có hóa đơn.</p>
+          ) : (
+            invoices.map((invoice) => (
+              <div key={invoice.id} className="flex items-center justify-between py-4">
                   <div>
                     <p className="font-body text-sm font-semibold text-foreground">{invoice.invoice_number}</p>
                     <p className="font-body text-xs text-foreground/50">{formatCurrency(invoice.amount, invoice.currency)} · {invoice.status}</p>
@@ -811,7 +803,7 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
                 </div>
               ))
             )}
-          </div>
+          )}
         </Card>
       </div>
 
@@ -825,8 +817,8 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
                 <span className="text-foreground font-semibold">{aiLimit > 0 ? `${creditBalance} / ${aiLimit}` : "Không giới hạn"}</span>
               </div>
               {aiLimit > 0 && (
-                <div className="w-full h-1.5 bg-border">
-                  <div className="h-full bg-accent" style={{ width: `${Math.min(100, (creditBalance / aiLimit) * 100)}%` }} />
+                <div className="w-full h-1.5 bg-secondary">
+                  <div className="h-full bg-foreground/20" style={{ width: `${Math.min(100, (creditBalance / aiLimit) * 100)}%` }} />
                 </div>
               )}
             </div>
@@ -861,12 +853,12 @@ const DangerPanel = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div className="lg:col-span-2">
-        <Card className="border-destructive/20">
+        <Card className="divide-y divide-border/40">
           <SectionHead icon={AlertTriangle} title="Vùng nguy hiểm" sub="Hành động không thể hoàn tác" />
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-secondary flex items-center justify-center">
-                <Download className="w-4 h-4 text-foreground/40" />
+                <KeyRound className="w-4 h-4 text-foreground/40" />
               </div>
               <div>
                 <p className="font-body text-sm font-semibold text-foreground">Export dữ liệu cá nhân</p>
@@ -874,10 +866,10 @@ const DangerPanel = ({
               </div>
             </div>
             <Button variant="outline" size="sm" className="gap-1.5 font-body text-xs" onClick={onExportData} disabled={isExporting}>
-              {isExporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />} Export
+              {isExporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <KeyRound className="w-3 h-3" />} Export
             </Button>
           </div>
-          <div className="border-t border-border py-4 flex items-center justify-between">
+          <div className="py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-secondary flex items-center justify-center">
                 <LogOut className="w-4 h-4 text-foreground/40" />
@@ -891,7 +883,7 @@ const DangerPanel = ({
               <LogOut className="w-3 h-3" /> Đăng xuất
             </Button>
           </div>
-          <div className="border-t border-border py-4 flex items-center justify-between">
+          <div className="py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-destructive/10 flex items-center justify-center">
                 <Trash2 className="w-4 h-4 text-destructive" />
@@ -944,7 +936,7 @@ const DangerPanel = ({
         <InfoCard icon={AlertTriangle} title="Cảnh báo">
           <p>Xóa tài khoản sẽ xóa vĩnh viễn dữ liệu gắn với tài khoản, bao gồm tủ đồ, outfit đã lưu và lịch sử phong cách.</p>
           <a href="mailto:support@redo.ai" className="inline-flex items-center gap-1 text-accent text-xs font-medium mt-2 hover:underline">
-            <HelpCircle className="w-3 h-3" /> Liên hệ hỗ trợ
+            <ExternalLink className="w-3 h-3" /> Liên hệ hỗ trợ
           </a>
         </InfoCard>
       </div>
@@ -1077,10 +1069,10 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="pt-16 border-b border-border">
+      <div className="pt-16">
         <div className="container mx-auto px-6 py-5">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-            <p className="text-[11px] font-body font-semibold text-accent uppercase tracking-widest mb-1">Tài khoản</p>
+            <p className="text-[11px] font-body font-semibold text-muted-foreground uppercase tracking-widest mb-1">Tài khoản</p>
             <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Cài đặt tài khoản</h1>
           </motion.div>
         </div>
@@ -1099,8 +1091,7 @@ const ProfilePage = () => {
                     isActive ? "text-foreground bg-secondary" : "text-foreground/45 hover:text-foreground hover:bg-secondary/50"
                   }`}
                 >
-                  <span className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-accent transition-opacity duration-200 ${isActive ? "opacity-100" : "opacity-0"}`} />
-                  <tab.icon className={`w-4 h-4 shrink-0 ${isActive ? "text-accent" : ""}`} />
+                  <tab.icon className={`w-4 h-4 shrink-0 ${isActive ? "text-foreground" : ""}`} />
                   <span className={`font-body text-sm ${isActive ? "font-semibold" : "font-medium"}`}>{tab.label}</span>
                 </button>
               );
@@ -1108,13 +1099,13 @@ const ProfilePage = () => {
           </nav>
         </aside>
 
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border flex overflow-x-auto px-2 py-1.5 gap-1 scrollbar-hide">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background flex overflow-x-auto px-2 py-1.5 gap-1 scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActive(tab.id)}
               className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-body font-semibold whitespace-nowrap transition-colors ${
-                active === tab.id ? "text-accent" : "text-foreground/40"
+                active === tab.id ? "text-foreground font-semibold" : "text-foreground/40"
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -1125,7 +1116,7 @@ const ProfilePage = () => {
 
         <main className="flex-1 min-w-0 pb-20 md:pb-0">
           {statusMessage && (
-            <div className="mb-4 flex items-center justify-between gap-3 border border-green-500/20 bg-green-500/5 px-4 py-3 text-sm font-body text-green-700">
+            <div className="mb-4 flex items-center justify-between gap-3 bg-green-500/5 p-4 text-sm font-body text-green-700">
               <span>{statusMessage}</span>
               <button type="button" onClick={() => setStatusMessage(null)}>
                 <X className="w-4 h-4" />
@@ -1134,7 +1125,7 @@ const ProfilePage = () => {
           )}
 
           {errorMessage && (
-            <div className="mb-4 flex items-center gap-2 border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm font-body text-destructive">
+            <div className="mb-4 flex items-center gap-2 bg-destructive/5 p-4 text-sm font-body text-destructive">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {errorMessage}
             </div>

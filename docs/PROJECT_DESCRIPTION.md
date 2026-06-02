@@ -46,7 +46,7 @@
 AI phân tích tủ đồ, xác định **khoảng trống** và đề xuất sản phẩm cụ thể từ các sàn TMĐT đối tác thông qua **affiliate link**:
 
 - **Gap Analysis**: tìm ra item còn thiếu để tủ đồ phối được nhiều hơn
-- **Affiliate Integration**: liên kết trực tiếp đến sản phẩm trên **Shopee, Lazada, Tiki, Zalora…** — người dùng mua, ứng dụng nhận hoa hồng affiliate
+- **Affiliate Integration**: liên kết trực tiếp đến sản phẩm trên **Shopee, TikTok Shop** — người dùng mua, ứng dụng nhận hoa hồng affiliate
 - **Smart Filter**: lọc gợi ý theo ngân sách, brand, phong cách và mùa hiện tại
 - **Trend-aware**: ưu tiên item đang trend, phù hợp với style profile cá nhân
 - **Anti-duplicate**: tránh gợi ý những thứ người dùng đã có trong tủ đồ
@@ -91,7 +91,7 @@ User mua qua affiliate link → revenue cho platform
 | **Outfit Generation** | Phối đồ từ wardrobe + context prompt |
 | **Style Profiling** | Tổng hợp phong cách cá nhân từ dữ liệu thực tế |
 | **Gap Analysis** | Xác định item còn thiếu trong tủ đồ |
-| **Affiliate Matching** | Map item gợi ý với sản phẩm thực trên Shopee/Lazada/Tiki… |
+| **Affiliate Matching** | Map item gợi ý với sản phẩm thực trên Shopee/TikTok Shop… |
 | **Trend Summarization** | Lọc trend phù hợp theo từng user |
 | **Prompt Normalization** | Biến yêu cầu tự nhiên thành input AI chuẩn |
 
@@ -213,7 +213,7 @@ Dự án được thiết kế theo mô hình **Microservices** — mỗi domain
 | **Database** | PostgreSQL (`affiliate_db`) |
 | **Tech** | Node.js |
 | **Endpoints** | `POST /affiliate/match-products` `POST /affiliate/create-link` `GET /affiliate/conversions` |
-| **Tích hợp** | Shopee Affiliate API, Lazada Open Platform, Tiki Affiliate, Zalora Partner |
+| **Tích hợp** | Shopee Affiliate API, TikTok Shop Affiliate |
 | **Events lắng nghe** | `ai.gap_analyzed` → match & gợi ý sản phẩm |
 | **Events phát ra** | `affiliate.link_clicked` `affiliate.conversion` |
 
@@ -283,7 +283,7 @@ Dự án được thiết kế theo mô hình **Microservices** — mỗi domain
 
 ### Pha 4 — Affiliate Shopping 📋
 - Gap analysis engine
-- Tích hợp affiliate API: Shopee, Lazada, Tiki, Zalora
+- Tích hợp affiliate API: Shopee, TikTok Shop
 - Affiliate link tracking & conversion analytics
 - Personalized product matching từ catalog TMĐT
 
@@ -396,9 +396,7 @@ redo-tuatua/                          ← Monorepo root
 │   │   │   ├── services/
 │   │   │   ├── integrations/
 │   │   │   │   ├── shopee.ts         # Shopee Affiliate API
-│   │   │   │   ├── lazada.ts         # Lazada Open Platform
-│   │   │   │   ├── tiki.ts           # Tiki Affiliate
-│   │   │   │   └── zalora.ts         # Zalora Partner
+│   │   │   │   └── tiktok-shop.ts    # TikTok Shop Affiliate
 │   │   │   ├── models/               # AffiliateLink, Conversion
 │   │   │   └── events/               # Lắng nghe ai.gap_analyzed
 │   │   ├── prisma/schema.prisma

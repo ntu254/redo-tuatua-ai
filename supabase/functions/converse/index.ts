@@ -46,7 +46,7 @@ Phân tích yêu cầu của user và trả về JSON:
     "products": [{
       "name": "tên sản phẩm",
       "price": "giá VND",
-      "platform": "Shopee|Lazada|Tiki|Zalora",
+      "platform": "Shopee|TikTokShop",
       "badge": "giảm giá hoặc null",
       "rating": số 0-5,
       "sold": "số lượng đã bán dạng text",

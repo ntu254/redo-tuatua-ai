@@ -15,7 +15,11 @@ import {
 } from "@/features/wardrobe/hooks/useWardrobeFilters";
 import type { WardrobeOverview } from "@/features/wardrobe/services/wardrobe.service";
 import { wardrobeService } from "@/features/wardrobe/services/wardrobe.service";
-import type { ActiveFilters, WardrobeAnalysis as WardrobeAnalysisType, WardrobeItem } from "@/features/wardrobe/types";
+import type {
+  ActiveFilters,
+  WardrobeAnalysis as WardrobeAnalysisType,
+  WardrobeItem,
+} from "@/features/wardrobe/types";
 import { Navbar } from "@/shared/layout";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
@@ -58,7 +62,8 @@ const WardrobePage = () => {
       setSummary(summaryData);
     } catch (error) {
       if (cancelledRef.current) return;
-      const message = error instanceof Error ? error.message : "Không thể tải dữ liệu tủ đồ.";
+      const message =
+        error instanceof Error ? error.message : "Không thể tải dữ liệu tủ đồ.";
       setLoadError(message);
     } finally {
       if (!cancelledRef.current) setIsLoading(false);
@@ -68,7 +73,9 @@ const WardrobePage = () => {
   useEffect(() => {
     cancelledRef.current = false;
     void loadWardrobe();
-    return () => { cancelledRef.current = true; };
+    return () => {
+      cancelledRef.current = true;
+    };
   }, [loadWardrobe]);
 
   const filtered = useWardrobeFilters({ items, filters, search });
@@ -144,8 +151,8 @@ const WardrobePage = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto max-w-7xl px-6 py-20">
-          <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-sm">
-            Đang tải mock wardrobe API...
+          <div className="rounded-xl bg-card p-8 text-center text-sm text-muted-foreground">
+            Đang tải dữ liệu tủ đồ...
           </div>
         </div>
       </div>
@@ -157,7 +164,7 @@ const WardrobePage = () => {
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto max-w-7xl px-6 py-20">
-          <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-8 text-center text-sm text-destructive shadow-sm">
+          <div className="rounded-xl bg-destructive/5 p-8 text-center text-sm text-destructive">
             {loadError}
           </div>
         </div>
@@ -192,16 +199,22 @@ const WardrobePage = () => {
               {/* Search + actions */}
               <div className="flex items-center gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
+                  <Search
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40"
+                    strokeWidth={1.5}
+                  />
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Tìm kiếm quần áo..."
-                    className="w-full h-10 pl-10 pr-9 rounded-xl border border-border bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all"
+                    className="w-full h-10 pl-10 pr-9 rounded-md bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
                   />
                   {search && (
-                    <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
                       <X className="w-3.5 h-3.5" />
                     </button>
                   )}
@@ -209,15 +222,15 @@ const WardrobePage = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 rounded-xl h-10 px-3 shrink-0"
+                  className="gap-1.5 rounded-md h-10 px-3 shrink-0"
                   onClick={handleToggleAnalysis}
                 >
-                  <BarChart3 className="w-4 h-4" /> {showAnalysis ? "Ẩn phân tích" : "Phân tích"}
+                  <BarChart3 className="w-4 h-4" />
+                  {showAnalysis ? "Ẩn phân tích" : "Phân tích"}
                 </Button>
                 <Button
-                  variant="accent"
                   size="sm"
-                  className="gap-1.5 rounded-xl h-10 px-4 shrink-0"
+                  className="gap-1.5 rounded-md h-10 px-4 shrink-0 bg-foreground text-background hover:bg-foreground/92"
                   onClick={() => setUploadOpen(true)}
                 >
                   <Plus className="w-4 h-4" /> Thêm món đồ
@@ -227,7 +240,10 @@ const WardrobePage = () => {
               {/* Mobile: AI Gen + Filters */}
               <div className="space-y-4 sm:hidden">
                 <AIOutfitGenerator items={items} selectedIds={selectedIds} />
-                <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
+                <WardrobeFilterSidebar
+                  filters={filters}
+                  onChange={setFilters}
+                />
               </div>
 
               {/* Analysis Section */}
@@ -244,7 +260,7 @@ const WardrobePage = () => {
               </AnimatePresence>
 
               {analysisLoading && (
-                <div className="rounded-xl border border-border bg-card p-6 text-center text-xs text-muted-foreground">
+                <div className="rounded-xl bg-card p-6 text-center text-xs text-muted-foreground">
                   Đang phân tích tủ đồ...
                 </div>
               )}
@@ -256,9 +272,9 @@ const WardrobePage = () => {
                     initial={{ opacity: 0, y: -4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -4 }}
-                    className="flex items-center gap-3 px-4 py-2 rounded-xl bg-accent/5 border border-accent/15"
+                    className="flex items-center gap-3 px-4 py-2 rounded-xl bg-secondary/60"
                   >
-                    <span className="text-xs font-body text-accent font-medium">
+                    <span className="text-xs font-body text-foreground/70 font-medium">
                       {selectedIds.length} món đồ đã chọn
                     </span>
                     <button
@@ -274,12 +290,18 @@ const WardrobePage = () => {
               <div className="flex items-center justify-between">
                 <p className="text-xs font-body text-muted-foreground">
                   {filtered.length} món đồ
-                  {(filters.category.length > 0 || filters.style.length > 0 || search) && " được tìm thấy"}
+                  {(filters.category.length > 0 ||
+                    filters.style.length > 0 ||
+                    search) &&
+                    " được tìm thấy"}
                 </p>
               </div>
 
               {/* Wardrobe grid */}
-              <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+              <motion.div
+                layout
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
+              >
                 <AnimatePresence mode="popLayout">
                   {filtered.map((item, i) => (
                     <WardrobeItemCard
@@ -297,12 +319,24 @@ const WardrobePage = () => {
               </motion.div>
 
               {filtered.length === 0 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-16"
+                >
                   <p className="text-sm text-muted-foreground font-body">
                     Không tìm thấy món đồ nào phù hợp.
                   </p>
                   <button
-                    onClick={() => { setFilters({ category: [], style: [], color: [], season: [] }); setSearch(""); }}
+                    onClick={() => {
+                      setFilters({
+                        category: [],
+                        style: [],
+                        color: [],
+                        season: [],
+                      });
+                      setSearch("");
+                    }}
                     className="text-xs text-accent font-body mt-2 underline underline-offset-2 hover:text-accent/80 transition-colors"
                   >
                     Xóa tất cả bộ lọc
@@ -315,9 +349,25 @@ const WardrobePage = () => {
       </div>
 
       {/* Modals */}
-      <WardrobeUploadModal open={uploadOpen} onClose={() => { setUploadOpen(false); void loadWardrobe(); }} />
-      <WardrobeEditModal item={editItem} open={!!editItem} onClose={() => setEditItem(null)} onSave={handleEditSave} />
-      <WardrobeDeleteConfirm item={deleteItem} open={!!deleteItem} onClose={() => setDeleteItem(null)} onConfirm={handleDeleteConfirm} />
+      <WardrobeUploadModal
+        open={uploadOpen}
+        onClose={() => {
+          setUploadOpen(false);
+          void loadWardrobe();
+        }}
+      />
+      <WardrobeEditModal
+        item={editItem}
+        open={!!editItem}
+        onClose={() => setEditItem(null)}
+        onSave={handleEditSave}
+      />
+      <WardrobeDeleteConfirm
+        item={deleteItem}
+        open={!!deleteItem}
+        onClose={() => setDeleteItem(null)}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };

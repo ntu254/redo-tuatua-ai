@@ -11,9 +11,6 @@ import { Button } from "@/shared/ui";
 
 const platformColors: Record<string, string> = {
   Shopee: "bg-shopee",
-  Lazada: "bg-lazada",
-  Tiki: "bg-tiki",
-  Zalora: "bg-zalora",
 };
 
 interface Product {
@@ -44,9 +41,9 @@ const styles: StyleData[] = [
       {
         name: "Quần jeans slim-fit xanh nhạt",
         price: "389.000đ",
-        platform: "Lazada",
+        platform: "Shopee",
       },
-      { name: "Sneaker low-top trắng", price: "329.000đ", platform: "Tiki" },
+      { name: "Sneaker low-top trắng", price: "329.000đ", platform: "TikTokShop" },
       { name: "Túi tote canvas beige", price: "135.000đ", platform: "Shopee" },
     ],
   },
@@ -59,11 +56,11 @@ const styles: StyleData[] = [
       {
         name: "Áo sơ mi lụa trắng slim",
         price: "450.000đ",
-        platform: "Lazada",
+        platform: "Shopee",
       },
       { name: "Quần âu ống đứng đen", price: "380.000đ", platform: "Shopee" },
-      { name: "Giày oxford da nâu", price: "520.000đ", platform: "Tiki" },
-      { name: "Đồng hồ minimalist bạc", price: "890.000đ", platform: "Zalora" },
+      { name: "Giày oxford da nâu", price: "520.000đ", platform: "TikTokShop" },
+      { name: "Đồng hồ minimalist bạc", price: "890.000đ", platform: "Shopee" },
     ],
   },
   {
@@ -72,14 +69,14 @@ const styles: StyleData[] = [
     tagline: "Sang trọng cho buổi tối",
     swatches: ["#FFD700", "#8B0000", "#000000"],
     products: [
-      { name: "Đầm sequin vàng midi", price: "1.250.000đ", platform: "Zalora" },
+      { name: "Đầm sequin vàng midi", price: "1.250.000đ", platform: "Shopee" },
       { name: "Clutch ánh kim bạc", price: "320.000đ", platform: "Shopee" },
       {
         name: "Giày cao gót strappy đen",
         price: "650.000đ",
-        platform: "Lazada",
+        platform: "Shopee",
       },
-      { name: "Bông tai pha lê dáng dài", price: "189.000đ", platform: "Tiki" },
+      { name: "Bông tai pha lê dáng dài", price: "189.000đ", platform: "TikTokShop" },
     ],
   },
   {
@@ -93,8 +90,8 @@ const styles: StyleData[] = [
         price: "420.000đ",
         platform: "Shopee",
       },
-      { name: "Quần cargo túi hộp xám", price: "350.000đ", platform: "Lazada" },
-      { name: "Giày chunky sneaker", price: "780.000đ", platform: "Tiki" },
+      { name: "Quần cargo túi hộp xám", price: "350.000đ", platform: "Shopee" },
+      { name: "Giày chunky sneaker", price: "780.000đ", platform: "TikTokShop" },
       { name: "Mũ bucket hat đen", price: "125.000đ", platform: "Shopee" },
     ],
   },
@@ -108,9 +105,9 @@ const styles: StyleData[] = [
       {
         name: "Legging tập gym seamless",
         price: "380.000đ",
-        platform: "Lazada",
+        platform: "Shopee",
       },
-      { name: "Giày training nhẹ", price: "690.000đ", platform: "Tiki" },
+      { name: "Giày training nhẹ", price: "690.000đ", platform: "TikTokShop" },
       {
         name: "Bình nước thể thao 750ml",
         price: "95.000đ",
@@ -126,7 +123,7 @@ const StylePicker = () => {
 
   return (
     <section className="bg-background">
-      <div className="border-b border-border px-6 py-16 text-center">
+      <div className="px-6 py-16 text-center">
         <p className="editorial-label mb-4">Phong cách của bạn</p>
         <h2 className="font-heading text-3xl md:text-4xl font-medium text-foreground">
           Chọn phong cách,{" "}
@@ -134,15 +131,15 @@ const StylePicker = () => {
         </h2>
       </div>
 
-      <div className="border-b border-border flex items-center justify-center gap-0 overflow-x-auto">
+      <div className="flex items-center justify-center gap-1 overflow-x-auto">
         {styles.map((s, i) => (
           <button
             key={s.label}
             onClick={() => setActive(i)}
-            className={`px-8 py-4 text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-all border-r border-border last:border-r-0 ${
+            className={`px-8 py-4 text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-all ${
               i === active
                 ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {s.label}
@@ -189,26 +186,26 @@ const StylePicker = () => {
                 Sản phẩm gợi ý từ các sàn TMĐT
               </p>
 
-              <div className="space-y-0 border-t border-border">
+              <div className="space-y-0 divide-y divide-border/30">
                 {current.products.map((p, i) => (
                   <motion.div
                     key={p.name}
                     initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.08 }}
-                    className="flex items-center gap-4 py-5 border-b border-border cursor-pointer group"
+                    className="flex items-center gap-4 py-5"
                   >
                     <div className="w-12 h-12 bg-secondary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-body font-medium text-foreground truncate group-hover:text-accent transition-colors">
+                      <p className="text-sm font-body font-medium text-foreground truncate">
                         {p.name}
                       </p>
-                      <p className="text-sm text-accent font-body font-semibold">
+                      <p className="text-sm text-foreground font-body font-semibold">
                         {p.price}
                       </p>
                     </div>
                     <span
-                      className={`${platformColors[p.platform]} text-accent-foreground text-[9px] font-body font-semibold px-2.5 py-1 uppercase tracking-wider`}
+                      className={`${platformColors[p.platform]} text-accent-foreground text-[10px] font-body font-semibold px-2.5 py-1 uppercase tracking-wider`}
                     >
                       {p.platform}
                     </span>
@@ -216,7 +213,7 @@ const StylePicker = () => {
                 ))}
               </div>
 
-              <Button variant="accent" className="mt-8 gap-2 self-start">
+              <Button className="mt-8 gap-2 self-start bg-foreground text-background">
                 Xem toàn bộ outfit <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </div>

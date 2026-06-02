@@ -213,7 +213,7 @@ create table product_tags (
 
 create table product_sources (
   id              uuid primary key default uuid_generate_v4(),
-  platform        text not null,               -- 'shopee','lazada','tiki','zalora','tiktok_shop'
+  platform        text not null,               -- 'shopee','tiktok_shop'
   is_active       boolean not null default true,
   last_sync_at    timestamptz,
   sync_interval_mins int not null default 1440, -- 24h

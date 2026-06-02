@@ -32,10 +32,7 @@ export const adminSettingsService = {
         notificationTemplates: ["Welcome Email", "Weekly Style Report", "New Trend Alert", "Outfit Saved Confirmation", "Account Suspension Notice"],
         apiIntegrations: [
           { name: "Shopee Affiliate API", status: "Connected" },
-          { name: "Lazada Open Platform", status: "Connected" },
           { name: "TikTok Shop API", status: "Connected" },
-          { name: "Tiki Affiliate", status: "Disconnected" },
-          { name: "Zalora Affiliate", status: "Connected" },
         ],
         roles: roles.map((r) => ({
           role: r.name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
@@ -59,10 +56,14 @@ export const adminSettingsService = {
     return apiClient.post<{ success: boolean }>("/api/admin/settings/general", { json: { platformInfo: info, toggles } } as RequestInit);
   },
 
-  saveApiKey: async (_name: string, _key: string): Promise<{ success: boolean }> => {
+  saveApiKey: async (name: string, key: string): Promise<{ success: boolean }> => {
     if (!apiConfig.useMockApi) {
+      await supabase.from("system_settings").upsert(
+        { key: `api_key_${name}`, value: key },
+        { onConflict: "key" },
+      );
       return { success: true };
     }
-    return apiClient.post<{ success: boolean }>("/api/admin/settings/api", { json: { name: _name, key: _key } } as RequestInit);
+    return apiClient.post<{ success: boolean }>("/api/admin/settings/api", { json: { name, key } } as RequestInit);
   },
 };

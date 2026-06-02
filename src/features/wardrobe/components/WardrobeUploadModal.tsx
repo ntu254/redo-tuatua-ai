@@ -2,14 +2,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Camera,
   Check,
-  ChevronRight,
   ImagePlus,
   Loader2,
   Pencil,
-  Shirt,
-  ShoppingBag,
   Sparkles,
   Upload,
   X,
@@ -23,14 +19,6 @@ interface WardrobeUploadModalProps {
 }
 
 type UploadStep = "upload" | "analyzing" | "review" | "saved";
-
-const wardrobeUploadAnalysisMock = {
-  suggestion: [
-    { name: "Quần jeans" },
-    { name: "Giày sneaker" },
-    { name: "Túi tote" },
-  ],
-};
 
 const categories = ["Tops", "Bottoms", "Shoes", "Outerwear", "Accessories"];
 const types: Record<string, string[]> = {
@@ -162,14 +150,14 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 12 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative w-full max-w-lg bg-card rounded-2xl border border-border shadow-xl overflow-hidden"
+          className="relative w-full max-w-lg bg-card rounded-xl shadow-sm overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-teal/15 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-teal" strokeWidth={1.5} />
+              <div className="w-8 h-8 rounded-md bg-secondary flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-foreground/60" strokeWidth={1.5} />
               </div>
               <div>
                 <p className="text-sm font-body font-semibold text-foreground">
@@ -206,13 +194,13 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
                   className={cn(
-                    "border-2 border-dashed rounded-xl p-10 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200",
+                    "border-2 border-dashed rounded-lg p-10 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200",
                     isDragging
                       ? "border-accent bg-accent/5"
-                      : "border-border hover:border-muted-foreground/40 hover:bg-secondary/30",
+                      : "border-border hover:bg-secondary/30",
                   )}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-lg bg-secondary flex items-center justify-center">
                     <Upload
                       className="w-6 h-6 text-muted-foreground/30"
                       strokeWidth={1.5}
@@ -238,38 +226,18 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                   />
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border hover:bg-secondary/50 transition-colors"
-                  >
-                    <ImagePlus
-                      className="w-4 h-4 text-muted-foreground"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-[10px] font-body text-muted-foreground">
-                      Tải ảnh
-                    </span>
-                  </button>
-                  <button className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border hover:bg-secondary/50 transition-colors">
-                    <Camera
-                      className="w-4 h-4 text-muted-foreground"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-[10px] font-body text-muted-foreground">
-                      Chụp ảnh
-                    </span>
-                  </button>
-                  <button className="flex flex-col items-center gap-1.5 p-3 rounded-xl border border-border hover:bg-secondary/50 transition-colors">
-                    <ShoppingBag
-                      className="w-4 h-4 text-muted-foreground"
-                      strokeWidth={1.5}
-                    />
-                    <span className="text-[10px] font-body text-muted-foreground">
-                      Từ lịch sử
-                    </span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center justify-center gap-1.5 p-3 rounded-lg border border-border hover:bg-secondary/50 transition-colors w-full"
+                >
+                  <ImagePlus
+                    className="w-4 h-4 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
+                  <span className="text-[10px] font-body text-muted-foreground">
+                    Tải ảnh
+                  </span>
+                </button>
               </div>
             )}
 
@@ -284,7 +252,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                     <img
                       src={preview}
                       alt="Đã tải"
-                      className="w-28 h-28 rounded-2xl object-cover border border-border"
+                      className="w-28 h-28 rounded-lg object-cover border border-border"
                     />
                   )}
                   <motion.div
@@ -294,9 +262,9 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                       duration: 2,
                       ease: "linear",
                     }}
-                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-teal/15 flex items-center justify-center"
+                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-secondary flex items-center justify-center"
                   >
-                    <Sparkles className="w-4 h-4 text-teal" />
+                    <Sparkles className="w-4 h-4 text-foreground/60" />
                   </motion.div>
                 </div>
                 <div className="text-center">
@@ -307,7 +275,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                     Nhận diện loại, màu sắc và phong cách
                   </p>
                 </div>
-                <Loader2 className="w-5 h-5 text-teal animate-spin" />
+                <Loader2 className="w-5 h-5 text-foreground/40 animate-spin" />
               </motion.div>
             )}
 
@@ -330,7 +298,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                       <input
                         value={detectedName}
                         onChange={(e) => setDetectedName(e.target.value)}
-                        className="w-full text-sm font-body font-medium text-foreground bg-secondary/50 border border-border rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-accent/20"
+                        className="w-full text-sm font-body font-medium text-foreground bg-secondary/50 rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-accent/20"
                       />
                     ) : (
                       <p className="text-sm font-body font-semibold text-foreground">
@@ -346,7 +314,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                             onChange={(e) =>
                               setDetectedCategory(e.target.value)
                             }
-                            className="text-[11px] font-body bg-secondary border border-border rounded-lg px-2 py-1 text-foreground focus:outline-none"
+                            className="text-[11px] font-body bg-secondary rounded-md px-2 py-1 text-foreground focus:outline-none"
                           >
                             {categories.map((c) => (
                               <option key={c} value={c}>
@@ -357,7 +325,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                           <select
                             value={detectedType}
                             onChange={(e) => setDetectedType(e.target.value)}
-                            className="text-[11px] font-body bg-secondary border border-border rounded-lg px-2 py-1 text-foreground focus:outline-none"
+                            className="text-[11px] font-body bg-secondary rounded-md px-2 py-1 text-foreground focus:outline-none"
                           >
                             {(types[detectedCategory] || []).map((t) => (
                               <option key={t} value={t}>
@@ -368,7 +336,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                         </>
                       ) : (
                         <>
-                          <span className="text-[10px] font-body bg-secondary text-muted-foreground px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          <span className="text-[10px] font-body bg-secondary text-muted-foreground px-2 py-0.5 rounded-md uppercase tracking-wider">
                             {detectedCategory}
                           </span>
                           <span className="text-[10px] font-body text-muted-foreground">
@@ -389,10 +357,10 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                               key={c.hex}
                               onClick={() => setDetectedColor(c.hex)}
                               className={cn(
-                                "w-5 h-5 rounded-full border-2 transition-all",
+                                "w-5 h-5 rounded-full transition-all",
                                 detectedColor === c.hex
-                                  ? "border-accent scale-110"
-                                  : "border-border",
+                                  ? "ring-2 ring-foreground/30"
+                                  : "ring-1 ring-border/30",
                               )}
                               style={{ backgroundColor: c.hex }}
                               title={c.label}
@@ -419,10 +387,10 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                         key={tag}
                         onClick={() => isEditing && toggleTag(tag)}
                         className={cn(
-                          "text-[10px] px-2.5 py-1 rounded-full font-body font-medium transition-all",
+                          "text-[10px] px-2.5 py-1 rounded-md font-body font-medium transition-all",
                           detectedTags.includes(tag)
-                            ? "bg-accent/10 text-accent border border-accent/20"
-                            : "bg-secondary text-muted-foreground border border-transparent",
+                            ? "bg-foreground/10 text-foreground"
+                            : "bg-secondary text-muted-foreground",
                           isEditing && "cursor-pointer hover:opacity-80",
                         )}
                       >
@@ -436,7 +404,7 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 rounded-xl gap-1.5 text-xs h-9"
+                    className="flex-1 rounded-md gap-1.5 text-xs h-9"
                     onClick={() => setIsEditing(!isEditing)}
                   >
                     <Pencil className="w-3 h-3" />{" "}
@@ -445,42 +413,10 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                   <Button
                     variant="accent"
                     size="sm"
-                    className="flex-1 rounded-xl gap-1.5 text-xs h-9"
+                    className="flex-1 rounded-md gap-1.5 text-xs h-9"
                     onClick={handleConfirm}
                   >
                     <Check className="w-3.5 h-3.5" /> Xác nhận
-                  </Button>
-                </div>
-
-                <div className="border-t border-border pt-4">
-                  <p className="text-[10px] font-body text-muted-foreground uppercase tracking-wider mb-2">
-                    Ý tưởng outfit với món đồ này
-                  </p>
-                  <div className="flex items-center gap-2">
-                    {wardrobeUploadAnalysisMock.suggestion.map((piece, i) => (
-                      <div key={i} className="flex items-center gap-1.5">
-                        <div className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center">
-                          <Shirt
-                            className="w-3 h-3 text-muted-foreground/25"
-                            strokeWidth={1.5}
-                          />
-                        </div>
-                        <span className="text-[10px] font-body text-foreground">
-                          {piece.name}
-                        </span>
-                        {i <
-                          wardrobeUploadAnalysisMock.suggestion.length - 1 && (
-                          <ChevronRight className="w-3 h-3 text-muted-foreground/30 mx-0.5" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <Button
-                    variant="teal"
-                    size="sm"
-                    className="w-full mt-3 rounded-xl gap-1.5 text-[11px] h-8"
-                  >
-                    <Sparkles className="w-3 h-3" /> Tạo outfit
                   </Button>
                 </div>
               </motion.div>
@@ -496,9 +432,9 @@ const WardrobeUploadModal = ({ open, onClose }: WardrobeUploadModalProps) => {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", damping: 15, delay: 0.1 }}
-                  className="w-14 h-14 rounded-full bg-teal/15 flex items-center justify-center"
+                  className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center"
                 >
-                  <Check className="w-6 h-6 text-teal" strokeWidth={2} />
+                  <Check className="w-6 h-6 text-foreground/60" strokeWidth={2} />
                 </motion.div>
                 <p className="text-sm font-body font-semibold text-foreground">
                   Đã thêm vào tủ đồ!

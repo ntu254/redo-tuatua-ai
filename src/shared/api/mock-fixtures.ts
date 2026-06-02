@@ -317,13 +317,13 @@ export const adminProductsDataMock = {
   },
   products: [
     { id: "p1", title: "Classic White Tee", platform: "Shopee", category: "Tops", affiliate: "Active", linkHealth: "Healthy", featured: true, clicks: 842, commission: 12800, image_url: null },
-    { id: "p2", title: "Wide Leg Jeans", platform: "Lazada", category: "Bottoms", affiliate: "Active", linkHealth: "Healthy", featured: false, clicks: 563, commission: 22400, image_url: null },
-    { id: "p3", title: "Silk Midi Skirt", platform: "Zalora", category: "Bottoms", affiliate: "Active", linkHealth: "Broken", featured: false, clicks: 0, commission: 0, image_url: null },
-    { id: "p4", title: "Canvas Tote Bag", platform: "Tiki", category: "Accessories", affiliate: "Inactive", linkHealth: "Healthy", featured: false, clicks: 189, commission: 3400, image_url: null },
+    { id: "p2", title: "Wide Leg Jeans", platform: "Shopee", category: "Bottoms", affiliate: "Active", linkHealth: "Healthy", featured: false, clicks: 563, commission: 22400, image_url: null },
+    { id: "p3", title: "Silk Midi Skirt", platform: "Shopee", category: "Bottoms", affiliate: "Active", linkHealth: "Broken", featured: false, clicks: 0, commission: 0, image_url: null },
+    { id: "p4", title: "Canvas Tote Bag", platform: "TikTokShop", category: "Accessories", affiliate: "Inactive", linkHealth: "Healthy", featured: false, clicks: 189, commission: 3400, image_url: null },
     { id: "p5", title: "Chunky Sneakers", platform: "TikTok Shop", category: "Shoes", affiliate: "Active", linkHealth: "Healthy", featured: true, clicks: 1204, commission: 45000, image_url: null },
     { id: "p6", title: "Oversized Blazer", platform: "Shopee", category: "Outerwear", affiliate: "Active", linkHealth: "Healthy", featured: false, clicks: 321, commission: 18900, image_url: null },
-    { id: "p7", title: "Sequin Party Dress", platform: "Lazada", category: "Dresses", affiliate: "Active", linkHealth: "Broken", featured: false, clicks: 0, commission: 0, image_url: null },
-    { id: "p8", title: "Leather Belt", platform: "Tiki", category: "Accessories", affiliate: "Inactive", linkHealth: "Healthy", featured: false, clicks: 332, commission: 5600, image_url: null },
+    { id: "p7", title: "Sequin Party Dress", platform: "Shopee", category: "Dresses", affiliate: "Active", linkHealth: "Broken", featured: false, clicks: 0, commission: 0, image_url: null },
+    { id: "p8", title: "Leather Belt", platform: "TikTokShop", category: "Accessories", affiliate: "Inactive", linkHealth: "Healthy", featured: false, clicks: 332, commission: 5600, image_url: null },
   ],
 };
 
@@ -352,10 +352,7 @@ export const adminSettingsDataMock = {
   notificationTemplates: ["Welcome Email", "Weekly Style Report", "New Trend Alert", "Outfit Saved Confirmation", "Account Suspension Notice"],
   apiIntegrations: [
     { name: "Shopee Affiliate API", status: "Connected" },
-    { name: "Lazada Open Platform", status: "Connected" },
     { name: "TikTok Shop API", status: "Connected" },
-    { name: "Tiki Affiliate", status: "Disconnected" },
-    { name: "Zalora Affiliate", status: "Connected" },
   ],
   roles: [
     { role: "Super Admin", users: 1, access: "Full access to all features" },

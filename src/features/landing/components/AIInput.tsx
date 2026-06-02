@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, Send, Sparkles, Wand2 } from "lucide-react";
+import { MessageCircle, Send, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const placeholders = [
@@ -58,16 +58,7 @@ const AIInput = () => {
   };
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-coral-light via-background to-teal-light" />
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle, hsl(var(--foreground)) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
+    <section className="relative overflow-hidden bg-secondary/30">
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_1.8fr] min-h-[520px]">
         <motion.div
@@ -85,7 +76,7 @@ const AIInput = () => {
               transition={{ type: "spring", delay: 0.2 }}
               className="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mb-6"
             >
-              <Wand2 className="w-7 h-7 text-accent" />
+              <Sparkles className="w-7 h-7 text-accent" />
             </motion.div>
             <p className="editorial-label mb-4">Chat với AI Stylist</p>
             <h2 className="font-heading text-4xl md:text-5xl font-semibold text-foreground leading-tight">
@@ -115,9 +106,9 @@ const AIInput = () => {
           className="flex flex-col justify-center p-8 md:p-12 lg:p-16"
         >
           <div className="max-w-lg mx-auto lg:mx-0 w-full">
-            <div className="bg-background/80 backdrop-blur-xl border border-border rounded-2xl shadow-xl shadow-foreground/5 overflow-hidden">
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-border bg-background/60">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-accent to-coral flex items-center justify-center">
+            <div className="bg-card rounded-xl overflow-hidden">
+              <div className="flex items-center gap-3 px-5 py-4">
+                <div className="w-9 h-9 rounded-md bg-secondary flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-accent-foreground" />
                 </div>
                 <div>
@@ -143,17 +134,17 @@ const AIInput = () => {
                       transition={{ type: "spring", damping: 20 }}
                     >
                       <div className="flex justify-end mb-3">
-                        <div className="bg-accent text-accent-foreground px-4 py-2.5 rounded-2xl rounded-br-sm max-w-[80%]">
+                        <div className="bg-foreground text-background px-4 py-2.5 rounded-xl rounded-br-sm max-w-[80%]">
                           <p className="text-sm font-body">
                             {text || "Gợi ý outfit"}
                           </p>
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-accent/10 flex items-center justify-center mt-1 shrink-0">
+                        <div className="w-7 h-7 rounded-md bg-secondary flex items-center justify-center mt-1 shrink-0">
                           <Sparkles className="w-3.5 h-3.5 text-accent" />
                         </div>
-                        <div className="bg-secondary/80 rounded-2xl rounded-bl-sm px-4 py-3">
+                        <div className="bg-secondary rounded-xl px-4 py-3">
                           <p className="text-sm font-body text-foreground mb-2">
                             {sampleResponses[responseIdx].text}
                           </p>
@@ -182,7 +173,7 @@ const AIInput = () => {
                       animate={{ opacity: 1 }}
                       className="flex flex-col items-center justify-center h-[120px] text-center"
                     >
-                      <Wand2 className="w-6 h-6 text-muted-foreground/30 mb-2" />
+                      <Sparkles className="w-6 h-6 text-muted-foreground/30 mb-2" />
                       <p className="text-xs text-muted-foreground/50 font-body">
                         Nhập câu hỏi hoặc chọn gợi ý bên dưới
                       </p>
@@ -199,11 +190,11 @@ const AIInput = () => {
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder={typed}
-                    className="w-full bg-secondary/50 border border-border rounded-xl px-4 py-3.5 pr-12 text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent/30 transition-all"
+                    className="w-full bg-secondary/50 rounded-md px-4 py-3.5 pr-12 text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
                   />
                   <button
                     onClick={handleSend}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-accent text-accent-foreground p-2.5 rounded-xl hover:shadow-lg hover:shadow-accent/20 hover:scale-105 active:scale-95 transition-all"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-foreground text-background p-2.5 rounded-md active:scale-95 transition-all"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>
@@ -228,7 +219,7 @@ const AIInput = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setText(tag)}
-                      className="text-[11px] font-body font-medium text-muted-foreground border border-border px-3.5 py-2 rounded-full hover:border-accent hover:text-accent hover:bg-accent/5 transition-all"
+                      className="text-[11px] font-body font-medium text-muted-foreground border border-border px-3.5 py-2 rounded-md hover:border-foreground/20 hover:text-foreground hover:bg-secondary/50 transition-all"
                     >
                       {tag}
                     </motion.button>
