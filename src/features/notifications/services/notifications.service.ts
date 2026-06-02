@@ -41,7 +41,20 @@ export const notificationsService = {
       .order("created_at", { ascending: false })
       .limit(limit);
 
-    if (error) throw error;
+    if (error) {
+      if (
+        error.message.includes("schema cache") ||
+        error.message.includes("permission denied") ||
+        error.code === "PGRST204" ||
+        error.code === "PGRST116" ||
+        error.code === "42P01" ||
+        error.code === "42501" ||
+        error.code === "PGRST301"
+      ) {
+        return [];
+      }
+      throw error;
+    }
 
     return (data ?? []).map((row: any) => ({
       id: row.id,
@@ -68,7 +81,20 @@ export const notificationsService = {
       .eq("user_id", userId)
       .eq("is_read", false);
 
-    if (error) throw error;
+    if (error) {
+      if (
+        error.message.includes("schema cache") ||
+        error.message.includes("permission denied") ||
+        error.code === "PGRST204" ||
+        error.code === "PGRST116" ||
+        error.code === "42P01" ||
+        error.code === "42501" ||
+        error.code === "PGRST301"
+      ) {
+        return 0;
+      }
+      throw error;
+    }
     return count ?? 0;
   },
 

@@ -4,7 +4,7 @@ import { Button, Input, Label } from "@/shared/ui";
 import { motion } from "framer-motion";
 import { AlertCircle, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { authService, type SocialProvider } from "../services/auth.service";
 import { useAuth } from "../hooks/useAuth";
 
@@ -17,7 +17,11 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const from = (location.state as { from?: string } | null)?.from ?? "/";
+  const [searchParams] = useSearchParams();
+  const from = (location.state as { from?: string; oauthError?: string } | null)?.from ?? "/";
+  const oauthError = (location.state as { oauthError?: string } | null)?.oauthError
+    ?? searchParams.get("error_description")
+    ?? (searchParams.get("error_code") ? "Đăng nhập OAuth thất bại. Vui lòng thử lại." : null);
 
   const loginMutation = useMutation({
     mutationFn: () => login(email, password),
@@ -106,6 +110,13 @@ const LoginPage = () => {
           <p className="text-muted-foreground font-body text-sm mb-8">
             Tiếp tục phối đồ cùng trợ lý AI của bạn.
           </p>
+
+          {oauthError && (
+            <div className="flex items-center gap-2 p-3 mb-5 bg-accent/5 border border-accent/20 text-accent text-sm font-body">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              {oauthError}
+            </div>
+          )}
 
           {loginMutation.isError && (
             <div className="flex items-center gap-2 p-3 mb-5 bg-destructive/5 border border-destructive/20 text-destructive text-sm font-body">

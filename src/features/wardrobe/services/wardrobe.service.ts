@@ -140,7 +140,22 @@ export const wardrobeService = {
         .select("id, name, image_url, color, is_favorite, created_at, category_id, style_preset_id")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      if (error) throw error;
+        
+      if (error) {
+        if (
+          error.message.includes("schema cache") ||
+          error.message.includes("permission denied") ||
+          error.code === "PGRST204" ||
+          error.code === "PGRST116" ||
+          error.code === "42P01" ||
+          error.code === "42501" ||
+          error.code === "PGRST301"
+        ) {
+          return [];
+        }
+        throw error;
+      }
+      
       if (data && data.length > 0) return data.map(mapDbItem);
       return [];
     }
@@ -151,18 +166,30 @@ export const wardrobeService = {
     if (!apiConfig.useMockApi) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return { itemCount: 0, savedOutfits: 0, aiSuggestions: 0 };
-      const { count: itemCount } = await supabase
-        .from("wardrobe_items")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id);
-      const { count: savedOutfits } = await supabase
-        .from("outfits")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .eq("is_saved", true);
+      
+      let itemCount = 0;
+      let savedOutfits = 0;
+      
+      try {
+        const { count: ic, error: e1 } = await supabase
+          .from("wardrobe_items")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id);
+        if (!e1) itemCount = ic ?? 0;
+        
+        const { count: so, error: e2 } = await supabase
+          .from("outfits")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("is_saved", true);
+        if (!e2) savedOutfits = so ?? 0;
+      } catch (err) {
+        // ignore schema errors
+      }
+      
       return {
-        itemCount: itemCount ?? 0,
-        savedOutfits: savedOutfits ?? 0,
+        itemCount,
+        savedOutfits,
         aiSuggestions: 0,
       };
     }

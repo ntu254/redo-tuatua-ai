@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import heroImg from "@/assets/hero-fashion-1.jpg";
 import { Button, Input, Label } from "@/shared/ui";
 import { motion } from "framer-motion";
-import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService, type SocialProvider } from "../services/auth.service";
@@ -20,6 +20,7 @@ const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [emailConfirmMsg, setEmailConfirmMsg] = useState(false);
 
   const validationError = useMemo(() => {
     if (!name.trim()) return "";
@@ -35,7 +36,14 @@ const SignUpPage = () => {
 
   const signupMutation = useMutation({
     mutationFn: () => signup(email, password, name),
-    onSuccess: () => navigate("/quiz"),
+    onSuccess: (result) => {
+      if (result.needsEmailConfirmation) {
+        setEmailConfirmMsg(true);
+        setTimeout(() => navigate("/login", { replace: true }), 5000);
+        return;
+      }
+      navigate("/quiz");
+    },
   });
 
   const socialMutation = useMutation({
@@ -129,7 +137,14 @@ const SignUpPage = () => {
               Bắt đầu hành trình thời trang AI của bạn.
             </p>
 
-            {signupMutation.isError && (
+            {emailConfirmMsg && (
+              <div className="flex items-center gap-2 p-3 mb-5 bg-accent/5 border border-accent/20 text-accent text-sm font-body">
+                <CheckCircle className="w-4 h-4 shrink-0" />
+                Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản. Tự động chuyển về trang đăng nhập...
+              </div>
+            )}
+
+            {signupMutation.isError && !emailConfirmMsg && (
               <div className="flex items-center gap-2 p-3 mb-5 bg-destructive/5 border border-destructive/20 text-destructive text-sm font-body">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {(signupMutation.error as Error)?.message ?? "Đăng ký thất bại. Vui lòng thử lại."}

@@ -7,6 +7,7 @@ export interface AuthResult {
   session: { access_token: string };
   role?: "user" | "admin";
   is_banned?: boolean;
+  needsEmailConfirmation?: boolean;
 }
 
 export type SocialProvider = "google" | "apple";
@@ -86,14 +87,25 @@ export const authService = {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
           display_name: displayName,
         },
       },
     });
     if (error) throw error;
+
+    // Supabase returns an empty identities array if the user already exists (when email enumeration protection is ON)
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      throw new Error("Email này đã được sử dụng");
+    }
+
     if (data.user && !data.session) {
-      throw new Error("Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập.");
+      return {
+        user: { id: data.user.id, email: data.user.email ?? "" },
+        session: { access_token: "" },
+        needsEmailConfirmation: true,
+      };
     }
     if (data.user) {
       await supabase.from("profiles").upsert({
