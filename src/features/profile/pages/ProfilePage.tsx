@@ -791,16 +791,16 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
           ) : (
             invoices.map((invoice) => (
               <div key={invoice.id} className="flex items-center justify-between py-4">
-                  <div>
-                    <p className="font-body text-sm font-semibold text-foreground">{invoice.invoice_number}</p>
-                    <p className="font-body text-xs text-foreground/50">{formatCurrency(invoice.amount, invoice.currency)} · {invoice.status}</p>
-                  </div>
-                  {invoice.pdf_url && (
-                    <Button asChild variant="outline" size="sm" className="h-8 px-3 text-xs">
-                      <a href={invoice.pdf_url} target="_blank" rel="noreferrer">Mở</a>
-                    </Button>
-                  )}
+                <div>
+                  <p className="font-body text-sm font-semibold text-foreground">{invoice.invoice_number}</p>
+                  <p className="font-body text-xs text-foreground/50">{formatCurrency(invoice.amount, invoice.currency)} · {invoice.status}</p>
                 </div>
+                {invoice.pdf_url && (
+                  <Button asChild variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    <a href={invoice.pdf_url} target="_blank" rel="noreferrer">Mở</a>
+                  </Button>
+                )}
+              </div>
               ))
             )}
         </Card>

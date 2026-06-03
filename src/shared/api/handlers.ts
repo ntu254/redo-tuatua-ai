@@ -249,6 +249,26 @@ export const mockHandlers: Record<string, MockHandler> = {
       }, delay);
     });
   },
+  "/api/recommender/converse": (options) => {
+    const body = typeof options.json === "string"
+      ? JSON.parse(options.json)
+      : (options.json || {});
+    const prompt = (body?.prompt || "").trim();
+    const results = prompt ? matchPrompt(prompt, allOutfits).slice(0, 3) : allOutfits.slice(0, 3);
+    const topStyle = results[0]?.style ?? "Casual";
+
+    return {
+      reply: prompt
+        ? `Mình đã phân tích yêu cầu “${prompt}” và chọn ${results.length} outfit hợp với vibe ${topStyle}.`
+        : "Mình đã chuẩn bị một vài outfit nổi bật để bạn bắt đầu.",
+      outfits: results,
+      suggestions: [
+        { label: "Rẻ hơn", prompt: "Điều chỉnh outfit này dưới 500 nghìn" },
+        { label: "Thanh lịch hơn", prompt: "Làm outfit này thanh lịch hơn" },
+        { label: "Cá tính hơn", prompt: "Phối theo hướng cá tính hơn" },
+      ],
+    };
+  },
   "/api/admin/auth/login": () => ({
     session: {
       id: "admin-001",

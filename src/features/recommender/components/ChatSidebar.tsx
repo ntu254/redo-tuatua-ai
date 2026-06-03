@@ -55,7 +55,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
         const updated = [...c];
         updated[updated.length - 1] = {
           role: "ai",
-          text: `${result.message}\n\n${result.outfits.map((o, i) => `${i + 1}. **${o.title}**, ${o.aiComment}`).join("\n")}\n\nBạn thấy thế nào? Mình có thể điều chỉnh theo ý bạn!`,
+          text: `${result.reply}\n\n${result.outfits.map((o, i) => `${i + 1}. **${o.title}**, ${o.aiComment}`).join("\n")}\n\nBạn thấy thế nào? Mình có thể điều chỉnh theo ý bạn!`,
         };
         return updated;
       });

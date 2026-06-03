@@ -1,4 +1,5 @@
 import type { WardrobeItem } from "@/features/wardrobe/types";
+import { wardrobeSuggestionMock } from "@/shared/api/mock-fixtures";
 import { Button } from "@/shared/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight, RefreshCw, Shirt, Sparkles, Wand2 } from "lucide-react";

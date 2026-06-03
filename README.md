@@ -16,6 +16,7 @@ Redo TuaTua AI là một ứng dụng thời trang AI xây bằng React + TypeSc
 - [Architecture guidelines](./docs/ARCHITECTURE_GUIDELINES.md)
 - [Refactor map](./docs/REFACTOR_MAP.md)
 - [Backend, AI & deployment roadmap](./docs/ROADMAP_BACKEND_AI_DEPLOYMENT.md)
+- [MVP documentation](./docs/MVP.md)
 
 ## Project info
 

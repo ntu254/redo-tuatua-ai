@@ -8,14 +8,14 @@ export default function AuthCallbackPage() {
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const isLinking = searchParams.get("linking") === "true";
+  const oauthError = searchParams.get("error") || searchParams.get("error_code");
+  const oauthErrorDescription = searchParams.get("error_description") || "Đăng nhập đã bị hủy hoặc hết hạn.";
 
   useEffect(() => {
     let cancelled = false;
 
-    const oauthError = searchParams.get("error") || searchParams.get("error_code");
     if (oauthError) {
-      const desc = searchParams.get("error_description") || "Đăng nhập đã bị hủy hoặc hết hạn.";
-      navigate("/login", { replace: true, state: { oauthError: desc } });
+      navigate("/login", { replace: true, state: { oauthError: oauthErrorDescription } });
       return;
     }
 
@@ -61,7 +61,7 @@ export default function AuthCallbackPage() {
 
     handleCallback();
     return () => { cancelled = true; };
-  }, [navigate, isLinking]);
+  }, [navigate, isLinking, oauthError, oauthErrorDescription]);
 
   if (error) {
     return (
