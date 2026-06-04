@@ -51,23 +51,16 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-
-    let userId: string | null = null;
-    if (authHeader) {
-      const supabase = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-        { global: { headers: { Authorization: authHeader } } },
-      );
-      const { data: { user } } = await supabase.auth.getUser();
-      userId = user?.id ?? null;
-    }
+    if (!authHeader) throw new Error("Missing Authorization");
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      authHeader ? { global: { headers: { Authorization: authHeader } } } : undefined,
+      { global: { headers: { Authorization: authHeader } } },
     );
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
 
     const { text, ref } = await req.json();
     if (!text?.trim()) throw new Error("Missing text");
@@ -175,16 +168,14 @@ ${productList}`,
       traffic_source: trafficSource,
     };
 
-    // Log to outfits table (only if user is authenticated)
-    if (userId) {
-      await supabase.from("outfits").insert({
-        user_id: userId,
-        name: description,
-        image_url: items[0]?.image_url || "",
-        source: "ai",
-        is_saved: false,
-      });
-    }
+    // Log to outfits table
+    await supabase.from("outfits").insert({
+      user_id: user.id,
+      name: description,
+      image_url: items[0]?.image_url || "",
+      source: "ai",
+      is_saved: false,
+    });
 
     return new Response(JSON.stringify({ outfit: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -73,7 +73,11 @@ export default function OutfitBuilderPage() {
         style && `style: ${style}`,
       ].filter(Boolean).join(", ");
 
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       const { data, error: fnError } = await supabase.functions.invoke("create-outfit", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: { text: prompt, ref: trafficRef },
       });
       if (fnError) throw fnError;
@@ -101,7 +105,11 @@ export default function OutfitBuilderPage() {
     setViewMode("after");
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
       const { data, error: fnError } = await supabase.functions.invoke("tryon", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: {
           action: "create",
           human_image: humanImage,
@@ -127,7 +135,11 @@ export default function OutfitBuilderPage() {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
         const { data, error: fnError } = await supabase.functions.invoke("tryon", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
           body: {
             action: "status",
             task_id: taskId,
