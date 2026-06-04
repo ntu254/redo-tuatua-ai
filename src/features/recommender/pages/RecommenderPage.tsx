@@ -69,7 +69,7 @@ const RecommenderPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar compact />
+      <Navbar />
 
       <div className="pt-16 flex min-h-[calc(100vh-4rem)]">
         <ChatSidebar
