@@ -93,7 +93,7 @@ export default function TryOnCanvas({
       </header>
 
       {/* Main Canvas */}
-      <div className="flex-1 p-6 overflow-hidden flex flex-col">
+      <div className="flex-1 p-6 overflow-hidden flex flex-col min-h-0">
         <AnimatePresence mode="wait">
           {isLoading && (
             <motion.div
@@ -101,7 +101,7 @@ export default function TryOnCanvas({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex-1 bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6"
+              className="h-full bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6"
             >
               <div className="flex items-center gap-2 mb-4">
                 <Loader2 className="w-5 h-5 text-foreground/40 animate-spin" />
@@ -116,7 +116,7 @@ export default function TryOnCanvas({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex-1 bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6"
+              className="h-full bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6"
             >
               <p className="text-sm font-body text-foreground/75 mb-4 text-center max-w-sm leading-relaxed">{error}</p>
               <button onClick={onRetry} className="px-4.5 py-2 rounded-xl border border-foreground hover:bg-secondary text-foreground text-xs font-body font-semibold transition-colors cursor-pointer active:scale-95">
@@ -136,7 +136,7 @@ export default function TryOnCanvas({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex-1 bg-card rounded-xl border border-border/50 shadow-sm flex flex-col overflow-hidden"
+                    className="h-full bg-card rounded-xl border border-border/50 shadow-sm flex flex-col overflow-hidden"
                   >
                     {/* Outfit Header */}
                     <div className="px-6 pt-6 pb-4">
@@ -267,7 +267,7 @@ export default function TryOnCanvas({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex-1 bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6 relative overflow-hidden"
+                    className="h-full bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6 relative overflow-hidden"
                   >
                     <div className="text-center max-w-md z-10">
                       <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center text-foreground/40 mx-auto mb-4">
@@ -301,7 +301,7 @@ export default function TryOnCanvas({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex-1 bg-card rounded-xl border border-border/50 shadow-sm flex flex-col justify-center items-center overflow-hidden p-6"
+                  className="h-full bg-card rounded-xl border border-border/50 shadow-sm flex flex-col justify-center items-center overflow-hidden p-6"
                 >
                   {tryOnStatus === "submitting" || tryOnStatus === "processing" ? (
                     <div className="flex flex-col items-center justify-center text-center space-y-4 max-w-sm">
