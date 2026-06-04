@@ -13,6 +13,7 @@ export async function withCreditCheck<T>(
   jobType: string,
   modelName: string,
   fn: () => Promise<T>,
+  cost: number = 1,
 ): Promise<T> {
   const adminClient = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -47,9 +48,9 @@ export async function withCreditCheck<T>(
     }
   }
 
-  if (limit !== 0 && balance <= 0) {
+  if (limit !== 0 && balance < cost) {
     throw new CreditError(
-      `Bạn đã hết credit AI (gói ${planName}). Vui lòng nâng cấp gói tại /pricing để tiếp tục.`,
+      `Bạn không đủ credit AI (yêu cầu ${cost} credits, hiện có ${balance} credits). Vui lòng nâng cấp gói tại /pricing để tiếp tục.`,
     );
   }
 
@@ -98,17 +99,17 @@ export async function withCreditCheck<T>(
         await adminClient
           .from("user_credits")
           .update({
-            balance: (uc.balance ?? 0) - 1,
-            lifetime_spent: (uc.lifetime_spent ?? 0) + 1,
+            balance: (uc.balance ?? 0) - cost,
+            lifetime_spent: (uc.lifetime_spent ?? 0) + cost,
           })
           .eq("user_id", userId);
       }
       await adminClient.from("credit_transactions").insert({
         user_id: userId,
-        amount: -1,
+        amount: -cost,
         type: "generation",
         reference_type: "ai_job",
-        description: "Sử dụng AI generation",
+        description: `Sử dụng AI generation (${cost} credits)`,
       });
     }
 
