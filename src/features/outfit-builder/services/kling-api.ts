@@ -1,4 +1,4 @@
-import { apiConfig } from "@/shared/api";
+import { supabase } from "@/shared/lib";
 
 export class KlingApiError extends Error {
   code?: number;
@@ -21,102 +21,54 @@ export interface KlingTaskResult {
   updatedAt: number;
 }
 
-const base64UrlEncode = (str: string): string => {
-  return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-};
-
-const generateJwtToken = async (accessKey: string, secretKey: string): Promise<string> => {
-  const now = Math.floor(Date.now() / 1000);
-
-  const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const payload = base64UrlEncode(JSON.stringify({
-    iss: accessKey,
-    exp: now + 1800,
-    nbf: now - 5,
-  }));
-
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secretKey),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(`${header}.${payload}`));
-  const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-
-  return `${header}.${payload}.${signatureBase64}`;
-};
-
-const headers = async () => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${await generateJwtToken(apiConfig.klingAccessKey, apiConfig.klingSecretKey)}`,
-});
-
-const stripBase64Prefix = (dataUrl: string): string => {
-  const commaIndex = dataUrl.indexOf(",");
-  if (commaIndex === -1) return dataUrl;
-  return dataUrl.substring(commaIndex + 1);
-};
-
 export const klingApi = {
   createTryOnTask: async (humanImage: string, clothImage: string): Promise<{ taskId: string }> => {
-    const baseUrl = apiConfig.klingBaseUrl;
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
 
-    const body = {
-      model_name: "kolors-virtual-try-on-v1-5",
-      human_image: humanImage.startsWith("data:") ? stripBase64Prefix(humanImage) : humanImage,
-      cloth_image: clothImage.startsWith("data:") ? stripBase64Prefix(clothImage) : clothImage,
-    };
-
-    const response = await fetch(`${baseUrl}/v1/images/kolors-virtual-try-on`, {
+    const { data, error } = await supabase.functions.invoke("tryon", {
       method: "POST",
-      headers: await headers(),
-      body: JSON.stringify(body),
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: {
+        action: "create",
+        human_image: humanImage,
+        cloth_image: clothImage,
+      },
     });
 
-    const json = await response.json();
+    if (error) throw new KlingApiError(error.message);
+    if (data?.error) throw new KlingApiError(data.error);
 
-    if (json.code !== 0) {
-      throw new KlingApiError(json.message || "Failed to create try-on task", {
-        code: json.code,
-        requestId: json.request_id,
-      });
-    }
+    const taskId = data?.data?.task_id;
+    if (!taskId) throw new KlingApiError("No task_id returned from server");
 
-    return { taskId: json.data.task_id };
+    return { taskId };
   },
 
   getTaskStatus: async (taskId: string): Promise<KlingTaskResult> => {
-    const baseUrl = apiConfig.klingBaseUrl;
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
 
-    const response = await fetch(`${baseUrl}/v1/images/kolors-virtual-try-on/${taskId}`, {
-      method: "GET",
-      headers: await headers(),
+    const { data, error } = await supabase.functions.invoke("tryon", {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: {
+        action: "status",
+        task_id: taskId,
+      },
     });
 
-    const json = await response.json();
+    if (error) throw new KlingApiError(error.message);
+    if (data?.error) throw new KlingApiError(data.error);
 
-    if (json.code !== 0) {
-      throw new KlingApiError(json.message || "Failed to get task status", {
-        code: json.code,
-        requestId: json.request_id,
-      });
-    }
-
-    const data = json.data;
+    const result = data?.data;
     return {
-      taskId: data.task_id,
-      taskStatus: data.task_status,
-      taskStatusMsg: data.task_status_msg,
-      images: data.task_result?.images,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      taskId: result?.task_id || taskId,
+      taskStatus: result?.task_status || "unknown",
+      taskStatusMsg: result?.task_status_msg,
+      images: result?.task_result?.images,
+      createdAt: result?.created_at || 0,
+      updatedAt: result?.updated_at || 0,
     };
   },
 };

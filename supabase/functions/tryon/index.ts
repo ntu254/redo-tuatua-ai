@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, x-client-info, apikey, x-supabase-auth-referer",
 };
 
-const KLING_BASE_URL = "https://api.klingai.com";
+const KLING_BASE_URL = "https://api-singapore.klingai.com";
 
 function cleanBase64(base64: string): string {
   if (base64.startsWith("data:")) {
