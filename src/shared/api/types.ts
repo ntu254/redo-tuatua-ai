@@ -2,9 +2,6 @@ export interface ApiConfig {
   baseUrl: string;
   useMockApi: boolean;
   mockDelayMs: number;
-  klingBaseUrl: string;
-  klingAccessKey: string;
-  klingSecretKey: string;
 }
 
 export interface ApiRequestOptions extends RequestInit {

@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 
 import { Navbar } from "@/shared/layout";
 import { supabase } from "@/shared/lib";
-import { klingApi } from "../services/kling-api";
 import ControlPanel from "../components/ControlPanel";
 import TryOnCanvas from "../components/TryOnCanvas";
 import AIStylistReport from "../components/AIStylistReport";
@@ -117,7 +116,20 @@ export default function OutfitBuilderPage() {
     setViewMode("after");
 
     try {
-      const { taskId } = await klingApi.createTryOnTask(humanImage, clothImage);
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || "";
+
+      const { data, error } = await supabase.functions.invoke("tryon", {
+        body: { action: "create", humanImage, clothImage },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (error) throw new Error(error.message || "Edge function error");
+      if (data?.error) throw new Error(data.error);
+
+      const taskId = data?.taskId;
+      if (!taskId) throw new Error("Không nhận được task ID từ server.");
+
       setTryOnTaskId(taskId);
       setTryOnStatus("processing");
       pollTryOnStatus(taskId);
@@ -131,17 +143,26 @@ export default function OutfitBuilderPage() {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
-        const result = await klingApi.getTaskStatus(taskId);
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token || "";
 
-        if (result.taskStatus === "succeed") {
+        const { data, error } = await supabase.functions.invoke("tryon", {
+          body: { action: "status", taskId },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (error || data?.error) return;
+
+        const status = data?.status;
+        if (status === "succeed") {
           if (pollRef.current) clearInterval(pollRef.current);
-          const imageUrl = result.images?.[0]?.url;
+          const imageUrl = data?.imageUrl;
           setTryOnImage(imageUrl || null);
           setTryOnStatus("succeed");
-        } else if (result.taskStatus === "failed") {
+        } else if (status === "failed") {
           if (pollRef.current) clearInterval(pollRef.current);
           setTryOnStatus("failed");
-          setTryOnError(result.taskStatusMsg || "Thử đồ ảo thất bại.");
+          setTryOnError(data?.message || "Thử đồ ảo thất bại.");
         }
       } catch (err) {
         console.warn("Polling error:", err);
