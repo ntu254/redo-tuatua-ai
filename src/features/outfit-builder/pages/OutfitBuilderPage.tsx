@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { Navbar } from "@/shared/layout";
@@ -46,9 +46,17 @@ export default function OutfitBuilderPage() {
   const [viewMode, setViewMode] = useState<"before" | "after">("before");
 
   const trafficRef = searchParams.get("ref") || "direct";
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
 
   const buildOutfit = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    if (pollRef.current) clearInterval(pollRef.current);
     setIsLoading(true);
     setError("");
     setOutfit(null);
@@ -116,7 +124,8 @@ export default function OutfitBuilderPage() {
   };
 
   const pollTryOnStatus = (taskId: string) => {
-    const interval = setInterval(async () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    pollRef.current = setInterval(async () => {
       try {
         const { data, error: fnError } = await supabase.functions.invoke("tryon", {
           body: {
@@ -132,12 +141,12 @@ export default function OutfitBuilderPage() {
 
         const status = data.data.task_status;
         if (status === "succeed") {
-          clearInterval(interval);
+          if (pollRef.current) clearInterval(pollRef.current);
           const imageUrl = data.data.task_result?.images?.[0]?.url;
           setTryOnImage(imageUrl);
           setTryOnStatus("succeed");
         } else if (status === "failed") {
-          clearInterval(interval);
+          if (pollRef.current) clearInterval(pollRef.current);
           setTryOnStatus("failed");
           setTryOnError(data.data.task_status_msg || "Thử đồ ảo thất bại.");
         }
