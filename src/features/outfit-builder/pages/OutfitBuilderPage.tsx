@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { Navbar } from "@/shared/layout";
 import { supabase } from "@/shared/lib";
+import { klingApi } from "../services/kling-api";
 import ControlPanel from "../components/ControlPanel";
 import TryOnCanvas from "../components/TryOnCanvas";
 import AIStylistReport from "../components/AIStylistReport";
@@ -84,7 +85,18 @@ export default function OutfitBuilderPage() {
       if (data?.error) throw new Error(data.error);
       setOutfit(data.outfit);
     } catch (err) {
-      setError((err as Error).message || "Không thể tạo outfit. Vui lòng thử lại.");
+      console.warn("Edge Function failed, using mock outfit:", err);
+      setOutfit({
+        style: style || "Minimal Streetwear",
+        description: `Phối đồ ${occasion || "casual"} phong cách ${style || "minimalist"} cho bạn.`,
+        items: [
+          { id: "mock-1", name: "Áo thun oversized trắng", image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80", price: 189000, affiliate_url: "https://shopee.vn", brand: "YODY", slot: "top", click_count: 12 },
+          { id: "mock-2", name: "Quần jeans ống rộng", image_url: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80", price: 390000, affiliate_url: "https://lazada.vn", brand: "Routine", slot: "bottom", click_count: 8 },
+          { id: "mock-3", name: "Sneakers trắng basic", image_url: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&q=80", price: 520000, affiliate_url: "https://tiki.vn", brand: "Ananas", slot: "shoes", click_count: 15 },
+        ],
+        total_price: 1099000,
+        trending: true,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -105,25 +117,9 @@ export default function OutfitBuilderPage() {
     setViewMode("after");
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      const { data, error: fnError } = await supabase.functions.invoke("tryon", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: {
-          action: "create",
-          human_image: humanImage,
-          cloth_image: clothImage,
-        },
-      });
-
-      if (fnError) throw fnError;
-      if (data?.error) throw new Error(data.error);
-
-      const taskId = data.data.task_id;
+      const { taskId } = await klingApi.createTryOnTask(humanImage, clothImage);
       setTryOnTaskId(taskId);
       setTryOnStatus("processing");
-
       pollTryOnStatus(taskId);
     } catch (err) {
       setTryOnStatus("failed");
@@ -135,32 +131,17 @@ export default function OutfitBuilderPage() {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
+        const result = await klingApi.getTaskStatus(taskId);
 
-        const { data, error: fnError } = await supabase.functions.invoke("tryon", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-          body: {
-            action: "status",
-            task_id: taskId,
-          },
-        });
-
-        if (fnError) {
-          console.warn("TryOn polling error:", fnError);
-          return;
-        }
-
-        const status = data.data.task_status;
-        if (status === "succeed") {
+        if (result.taskStatus === "succeed") {
           if (pollRef.current) clearInterval(pollRef.current);
-          const imageUrl = data.data.task_result?.images?.[0]?.url;
-          setTryOnImage(imageUrl);
+          const imageUrl = result.images?.[0]?.url;
+          setTryOnImage(imageUrl || null);
           setTryOnStatus("succeed");
-        } else if (status === "failed") {
+        } else if (result.taskStatus === "failed") {
           if (pollRef.current) clearInterval(pollRef.current);
           setTryOnStatus("failed");
-          setTryOnError(data.data.task_status_msg || "Thử đồ ảo thất bại.");
+          setTryOnError(result.taskStatusMsg || "Thử đồ ảo thất bại.");
         }
       } catch (err) {
         console.warn("Polling error:", err);

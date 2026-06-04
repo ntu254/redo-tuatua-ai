@@ -14,4 +14,7 @@ export const apiConfig: ApiConfig = {
   baseUrl: import.meta.env.VITE_API_BASE_URL?.trim() ?? "",
   useMockApi: parseBoolean(import.meta.env.VITE_USE_MOCK_API, true),
   mockDelayMs: parseNumber(import.meta.env.VITE_MOCK_API_DELAY_MS, 350),
+  klingBaseUrl: import.meta.env.VITE_KLING_BASE_URL?.trim() ?? "https://api-singapore.klingai.com",
+  klingAccessKey: import.meta.env.VITE_KLING_ACCESS_KEY?.trim() ?? "",
+  klingSecretKey: import.meta.env.VITE_KLING_SECRET_KEY?.trim() ?? "",
 };
