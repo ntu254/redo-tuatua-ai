@@ -32,10 +32,11 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
+      if (!token) return;
 
       await supabase.functions.invoke("track-click", {
         method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
         body: {
           product_id: productId || null,
           outfit_id: outfit.dbId || null,
@@ -43,8 +44,8 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
           traffic_source: "direct",
         },
       });
-    } catch (err) {
-      console.warn("Click tracking failed:", err);
+    } catch {
+      // silent — tracking is best-effort
     }
   };
 

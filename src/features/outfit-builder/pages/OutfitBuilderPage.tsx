@@ -8,6 +8,9 @@ import ControlPanel from "../components/ControlPanel";
 import TryOnCanvas from "../components/TryOnCanvas";
 import AIStylistReport from "../components/AIStylistReport";
 
+const MAX_POLL_RETRIES = 60;
+const POLL_INTERVAL_MS = 3000;
+
 interface OutfitItem {
   id: string;
   name: string;
@@ -36,18 +39,18 @@ export default function OutfitBuilderPage() {
   const [outfit, setOutfit] = useState<Outfit | null>(null);
   const [error, setError] = useState("");
 
-  // Try-on states
   const [humanImage, setHumanImage] = useState<string | null>(null);
   const [clothImage, setClothImage] = useState<string | null>(null);
   const [selectedClothId, setSelectedClothId] = useState<string | null>(null);
   const [tryOnTaskId, setTryOnTaskId] = useState<string | null>(null);
   const [tryOnImage, setTryOnImage] = useState<string | null>(null);
-  const [tryOnStatus, setTryOnStatus] = useState<string>("idle"); // idle, submitting, processing, succeed, failed
+  const [tryOnStatus, setTryOnStatus] = useState<string>("idle");
   const [tryOnError, setTryOnError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"before" | "after">("before");
 
   const trafficRef = searchParams.get("ref") || "direct";
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollCountRef = useRef(0);
 
   useEffect(() => {
     return () => {
@@ -85,18 +88,7 @@ export default function OutfitBuilderPage() {
       if (data?.error) throw new Error(data.error);
       setOutfit(data.outfit);
     } catch (err) {
-      console.warn("Edge Function failed, using mock outfit:", err);
-      setOutfit({
-        style: style || "Minimal Streetwear",
-        description: `Phối đồ ${occasion || "casual"} phong cách ${style || "minimalist"} cho bạn.`,
-        items: [
-          { id: "mock-1", name: "Áo thun oversized trắng", image_url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80", price: 189000, affiliate_url: "https://shopee.vn", brand: "YODY", slot: "top", click_count: 12 },
-          { id: "mock-2", name: "Quần jeans ống rộng", image_url: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&q=80", price: 390000, affiliate_url: "https://lazada.vn", brand: "Routine", slot: "bottom", click_count: 8 },
-          { id: "mock-3", name: "Sneakers trắng basic", image_url: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&q=80", price: 520000, affiliate_url: "https://tiki.vn", brand: "Ananas", slot: "shoes", click_count: 15 },
-        ],
-        total_price: 1099000,
-        trending: true,
-      });
+      setError((err as Error).message || "Không thể tạo outfit. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -120,6 +112,7 @@ export default function OutfitBuilderPage() {
       const { taskId } = await klingApi.createTryOnTask(humanImage, clothImage);
       setTryOnTaskId(taskId);
       setTryOnStatus("processing");
+      pollCountRef.current = 0;
       pollTryOnStatus(taskId);
     } catch (err) {
       setTryOnStatus("failed");
@@ -129,7 +122,17 @@ export default function OutfitBuilderPage() {
 
   const pollTryOnStatus = (taskId: string) => {
     if (pollRef.current) clearInterval(pollRef.current);
+
     pollRef.current = setInterval(async () => {
+      pollCountRef.current++;
+
+      if (pollCountRef.current > MAX_POLL_RETRIES) {
+        if (pollRef.current) clearInterval(pollRef.current);
+        setTryOnStatus("failed");
+        setTryOnError("Hết thời gian chờ. Vui lòng thử lại.");
+        return;
+      }
+
       try {
         const result = await klingApi.getTaskStatus(taskId);
 
@@ -143,24 +146,29 @@ export default function OutfitBuilderPage() {
           setTryOnStatus("failed");
           setTryOnError(result.taskStatusMsg || "Thử đồ ảo thất bại.");
         }
-      } catch (err) {
-        console.warn("Polling error:", err);
+      } catch {
+        if (pollCountRef.current > MAX_POLL_RETRIES) {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setTryOnStatus("failed");
+          setTryOnError("Lỗi kết nối. Vui lòng thử lại.");
+        }
       }
-    }, 3000);
+    }, POLL_INTERVAL_MS);
   };
 
   const trackClick = async (productId: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
+      if (!token) return;
 
       await supabase.functions.invoke("track-click", {
         method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
         body: { product_id: productId },
       });
-    } catch (err) {
-      console.warn("Click tracking failed:", err);
+    } catch {
+      // silent — tracking is best-effort
     }
   };
 

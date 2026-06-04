@@ -1,6 +1,6 @@
 import type { Outfit, Product } from "@/features/recommender/types";
 import { motion } from "framer-motion";
-import { Bookmark, ExternalLink, Heart, RefreshCw, Sparkles, Star, ZoomIn } from "lucide-react";
+import { ExternalLink, Heart, Sparkles, Star, ZoomIn } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/shared/lib";
 
@@ -38,10 +38,11 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
     try {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token;
+      if (!token) return;
 
       await supabase.functions.invoke("track-click", {
         method: "POST",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
         body: {
           product_id: productId || null,
           outfit_id: outfit.dbId || null,
@@ -49,8 +50,8 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
           traffic_source: "direct",
         },
       });
-    } catch (err) {
-      console.warn("Click tracking failed:", err);
+    } catch {
+      // silent — tracking is best-effort
     }
   };
 
@@ -214,13 +215,7 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
             }}
             className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-5 py-2.5 bg-foreground text-background hover:bg-foreground/90 rounded-xl transition-all active:scale-95"
           >
-            <ExternalLink className="w-3.5 h-3.5" /> Mở tất cả link
-          </button>
-          <button className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-4 py-2.5 border border-border rounded-xl hover:bg-secondary text-foreground transition-all">
-            <Bookmark className="w-3.5 h-3.5" /> Lưu set
-          </button>
-          <button className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-4 py-2.5 border border-border rounded-xl hover:bg-secondary text-foreground transition-all">
-            <RefreshCw className="w-3.5 h-3.5" /> Tạo set khác
+            <ExternalLink className="w-3.5 h-3.5" /> Mua ngay
           </button>
         </div>
       </div>
