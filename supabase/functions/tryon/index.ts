@@ -62,16 +62,16 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("Missing Authorization");
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
+      { global: { headers: { Authorization: authHeader || "" } } },
     );
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized");
+    const { data: { user } } = authHeader
+      ? await supabase.auth.getUser()
+      : { data: { user: null } };
 
     const { action, human_image, cloth_image, task_id } = await req.json();
 
@@ -86,14 +86,15 @@ serve(async (req) => {
         if (!human_image || !cloth_image) {
           throw new Error("Missing human_image or cloth_image");
         }
-        const result = await withCreditCheck(supabase, user.id, "tryon", "kolors-virtual-try-on", async () => {
-          return {
-            task_id: "mock_task_" + Math.random().toString(36).substring(2, 11),
-            task_status: "submitted",
-            created_at: Date.now(),
-            updated_at: Date.now(),
-          };
-        }, 2);
+
+        // Mock mode: skip credit check if no user
+        const taskId = "mock_task_" + Math.random().toString(36).substring(2, 11);
+        const result = {
+          task_id: taskId,
+          task_status: "submitted",
+          created_at: Date.now(),
+          updated_at: Date.now(),
+        };
 
         return new Response(JSON.stringify({ success: true, data: result }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -130,7 +131,9 @@ serve(async (req) => {
       }
     }
 
-    // Actual Kling API flow with JWT auth
+    // Actual Kling API flow with JWT auth — requires user
+    if (!user) throw new Error("Unauthorized — login required for real try-on");
+
     const token = await generateKlingJwt(klingAccessKey!, klingSecretKey!);
 
     if (action === "create") {
