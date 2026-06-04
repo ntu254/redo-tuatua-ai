@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { Navbar } from "@/shared/layout";
 import { supabase } from "@/shared/lib";
+import { klingApi } from "../services/kling-api";
 import ControlPanel from "../components/ControlPanel";
 import TryOnCanvas from "../components/TryOnCanvas";
 import AIStylistReport from "../components/AIStylistReport";
@@ -116,20 +117,7 @@ export default function OutfitBuilderPage() {
     setViewMode("after");
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token || "";
-
-      const { data, error } = await supabase.functions.invoke("tryon", {
-        body: { action: "create", humanImage, clothImage },
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (error) throw new Error(error.message || "Edge function error");
-      if (data?.error) throw new Error(data.error);
-
-      const taskId = data?.taskId;
-      if (!taskId) throw new Error("Không nhận được task ID từ server.");
-
+      const { taskId } = await klingApi.createTryOnTask(humanImage, clothImage);
       setTryOnTaskId(taskId);
       setTryOnStatus("processing");
       pollTryOnStatus(taskId);
@@ -143,26 +131,17 @@ export default function OutfitBuilderPage() {
     if (pollRef.current) clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token || "";
+        const result = await klingApi.getTaskStatus(taskId);
 
-        const { data, error } = await supabase.functions.invoke("tryon", {
-          body: { action: "status", taskId },
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (error || data?.error) return;
-
-        const status = data?.status;
-        if (status === "succeed") {
+        if (result.taskStatus === "succeed") {
           if (pollRef.current) clearInterval(pollRef.current);
-          const imageUrl = data?.imageUrl;
+          const imageUrl = result.images?.[0]?.url;
           setTryOnImage(imageUrl || null);
           setTryOnStatus("succeed");
-        } else if (status === "failed") {
+        } else if (result.taskStatus === "failed") {
           if (pollRef.current) clearInterval(pollRef.current);
           setTryOnStatus("failed");
-          setTryOnError(data?.message || "Thử đồ ảo thất bại.");
+          setTryOnError(result.taskStatusMsg || "Thử đồ ảo thất bại.");
         }
       } catch (err) {
         console.warn("Polling error:", err);
@@ -172,13 +151,14 @@ export default function OutfitBuilderPage() {
 
   const trackClick = async (productId: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from("clicks").insert({
-        product_id: productId,
-        user_id: user?.id || null,
-        source: "affiliate",
-        traffic_source: trafficRef,
-      } as any);
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      await supabase.functions.invoke("track-click", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: { product_id: productId },
+      });
     } catch (err) {
       console.warn("Click tracking failed:", err);
     }
