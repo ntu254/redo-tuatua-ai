@@ -1,7 +1,7 @@
 import { supabase } from "@/shared/lib";
 import { apiClient } from "@/shared/api";
 import { apiConfig } from "@/shared/api/config";
-import type { Outfit, AIAction } from "../types";
+import type { Outfit, AIAction, Product } from "../types";
 
 export interface GenerateRequest {
   prompt: string;
@@ -49,6 +49,39 @@ function addRuntimeFields(outfits: Outfit[]): Outfit[] {
   }));
 }
 
+async function fetchProducts(limit = 12): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .select("id, name, price, currency, image_url, affiliate_url, category_id, source_id, metadata")
+      .eq("is_active", true)
+      .eq("is_hidden", false)
+      .order("click_count", { ascending: false })
+      .limit(limit);
+
+    if (error || !data || data.length === 0) return [];
+
+    const { data: srcs } = await supabase.from("product_sources").select("id, platform");
+    const srcMap = Object.fromEntries((srcs ?? []).map((s: any) => [s.id, s.platform]));
+
+    return data.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      price: `${Number(p.price).toLocaleString("vi-VN")}đ`,
+      oldPrice: null,
+      platform: srcMap[p.source_id] || "Shopee",
+      badge: null,
+      rating: 4.5,
+      sold: "100+",
+      brand: p.metadata?.brand || "",
+      image: p.image_url || "",
+      affiliateUrl: p.affiliate_url || "",
+    }));
+  } catch {
+    return [];
+  }
+}
+
 async function callEdgeConverse(message: string, history?: any[]): Promise<EdgeResponse | null> {
   try {
     const { data, error } = await supabase.functions.invoke("converse", {
@@ -74,31 +107,37 @@ async function callEdgeGenerate(req: GenerateRequest): Promise<Outfit[] | null> 
 }
 
 async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
-  const { data: outfits } = await (supabase as any)
-    .from("outfits")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(10);
+  const products = await fetchProducts(12);
+  const lower = prompt.toLowerCase();
 
-  const mapped: Outfit[] = (outfits ?? []).map((o: any) => ({
-    id: uuidToId(o.id),
-    title: o.name ?? "Gợi ý từ tủ đồ",
+  const matched = products.filter((p) => {
+    const text = `${p.name} ${p.brand} ${p.platform}`.toLowerCase();
+    return lower.split(" ").some((w) => w.length > 2 && text.includes(w));
+  });
+
+  const used = matched.length >= 2 ? matched.slice(0, 3) : products.slice(0, 3);
+  const total = used.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+
+  const outfit: Outfit = {
+    id: Date.now(),
+    title: prompt.slice(0, 40) || "Gợi ý từ AI",
     emoji: "✨",
-    image: o.image_url || pickFallbackImage(o.id),
+    image: used[0]?.image || pickFallbackImage(String(Date.now())),
     style: "Casual",
-    styleTags: ["Casual"],
+    styleTags: ["Casual", "AI"],
     aiMatch: true,
-    aiComment: "Gợi ý từ bộ sưu tập của bạn",
-    totalPrice: "—",
-    products: [],
+    aiComment: `Phối đồ phù hợp với yêu cầu "${prompt}". Tổng cộng ${total.toLocaleString("vi-VN")}đ.`,
+    totalPrice: `${total.toLocaleString("vi-VN")}đ`,
+    products: used,
+    matchScore: 88,
     season: "all_year",
     occasion: "casual",
-    mood: "Custom",
-  }));
+    mood: "Phù hợp",
+  };
 
   return {
-    reply: "Dưới đây là một số outfit từ bộ sưu tập của bạn!",
-    outfits: addRuntimeFields(mapped.slice(0, 3)),
+    reply: `Đây là gợi ý outfit cho bạn! ${outfit.title}`,
+    outfits: addRuntimeFields([outfit]),
     suggestions: [
       { label: "Thoải mái hơn", prompt: "Làm outfit này thoải mái hơn" },
       { label: "Rẻ hơn", prompt: "Outfit tương tự dưới 1 triệu" },
@@ -107,78 +146,69 @@ async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
   };
 }
 
-async function fallbackGenerate(_req: GenerateRequest): Promise<Outfit[]> {
-  const { data: outfits } = await (supabase as any)
-    .from("outfits")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(5);
+async function fallbackGenerate(req: GenerateRequest): Promise<Outfit[]> {
+  const products = await fetchProducts(12);
 
-  const mapped: Outfit[] = (outfits ?? []).map((o: any) => ({
-    id: uuidToId(o.id),
-    title: o.name ?? "Generated Outfit",
-    emoji: "✨",
-    image: o.image_url || pickFallbackImage(o.id),
-    style: "Casual",
-    styleTags: ["Casual"],
-    aiMatch: true,
-    aiComment: "AI-generated outfit based on your style profile.",
-    totalPrice: "—",
-    products: [],
-    season: "all_year",
-    occasion: "casual",
-    mood: "Custom",
-  }));
+  const shuffled = [...products].sort(() => Math.random() - 0.5);
+  const groups: Outfit[] = [];
 
-  return addRuntimeFields(mapped);
+  for (let i = 0; i < Math.min(shuffled.length, 9); i += 3) {
+    const chunk = shuffled.slice(i, i + 3);
+    if (chunk.length === 0) break;
+    const total = chunk.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+    groups.push({
+      id: Date.now() + i,
+      title: `Outfit ${groups.length + 1}`,
+      emoji: ["✨", "🔥", "💡"][groups.length] || "✨",
+      image: chunk[0]?.image || pickFallbackImage(String(i)),
+      style: req.style || "Casual",
+      styleTags: [req.style || "Casual", "AI"],
+      aiMatch: true,
+      aiComment: `Phối đồ từ ${chunk.length} sản phẩm phù hợp.`,
+      totalPrice: `${total.toLocaleString("vi-VN")}đ`,
+      products: chunk,
+      matchScore: 85 + Math.floor(Math.random() * 10),
+      season: req.season || "all_year",
+      occasion: req.occasion || "casual",
+      mood: "AI Gợi ý",
+    });
+  }
+
+  return addRuntimeFields(groups);
 }
 
 export const recommenderService = {
   listOutfits: async (): Promise<Outfit[]> => {
     if (!apiConfig.useMockApi) {
-      const { data: outfits, error } = await (supabase as any)
-        .from("outfits")
-        .select("id, name, image_url, is_saved, source, created_at, style_preset_id")
-        .order("created_at", { ascending: false })
-        .limit(20);
-        
-      if (error) {
-        if (
-          error.message.includes("schema cache") ||
-          error.message.includes("permission denied") ||
-          error.code === "PGRST204" ||
-          error.code === "PGRST116" ||
-          error.code === "42P01" ||
-          error.code === "42501" ||
-          error.code === "PGRST301"
-        ) {
-          return [];
-        }
-        throw error;
-      }
-      
-      if (outfits && outfits.length > 0) {
-        return outfits.map((o) => ({
-          id: uuidToId(o.id),
-          dbId: o.id,
-          title: o.name ?? "Generated Outfit",
-          emoji: "✨",
-          image: o.image_url || pickFallbackImage(o.id),
+      const products = await fetchProducts(12);
+      if (products.length === 0) return [];
+
+      const shuffled = [...products].sort(() => Math.random() - 0.5);
+      const groups: Outfit[] = [];
+
+      for (let i = 0; i < Math.min(shuffled.length, 9); i += 3) {
+        const chunk = shuffled.slice(i, i + 3);
+        if (chunk.length === 0) break;
+        const total = chunk.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+        groups.push({
+          id: Date.now() + i,
+          title: `Outfit ${groups.length + 1}`,
+          emoji: ["✨", "🔥", "💡"][groups.length] || "✨",
+          image: chunk[0]?.image || pickFallbackImage(String(i)),
           style: "Casual",
           styleTags: ["Casual"],
           aiMatch: true,
-          aiComment: "AI-generated outfit based on your style profile.",
-          totalPrice: "—",
-          products: [],
+          aiComment: `Phối đồ từ ${chunk.length} sản phẩm.`,
+          totalPrice: `${total.toLocaleString("vi-VN")}đ`,
+          products: chunk,
+          matchScore: 85 + Math.floor(Math.random() * 10),
           season: "all_year",
           occasion: "casual",
-          mood: "Custom",
-          userSaved: o.is_saved ?? false,
-          userLiked: null,
-          userHidden: false,
-        }));
+          mood: "Gợi ý",
+        });
       }
-      return [];
+
+      return addRuntimeFields(groups);
     }
     return apiClient.get<Outfit[]>("/api/recommender/outfits");
   },
