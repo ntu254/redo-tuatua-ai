@@ -36,13 +36,18 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
 
   const trackAffiliateClick = async (productId?: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from("clicks").insert({
-        user_id: user?.id || null,
-        product_id: productId || null,
-        outfit_id: outfit.dbId || null,
-        source: "affiliate",
-        traffic_source: "direct",
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      await supabase.functions.invoke("track-click", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: {
+          product_id: productId || null,
+          outfit_id: outfit.dbId || null,
+          source: "affiliate",
+          traffic_source: "direct",
+        },
       });
     } catch (err) {
       console.warn("Click tracking failed:", err);
