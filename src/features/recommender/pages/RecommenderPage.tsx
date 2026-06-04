@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/shared/layout";
-import { ChatSidebar, OutfitCard } from "../components";
+import { ChatSidebar } from "../components";
 import HotOutfitCarousel from "../components/HotOutfitCarousel";
+import DetailedOutfitSetCard from "../components/DetailedOutfitSetCard";
+import MiniSetCard from "../components/MiniSetCard";
 import type { Outfit } from "../types";
 
 const LOADING_STEPS = [
@@ -118,7 +120,7 @@ const RecommenderPage = () => {
                   Gợi ý outfit
                 </span>
                 <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground">
-                  Gợi ý outfit cho: "{activePrompt}"
+                  {filtered.length} set dành cho: "{activePrompt}"
                 </h1>
               </div>
 
@@ -149,14 +151,14 @@ const RecommenderPage = () => {
               </div>
 
               {/* Set Tabs */}
-              <div className="flex gap-2 border-b border-border/40 pb-3 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-1 border-b border-border/40 pb-0 overflow-x-auto scrollbar-hide">
                 {filtered.map((outfit, i) => {
                   const isActive = activeOutfitIndex === i;
                   return (
                     <button
                       key={outfit.id}
                       onClick={() => setActiveOutfitIndex(i)}
-                      className={`px-4 py-2 text-xs md:text-sm font-heading font-semibold border-b-2 whitespace-nowrap transition-all ${
+                      className={`px-4 py-2.5 text-xs font-body font-semibold border-b-2 whitespace-nowrap transition-all ${
                         isActive
                           ? "border-foreground text-foreground"
                           : "border-transparent text-muted-foreground hover:text-foreground"
@@ -168,12 +170,33 @@ const RecommenderPage = () => {
                 })}
               </div>
 
-              {/* Active Outfit Set Card */}
+              {/* Active Detailed Set Card */}
               {filtered[activeOutfitIndex] && (
-                <OutfitCard
+                <DetailedOutfitSetCard
                   outfit={filtered[activeOutfitIndex]}
                   index={activeOutfitIndex}
                 />
+              )}
+
+              {/* Mini Cards for Other Sets */}
+              {filtered.length > 1 && (
+                <div className="space-y-2 pt-2">
+                  <h3 className="text-xs font-body font-bold text-muted-foreground/60 uppercase tracking-wider">
+                    Các set khác
+                  </h3>
+                  {filtered.map((outfit, i) => {
+                    if (i === activeOutfitIndex) return null;
+                    return (
+                      <MiniSetCard
+                        key={outfit.id}
+                        outfit={outfit}
+                        index={i}
+                        isActive={false}
+                        onClick={() => setActiveOutfitIndex(i)}
+                      />
+                    );
+                  })}
+                </div>
               )}
             </div>
           ) : (
