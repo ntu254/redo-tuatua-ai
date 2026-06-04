@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Flame, Heart, Star, TrendingUp, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Heart, Sparkles, Star, TrendingUp, Zap } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface HotOutfit {
