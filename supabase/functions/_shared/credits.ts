@@ -14,7 +14,12 @@ export async function withCreditCheck<T>(
   modelName: string,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const { data: credits } = await supabase
+  const adminClient = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  );
+
+  const { data: credits } = await adminClient
     .from("user_credits")
     .select("balance")
     .eq("user_id", userId)
@@ -22,7 +27,7 @@ export async function withCreditCheck<T>(
 
   const balance = credits?.balance ?? 0;
 
-  const { data: sub } = await supabase
+  const { data: sub } = await adminClient
     .from("subscriptions")
     .select("plan_id")
     .eq("user_id", userId)
@@ -31,7 +36,7 @@ export async function withCreditCheck<T>(
   let limit = 5;
   let planName = "Free";
   if (sub?.plan_id) {
-    const { data: plan } = await supabase
+    const { data: plan } = await adminClient
       .from("plans")
       .select("name, ai_generations_limit")
       .eq("id", sub.plan_id)
@@ -48,12 +53,25 @@ export async function withCreditCheck<T>(
     );
   }
 
-  const { data: job } = await supabase
+  let modelId: string | null = null;
+  if (modelName) {
+    const { data: model } = await adminClient
+      .from("ai_models")
+      .select("id")
+      .ilike("name", `%${modelName.replace(/-/g, " ")}%`)
+      .limit(1)
+      .maybeSingle();
+    if (model) {
+      modelId = model.id;
+    }
+  }
+
+  const { data: job } = await adminClient
     .from("ai_jobs")
     .insert({
       user_id: userId,
       job_type: jobType,
-      model_name: modelName,
+      model_id: modelId,
       status: "processing",
     })
     .select("id")
@@ -65,19 +83,19 @@ export async function withCreditCheck<T>(
     const result = await fn();
     const latency = Date.now() - startTime;
 
-    await supabase
+    await adminClient
       .from("ai_jobs")
       .update({ status: "completed", completed_at: new Date().toISOString() })
       .eq("id", job.id);
 
     if (limit !== 0) {
-      const { data: uc } = await supabase
+      const { data: uc } = await adminClient
         .from("user_credits")
         .select("balance, lifetime_spent")
         .eq("user_id", userId)
         .maybeSingle();
       if (uc) {
-        await supabase
+        await adminClient
           .from("user_credits")
           .update({
             balance: (uc.balance ?? 0) - 1,
@@ -85,7 +103,7 @@ export async function withCreditCheck<T>(
           })
           .eq("user_id", userId);
       }
-      await supabase.from("credit_transactions").insert({
+      await adminClient.from("credit_transactions").insert({
         user_id: userId,
         amount: -1,
         type: "generation",
@@ -94,18 +112,18 @@ export async function withCreditCheck<T>(
       });
     }
 
-    await supabase.from("ai_generation_logs").insert({
+    await adminClient.from("ai_generation_logs").insert({
+      job_id: job.id,
       user_id: userId,
-      model_name: modelName,
-      job_type: jobType,
+      model_id: modelId,
       latency_ms: latency,
-      status: "success",
+      success: true,
     });
 
     return result;
   } catch (err) {
     const latency = Date.now() - startTime;
-    await supabase
+    await adminClient
       .from("ai_jobs")
       .update({
         status: "failed",
@@ -114,12 +132,12 @@ export async function withCreditCheck<T>(
       })
       .eq("id", job.id);
 
-    await supabase.from("ai_generation_logs").insert({
+    await adminClient.from("ai_generation_logs").insert({
+      job_id: job.id,
       user_id: userId,
-      model_name: modelName,
-      job_type: jobType,
+      model_id: modelId,
       latency_ms: latency,
-      status: "failed",
+      success: false,
       error_message: (err as Error).message,
     });
 

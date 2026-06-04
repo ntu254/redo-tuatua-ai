@@ -153,7 +153,7 @@ const OutfitCard = ({ outfit, index, onSave, onLike, onHide, onReport, onAction,
                 if (!p.affiliateUrl) {
                   e.preventDefault();
                 } else {
-                  trackAffiliateClick();
+                  trackAffiliateClick(p.id);
                 }
               }}
             >
