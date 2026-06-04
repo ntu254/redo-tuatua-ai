@@ -1,6 +1,6 @@
 import type { Outfit, Product } from "@/features/recommender/types";
 import { motion } from "framer-motion";
-import { ExternalLink, Heart, Sparkles, Star } from "lucide-react";
+import { Bookmark, ExternalLink, Heart, RefreshCw, Sparkles, Star, ZoomIn } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/shared/lib";
 
@@ -84,17 +84,20 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
         </button>
       </div>
 
-      {/* Body: 2-column */}
+      {/* Body: 2-column — 42% preview / 58% products */}
       <div className="flex flex-col lg:flex-row">
         {/* Left: Preview */}
-        <div className="lg:w-1/2 p-5 space-y-3">
+        <div className="lg:w-[42%] p-5 space-y-3">
           {/* Main image */}
-          <div className="aspect-[4/5] rounded-xl overflow-hidden bg-secondary/30 border border-border/30">
+          <div className="aspect-[4/5] rounded-xl overflow-hidden bg-secondary/30 border border-border/30 relative group">
             <img
               src={mainImage}
               alt={outfit.title}
               className="w-full h-full object-cover"
             />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center transition-colors">
+              <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-80 transition-opacity" />
+            </div>
           </div>
           {/* Thumbnails */}
           <div className="flex gap-2 overflow-x-auto scrollbar-hide">
@@ -117,16 +120,19 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
         </div>
 
         {/* Right: Products */}
-        <div className="lg:w-1/2 p-5 lg:border-l border-t lg:border-t-0 border-border/30 space-y-4">
+        <div className="lg:w-[58%] p-5 lg:border-l border-t lg:border-t-0 border-border/30 space-y-4 overflow-y-auto max-h-[520px]">
           <h4 className="text-xs font-body font-bold text-muted-foreground/60 uppercase tracking-wider">
             Sản phẩm trong set
           </h4>
 
           {grouped.map((group) => (
-            <div key={group.category} className="space-y-2">
-              <span className="text-[10px] font-body font-bold text-muted-foreground/50 uppercase tracking-widest">
-                {group.category}
-              </span>
+            <div key={group.category} className="space-y-1.5">
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[10px] font-body font-bold text-foreground/50 uppercase tracking-widest">
+                  {group.category}
+                </span>
+                <span className="text-[9px] font-body text-muted-foreground/50">({group.items.length})</span>
+              </div>
               {group.items.map((p, idx) => (
                 <div key={idx} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-secondary/30 transition-colors group">
                   <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border border-border/30 bg-secondary/40">
@@ -139,7 +145,7 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-body font-medium text-foreground truncate">{p.name}</p>
                     <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
-                      <span className="font-semibold text-foreground/70">{p.platform}</span>
+                      <span className={`font-semibold ${p.platform === "Shopee" ? "text-shopee" : "text-tiktok"}`}>{p.platform}</span>
                       <span>·</span>
                       <span className="flex items-center gap-0.5">
                         <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" /> {p.rating || 5.0}
@@ -147,6 +153,11 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
                       <span>·</span>
                       <span className="font-bold text-foreground">{p.price}</span>
                     </div>
+                    {p.badge && (
+                      <span className="inline-block mt-0.5 text-[9px] font-body px-1.5 py-0.5 rounded bg-teal/10 text-teal font-semibold">
+                        {p.badge}
+                      </span>
+                    )}
                   </div>
                   <a
                     href={p.affiliateUrl || "#"}
@@ -156,7 +167,7 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
                       if (!p.affiliateUrl) { e.preventDefault(); return; }
                       void trackAffiliateClick(p.id);
                     }}
-                    className="text-[10px] font-body font-semibold px-3 py-1.5 border border-border rounded-lg hover:bg-secondary text-foreground transition-all shrink-0 opacity-0 group-hover:opacity-100"
+                    className="text-[10px] font-body font-semibold px-3 py-1.5 border border-border rounded-lg hover:bg-foreground hover:text-background text-foreground transition-all shrink-0"
                   >
                     Mở link
                   </a>
@@ -176,7 +187,7 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
               AI Note
             </span>
           </div>
-          <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed">
+          <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed line-clamp-2">
             {outfit.aiComment}
           </p>
         </div>
@@ -188,7 +199,7 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
           <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">Tổng set</span>
           <span className="text-lg md:text-xl font-heading font-bold text-foreground">{outfit.totalPrice}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => {
               void trackAffiliateClick();
@@ -199,6 +210,12 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
             className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-5 py-2.5 bg-foreground text-background hover:bg-foreground/90 rounded-xl transition-all active:scale-95"
           >
             <ExternalLink className="w-3.5 h-3.5" /> Mở tất cả link
+          </button>
+          <button className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-4 py-2.5 border border-border rounded-xl hover:bg-secondary text-foreground transition-all">
+            <Bookmark className="w-3.5 h-3.5" /> Lưu set
+          </button>
+          <button className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-4 py-2.5 border border-border rounded-xl hover:bg-secondary text-foreground transition-all">
+            <RefreshCw className="w-3.5 h-3.5" /> Tạo set khác
           </button>
         </div>
       </div>

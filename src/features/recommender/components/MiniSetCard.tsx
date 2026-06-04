@@ -36,9 +36,16 @@ const MiniSetCard = ({ outfit, index, isActive, onClick }: MiniSetCardProps) => 
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-body font-semibold text-foreground truncate">
-          Set {index + 1} - {outfit.title}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-body font-semibold text-foreground truncate">
+            Set {index + 1} - {outfit.title}
+          </p>
+          {outfit.matchScore && (
+            <span className="text-[9px] font-body font-bold text-teal bg-teal/10 px-1.5 py-0.5 rounded-full shrink-0">
+              {outfit.matchScore}%
+            </span>
+          )}
+        </div>
         <p className="text-[10px] font-body text-muted-foreground mt-0.5 truncate">
           {outfit.styleTags.slice(0, 3).join(" · ")}
         </p>
