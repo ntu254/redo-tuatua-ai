@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Flame, Heart, Sparkles, Star, TrendingUp, Zap } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Outfit } from "../types";
 
 interface HotOutfit {
   id: number;
@@ -13,6 +14,31 @@ interface HotOutfit {
   platformColor: string;
   price: string;
   description: string;
+}
+
+function outfitsToHot(outfits: Outfit[]): HotOutfit[] {
+  if (!outfits || outfits.length === 0) return [];
+  const badges = [
+    { label: "Hot", icon: <Flame className="w-3 h-3" /> },
+    { label: "Trending", icon: <TrendingUp className="w-3 h-3" /> },
+    { label: "Phù hợp", icon: <Star className="w-3 h-3" /> },
+  ];
+  return outfits.map((o, i) => {
+    const b = badges[i % badges.length];
+    const platform = o.products?.[0]?.platform || "Shopee";
+    return {
+      id: typeof o.id === "number" ? o.id : i,
+      title: o.title,
+      image: o.image,
+      tags: o.styleTags || [o.style],
+      badge: b.label,
+      badgeIcon: b.icon,
+      platform,
+      platformColor: platform === "Shopee" ? "bg-shopee" : "bg-tiktok",
+      price: o.totalPrice,
+      description: o.aiComment || `${o.styleTags?.join(", ") || o.style}`,
+    };
+  });
 }
 
 const HOT_OUTFITS: HotOutfit[] = [
@@ -94,7 +120,11 @@ const FILTER_CHIPS = ["Hot trend", "Nữ tính", "Dưới 3 triệu", "Shopee", 
 
 const AUTO_SLIDE_MS = 5000;
 
-export default function HotOutfitCarousel() {
+interface HotOutfitCarouselProps {
+  outfits?: Outfit[];
+}
+
+export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
@@ -104,9 +134,10 @@ export default function HotOutfitCarousel() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(Date.now());
 
-  const total = HOT_OUTFITS.length;
+  const hotOutfits = realOutfits && realOutfits.length > 0 ? outfitsToHot(realOutfits) : HOT_OUTFITS;
+  const total = hotOutfits.length;
 
-  const filtered = HOT_OUTFITS.filter((o) => {
+  const filtered = hotOutfits.filter((o) => {
     if (activeFilter.length === 0) return true;
     if (activeFilter.includes("Dưới 3 triệu")) {
       const priceNum = Number(o.price.replace(/[^0-9]/g, ""));
@@ -211,7 +242,9 @@ export default function HotOutfitCarousel() {
           </span>
         </div>
         <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground">
-          Khám phá 6 set hot hôm nay
+          {realOutfits && realOutfits.length > 0
+            ? `Khám phá ${realOutfits.length} set hot hôm nay`
+            : "Khám phá set hot hôm nay"}
         </h2>
         <p className="text-xs font-body text-muted-foreground mt-1">
           Chưa biết mặc gì? Xem ngay các set đang thịnh hành.
@@ -254,7 +287,7 @@ export default function HotOutfitCarousel() {
         <div className="overflow-hidden px-2 py-4">
           <div className="flex items-center justify-center gap-5 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]">
             {getVisibleIndices().map(({ idx, offset }) => {
-              const outfit = filtered[idx % filtered.length] || HOT_OUTFITS[idx];
+              const outfit = filtered[idx % filtered.length] || hotOutfits[idx];
               const isActive = offset === 1;
               const isLeft = offset === 0;
               const isRight = offset === 2;

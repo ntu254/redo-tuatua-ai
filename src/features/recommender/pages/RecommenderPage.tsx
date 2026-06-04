@@ -5,6 +5,7 @@ import { ChatSidebar } from "../components";
 import HotOutfitCarousel from "../components/HotOutfitCarousel";
 import DetailedOutfitSetCard from "../components/DetailedOutfitSetCard";
 import MiniSetCard from "../components/MiniSetCard";
+import { recommenderService } from "../services/recommender.service";
 import type { Outfit } from "../types";
 
 const LOADING_STEPS = [
@@ -20,6 +21,7 @@ const RecommenderPage = () => {
   const [chatOpen, setChatOpen] = useState(true);
   const [activeChips, setActiveChips] = useState<string[]>([]);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [trendingOutfits, setTrendingOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -27,6 +29,10 @@ const RecommenderPage = () => {
   const [loadingStep, setLoadingStep] = useState(0);
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const cancelledRef = useRef(false);
+
+  useEffect(() => {
+    recommenderService.fetchTrendingOutfits().then(setTrendingOutfits);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !isGenerating) return;
@@ -201,7 +207,7 @@ const RecommenderPage = () => {
             </div>
           ) : (
             /* Empty State: Hot Outfit Carousel */
-            <HotOutfitCarousel />
+            <HotOutfitCarousel outfits={trendingOutfits} />
           )}
         </main>
       </div>

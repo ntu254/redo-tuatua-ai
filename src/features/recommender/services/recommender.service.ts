@@ -178,6 +178,76 @@ async function fallbackGenerate(req: GenerateRequest): Promise<Outfit[]> {
 }
 
 export const recommenderService = {
+  fetchTrendingOutfits: async (): Promise<Outfit[]> => {
+    try {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, name, price, currency, image_url, affiliate_url, category_id, source_id, metadata, tags, trending_score, click_count")
+        .eq("is_active", true)
+        .eq("is_hidden", false)
+        .order("trending_score", { ascending: false })
+        .order("click_count", { ascending: false })
+        .limit(30);
+
+      if (error || !data || data.length === 0) return [];
+
+      const { data: srcs } = await supabase.from("product_sources").select("id, platform");
+      const srcMap = Object.fromEntries((srcs ?? []).map((s: any) => [s.id, s.platform]));
+
+      const products: Product[] = data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        price: `${Number(p.price).toLocaleString("vi-VN")}đ`,
+        oldPrice: null,
+        platform: srcMap[p.source_id] || "Shopee",
+        badge: null,
+        rating: 4.5,
+        sold: "100+",
+        brand: p.metadata?.brand || "",
+        image: p.image_url || "",
+        affiliateUrl: p.affiliate_url || "",
+      }));
+
+      const shuffled = [...products].sort(() => Math.random() - 0.5);
+      const groups: Outfit[] = [];
+      const titles = [
+        "Phong cách công sở", "Năng động hàng ngày", "Dạo phố nhẹ nhàng",
+        "Hẹn hò lãng mạn", "Cuối tuần thư giãn", "Sang trọng nổi bật",
+        "Trẻ trung năng động", "Thanh lịch tối giản", "Nữ tính ngọt ngào",
+      ];
+      const tagPool = ["Thanh lịch", "Năng động", "Casual", "Nữ tính", "Tối giản", "Trẻ trung", "Sang trọng", "Basic"];
+
+      for (let i = 0; i < Math.min(shuffled.length, 18); i += 3) {
+        const chunk = shuffled.slice(i, i + 3);
+        if (chunk.length === 0) break;
+        const total = chunk.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+        const groupIdx = groups.length;
+        const tags = tagPool.sort(() => Math.random() - 0.5).slice(0, 2 + Math.floor(Math.random() * 2));
+
+        groups.push({
+          id: Date.now() + groupIdx,
+          title: titles[groupIdx] || `Set ${groupIdx + 1}`,
+          emoji: ["", ""][groupIdx] || "",
+          image: chunk[0]?.image || pickFallbackImage(String(i)),
+          style: tags[0],
+          styleTags: tags,
+          aiMatch: true,
+          aiComment: `${chunk.length} sản phẩm trending được phối từ kho thực tế.`,
+          totalPrice: `${total.toLocaleString("vi-VN")}đ`,
+          products: chunk,
+          matchScore: 80 + Math.floor(Math.random() * 15),
+          season: "all_year",
+          occasion: "casual",
+          mood: "Trending",
+        });
+      }
+
+      return addRuntimeFields(groups);
+    } catch {
+      return [];
+    }
+  },
+
   listOutfits: async (): Promise<Outfit[]> => {
     if (!apiConfig.useMockApi) {
       const products = await fetchProducts(12);
