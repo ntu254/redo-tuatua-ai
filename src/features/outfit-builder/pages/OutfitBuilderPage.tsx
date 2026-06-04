@@ -35,6 +35,16 @@ export default function OutfitBuilderPage() {
   const [outfit, setOutfit] = useState<Outfit | null>(null);
   const [error, setError] = useState("");
 
+  // Try-on states
+  const [humanImage, setHumanImage] = useState<string | null>(null);
+  const [clothImage, setClothImage] = useState<string | null>(null);
+  const [selectedClothId, setSelectedClothId] = useState<string | null>(null);
+  const [tryOnTaskId, setTryOnTaskId] = useState<string | null>(null);
+  const [tryOnImage, setTryOnImage] = useState<string | null>(null);
+  const [tryOnStatus, setTryOnStatus] = useState<string>("idle"); // idle, submitting, processing, succeed, failed
+  const [tryOnError, setTryOnError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"before" | "after">("before");
+
   const trafficRef = searchParams.get("ref") || "direct";
 
   const buildOutfit = async (text: string) => {
@@ -42,6 +52,12 @@ export default function OutfitBuilderPage() {
     setIsLoading(true);
     setError("");
     setOutfit(null);
+    setClothImage(null);
+    setSelectedClothId(null);
+    setTryOnImage(null);
+    setTryOnStatus("idle");
+    setTryOnError(null);
+
     try {
       const prompt = [
         text,
@@ -66,6 +82,69 @@ export default function OutfitBuilderPage() {
     if (input.trim()) {
       buildOutfit(input);
     }
+  };
+
+  const startTryOn = async () => {
+    if (!humanImage || !clothImage || tryOnStatus === "submitting" || tryOnStatus === "processing") return;
+
+    setTryOnStatus("submitting");
+    setTryOnError(null);
+    setTryOnImage(null);
+    setViewMode("after");
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("tryon", {
+        body: {
+          action: "create",
+          human_image: humanImage,
+          cloth_image: clothImage,
+        },
+      });
+
+      if (fnError) throw fnError;
+      if (data?.error) throw new Error(data.error);
+
+      const taskId = data.data.task_id;
+      setTryOnTaskId(taskId);
+      setTryOnStatus("processing");
+
+      pollTryOnStatus(taskId);
+    } catch (err) {
+      setTryOnStatus("failed");
+      setTryOnError((err as Error).message || "Không thể khởi tạo thử đồ ảo.");
+    }
+  };
+
+  const pollTryOnStatus = (taskId: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const { data, error: fnError } = await supabase.functions.invoke("tryon", {
+          body: {
+            action: "status",
+            task_id: taskId,
+          },
+        });
+
+        if (fnError) {
+          console.warn("TryOn polling error:", fnError);
+          return;
+        }
+
+        const status = data.data.task_status;
+        if (status === "succeed") {
+          clearInterval(interval);
+          const imageUrl = data.data.task_result?.images?.[0]?.url;
+          setTryOnImage(imageUrl);
+          setTryOnStatus("succeed");
+        } else if (status === "failed") {
+          clearInterval(interval);
+          setTryOnStatus("failed");
+          setTryOnError(data.data.task_status_msg || "Thử đồ ảo thất bại.");
+        }
+      } catch (err) {
+        console.warn("Polling error:", err);
+      }
+    }, 3000);
   };
 
   const trackClick = async (productId: string) => {
@@ -95,18 +174,36 @@ export default function OutfitBuilderPage() {
           setStyle={setStyle}
           isLoading={isLoading}
           onGenerate={handleGenerate}
+          humanImage={humanImage}
+          setHumanImage={setHumanImage}
+          clothImage={clothImage}
+          setClothImage={setClothImage}
+          isTryOnLoading={tryOnStatus === "submitting" || tryOnStatus === "processing"}
+          onStartTryOn={startTryOn}
+          canTryOn={!!humanImage && !!clothImage}
         />
         <TryOnCanvas
           isLoading={isLoading}
           outfit={outfit}
-          error={error}
+          error={error || tryOnError || ""}
           onRetry={handleGenerate}
           trackClick={trackClick}
+          humanImage={humanImage}
+          selectedClothId={selectedClothId}
+          setSelectedClothId={setSelectedClothId}
+          setSelectedClothImage={setClothImage}
+          tryOnImage={tryOnImage}
+          tryOnStatus={tryOnStatus}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
         />
         <AIStylistReport
           occasion={occasion}
           style={style}
           hasOutfit={!!outfit}
+          hasPhoto={!!humanImage}
+          tryOnImage={tryOnImage}
+          tryOnStatus={tryOnStatus}
         />
       </main>
     </div>

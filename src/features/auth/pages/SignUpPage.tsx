@@ -36,13 +36,9 @@ const SignUpPage = () => {
 
   const signupMutation = useMutation({
     mutationFn: () => signup(email, password, name),
-    onSuccess: (result) => {
-      if (result.needsEmailConfirmation) {
-        setEmailConfirmMsg(true);
-        setTimeout(() => navigate("/login", { replace: true }), 5000);
-        return;
-      }
-      navigate("/quiz");
+    onSuccess: () => {
+      setEmailConfirmMsg(true);
+      setTimeout(() => navigate("/login", { replace: true }), 5000);
     },
   });
 
