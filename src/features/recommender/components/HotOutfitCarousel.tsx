@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Flame, Heart, Play, Sparkles, Star, TrendingUp, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Heart, Star, TrendingUp, Zap } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface HotOutfit {
@@ -367,16 +367,7 @@ export default function HotOutfitCarousel() {
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-between gap-4 pt-2">
-        {/* Auto play toggle */}
-        <button
-          onClick={() => setIsAutoPlay(!isAutoPlay)}
-          className="flex items-center gap-1.5 text-[11px] font-body text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
-        >
-          <Play className={`w-3 h-3 ${isAutoPlay ? "fill-foreground text-foreground" : ""}`} />
-          <span className="hidden sm:inline">Tự động chuyển</span>
-        </button>
-
+      <div className="flex items-center justify-center gap-4 pt-2">
         {/* Progress bar */}
         <div className="flex-1 max-w-[200px] h-1 bg-secondary/60 rounded-full overflow-hidden">
           <div
@@ -398,26 +389,6 @@ export default function HotOutfitCarousel() {
             />
           ))}
         </div>
-
-        {/* Counter */}
-        <span className="text-[11px] font-body text-muted-foreground tabular-nums shrink-0">
-          {String(activeIndex + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-        </span>
-      </div>
-
-      {/* Bottom CTA */}
-      <div className="bg-secondary/30 rounded-2xl border border-border/30 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="font-heading text-sm font-bold text-foreground flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-accent" /> AI Stylist luôn sẵn sàng!
-          </h3>
-          <p className="text-[11px] font-body text-muted-foreground mt-0.5">
-            Hãy mô tả phong cách, dịp hoặc sản phẩm bạn thích để nhận gợi ý chính xác hơn.
-          </p>
-        </div>
-        <button className="px-5 py-2.5 rounded-xl bg-foreground text-background text-xs font-body font-semibold hover:bg-foreground/90 transition-colors cursor-pointer shrink-0 flex items-center gap-1.5">
-          Bắt đầu ngay <Sparkles className="w-3.5 h-3.5" />
-        </button>
       </div>
     </div>
   );
