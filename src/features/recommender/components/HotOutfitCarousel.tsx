@@ -262,8 +262,10 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
         <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.25)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.25)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_80%,transparent_100%)] pointer-events-none" />
 
         {/* Soft Ambient Light Blobs */}
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[300px] bg-accent/8 rounded-full blur-[100px] pointer-events-none animate-float z-0" />
-        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[350px] h-[350px] bg-teal/6 rounded-full blur-[120px] pointer-events-none animate-float z-0" style={{ animationDelay: "1.5s" }} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[300px] bg-accent/8 rounded-full blur-[100px] animate-float" />
+          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[350px] h-[350px] bg-teal/6 rounded-full blur-[120px] animate-float" style={{ animationDelay: "1.5s" }} />
+        </div>
 
         {/* Arrow Left */}
         <button
@@ -297,8 +299,8 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                   transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className={`relative shrink-0 transition-all duration-500 ${
                     isActive
-                      ? "w-[290px] md:w-[330px] z-10"
-                      : "w-[210px] md:w-[250px] z-0"
+                      ? "w-[280px] sm:w-[300px] md:w-[330px] z-10"
+                      : "hidden md:block w-[250px] z-0"
                   }`}
                 >
                   {/* Glowing active backdrop (rendered outside overflow-hidden) */}
