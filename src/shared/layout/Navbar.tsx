@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Crown, LogOut, Search, Sparkles, User } from "lucide-react";
+import { Crown, LogOut, Menu, Search, Sparkles, User } from "lucide-react";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -13,6 +13,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { supabase } from "@/shared/lib";
 import { Button } from "@/shared/ui";
@@ -33,6 +40,7 @@ interface NavbarProps {
 
 const Navbar = ({ compact = false }: NavbarProps) => {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { user, loading: authLoading, logout } = useAuth();
 
@@ -52,8 +60,8 @@ const Navbar = ({ compact = false }: NavbarProps) => {
         .eq("user_id", userId)
         .maybeSingle();
       return {
-        balance: uc?.balance ?? 0,
-        limit: sub?.plans?.ai_generations_limit ?? 10,
+        balance: (uc as any)?.balance ?? 0,
+        limit: (sub as any)?.plans?.ai_generations_limit ?? 10,
       };
     },
     enabled: !!userId,
@@ -72,7 +80,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
     enabled: !!userId,
   });
 
-  const displayName = profile?.display_name ?? user?.email?.split("@")[0] ?? "User";
+  const displayName = (profile as any)?.display_name ?? user?.email?.split("@")[0] ?? "User";
   const initial = displayName[0].toUpperCase();
 
   useEffect(() => {
@@ -108,7 +116,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-end gap-1 overflow-x-auto whitespace-nowrap pl-4 md:justify-center md:gap-2 lg:gap-4 xl:gap-6">
+          <div className="hidden xl:flex flex-1 items-center justify-center gap-1 xl:gap-2 2xl:gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -125,12 +133,12 @@ const Navbar = ({ compact = false }: NavbarProps) => {
           </div>
         )}
 
-        <div className={`${compact ? "flex" : "hidden xl:flex"} items-center gap-3`}>
+        <div className="flex items-center gap-2.5">
           {user ? (
             <>
               {!compact && (
-                <div className="flex items-center gap-1.5 rounded-full bg-secondary/60 px-3 py-1.5 text-xs font-body text-foreground/70">
-                  <Sparkles className="w-3 h-3 text-foreground/50" />
+                <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-secondary/60 px-3 py-1.5 text-xs font-body text-foreground/70">
+                  <Sparkles className="w-3.5 h-3.5 text-foreground/50" />
                   <span>
                     {credits?.balance ?? 0}/{credits?.limit ?? 10}
                   </span>
@@ -146,7 +154,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
                     className="w-8 h-8 rounded-full overflow-hidden hover:ring-2 hover:ring-foreground/20 transition-all"
                   >
                     <Avatar className="w-full h-full">
-                      <AvatarImage src={profile?.avatar_url ?? ""} />
+                      <AvatarImage src={(profile as any)?.avatar_url ?? ""} />
                       <AvatarFallback className="text-xs font-semibold bg-secondary">{initial}</AvatarFallback>
                     </Avatar>
                   </button>
@@ -183,7 +191,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
           ) : authLoading ? (
             <div className="w-5 h-5 rounded-full border-2 border-foreground/20 border-t-foreground animate-spin" />
           ) : (
-            <>
+            <div className="hidden sm:flex items-center gap-2">
               <Button
                 asChild
                 variant={location.pathname === "/login" ? "secondary" : "outline"}
@@ -195,7 +203,144 @@ const Navbar = ({ compact = false }: NavbarProps) => {
               <Button asChild variant="default" size="sm" className="rounded-full">
                 <Link to="/signup">Đăng ký</Link>
               </Button>
-            </>
+            </div>
+          )}
+
+          {/* Hamburger Menu Trigger on Mobile/Tablet */}
+          {!compact && (
+            <div className="xl:hidden flex items-center">
+              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full w-9 h-9 p-0 text-foreground/80 hover:text-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col p-6 bg-background border-l border-border/40">
+                  <SheetHeader className="text-left mb-6">
+                    <SheetTitle className="font-heading text-2xl italic tracking-tight text-foreground">
+                      Redo
+                    </SheetTitle>
+                  </SheetHeader>
+                  
+                  {/* Navigation Links */}
+                  <div className="flex flex-col gap-4 flex-1 overflow-y-auto pr-2">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        to={link.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`text-sm font-body font-medium transition-colors py-1 ${
+                          location.pathname === link.href
+                            ? "text-foreground font-semibold border-l-2 border-foreground pl-3"
+                            : "text-muted-foreground/80 hover:text-foreground pl-3"
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* User Profile / Actions in mobile menu drawer */}
+                  <div className="border-t border-border/30 pt-6 mt-auto">
+                    {user ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-10 h-10">
+                            <AvatarImage src={(profile as any)?.avatar_url ?? ""} />
+                            <AvatarFallback className="text-xs font-semibold bg-secondary">{initial}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <p className="truncate font-body text-sm font-semibold text-foreground">
+                              {displayName}
+                            </p>
+                            <p className="text-xs font-body text-foreground/50 truncate">
+                              {user.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between rounded-xl bg-secondary/40 px-3.5 py-2.5 text-xs font-body text-foreground/85">
+                          <span className="flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-foreground/50" />
+                            Lượt tạo AI
+                          </span>
+                          <span className="font-semibold">
+                            {credits?.balance ?? 0}/{credits?.limit ?? 10}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-full w-full justify-center text-xs h-9"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              window.location.assign("/profile");
+                            }}
+                          >
+                            Hồ sơ
+                          </Button>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="rounded-full w-full justify-center text-xs h-9 bg-foreground text-background hover:bg-foreground/90"
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              window.location.assign("/pricing");
+                            }}
+                          >
+                            Nâng cấp
+                          </Button>
+                        </div>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-center text-xs text-destructive hover:bg-destructive/10 rounded-full h-9 mt-2 gap-1.5"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            void logout();
+                          }}
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Đăng xuất
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-full w-full justify-center text-xs h-9"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            window.location.assign("/login");
+                          }}
+                        >
+                          Đăng nhập
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="rounded-full w-full justify-center text-xs h-9 bg-foreground text-background"
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            window.location.assign("/signup");
+                          }}
+                        >
+                          Đăng ký
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           )}
         </div>
       </div>

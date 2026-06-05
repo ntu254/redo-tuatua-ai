@@ -183,6 +183,7 @@ const WardrobePage = () => {
         savedOutfits={summary.savedOutfits}
         aiSuggestions={summary.aiSuggestions}
         onAddClick={() => setUploadOpen(true)}
+        onViewSavedAiOutfits={() => window.location.assign("/wardrobe/ai-collection")}
       />
 
       <div className="container mx-auto max-w-7xl px-6 pb-20">

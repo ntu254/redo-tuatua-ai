@@ -74,6 +74,15 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
   return (
     <>
       {showLoginPrompt && <LoginPromptOverlay />}
+      
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          onClick={onToggle}
+          className="md:hidden fixed inset-0 z-30 bg-foreground/20 backdrop-blur-sm transition-opacity duration-300"
+        />
+      )}
+
       {/* Mobile Toggle Button */}
       <button
         onClick={onToggle}
@@ -101,7 +110,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
         initial={false}
         animate={{ x: isOpen ? 0 : -350, width: isOpen ? 320 : 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 220 }}
-        className={`fixed md:sticky md:top-16 z-40 h-screen md:h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background border-r border-border/40 overflow-hidden ${
+        className={`fixed top-16 md:sticky z-40 h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background border-r border-border/40 overflow-hidden ${
           !isOpen ? "pointer-events-none opacity-0 md:w-0" : "w-[320px] opacity-100"
         }`}
       >

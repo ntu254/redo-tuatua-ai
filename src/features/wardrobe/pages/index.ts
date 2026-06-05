@@ -1,1 +1,2 @@
-export { default, default as WardrobePage } from "./WardrobePage";
+export { default } from "./WardrobePage";
+export { default as SavedAiOutfitsPage } from "./SavedAiOutfitsPage";

@@ -98,7 +98,7 @@ export default function ControlPanel({
   };
 
   return (
-    <aside className="w-[320px] bg-card border-r border-border/30 flex flex-col py-6 px-4 gap-4 shrink-0 z-10 h-full">
+    <aside className="w-full lg:w-[320px] bg-card lg:border-r border-border/30 flex flex-col py-6 px-4 gap-4 shrink-0 z-10 h-full">
       {/* Header */}
       <div className="flex items-center gap-3 mb-2 shrink-0">
         <div className="w-10 h-10 rounded-xl bg-foreground flex items-center justify-center text-background">

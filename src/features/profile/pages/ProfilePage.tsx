@@ -61,7 +61,7 @@ const Card = ({
 }: {
   children: React.ReactNode;
   className?: string;
-}) => <div className={`bg-card p-6 ${className}`}>{children}</div>;
+}) => <div className={`bg-card p-4 md:p-6 ${className}`}>{children}</div>;
 
 const SectionHead = ({
   icon: Icon,
@@ -90,7 +90,7 @@ const InfoCard = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <div className="bg-secondary/40 p-6">
+  <div className="bg-secondary/40 p-4 md:p-6">
     <div className="flex items-center gap-2 mb-3">
       <Icon className="w-3.5 h-3.5 text-foreground/30" />
       <p className="font-body text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">
@@ -734,9 +734,9 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
     enabled: !!userId,
   });
 
-  const planName = plan?.sub?.plans?.name ?? "Free";
-  const aiLimit = plan?.sub?.plans?.ai_generations_limit ?? 10;
-  const creditBalance = plan?.credits?.balance ?? 0;
+  const planName = (plan?.sub as any)?.plans?.name ?? "Free";
+  const aiLimit = (plan?.sub as any)?.plans?.ai_generations_limit ?? 10;
+  const creditBalance = (plan?.credits as any)?.balance ?? 0;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -967,7 +967,7 @@ const ProfilePage = () => {
     enabled: !!userId,
   });
 
-  const planName = plan?.plans?.name ?? "Free";
+  const planName = (plan as any)?.plans?.name ?? "Free";
 
   const updateMutation = useMutation({
     mutationFn: (updates: Parameters<typeof profileService.updateProfile>[1]) => profileService.updateProfile(userId, updates),
@@ -1069,7 +1069,7 @@ const ProfilePage = () => {
       <Navbar />
 
       <div className="pt-16">
-        <div className="container mx-auto px-6 py-5">
+        <div className="container mx-auto px-4 md:px-6 py-5">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <p className="text-[11px] font-body font-semibold text-muted-foreground uppercase tracking-widest mb-1">Tài khoản</p>
             <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Cài đặt tài khoản</h1>
@@ -1077,7 +1077,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-6 flex gap-6">
+      <div className="container mx-auto px-4 md:px-6 py-6 flex gap-6">
         <aside className="hidden md:block w-48 shrink-0">
           <nav className="sticky top-20 space-y-0.5">
             {tabs.map((tab) => {
@@ -1098,7 +1098,7 @@ const ProfilePage = () => {
           </nav>
         </aside>
 
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background flex overflow-x-auto px-2 py-1.5 gap-1 scrollbar-hide">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-md flex overflow-x-auto px-2 py-1.5 gap-1 scrollbar-hide border-t border-border/80 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
