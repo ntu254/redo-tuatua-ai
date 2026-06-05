@@ -1,79 +1,101 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, x-client-info, apikey, x-supabase-auth-referer",
-};
+const ALLOWED_ORIGINS = [
+  "https://redo-tuatua-ai.vercel.app",
+  "https://redo-tuatua-ai.netlify.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
+function getCorsHeaders(origin: string | null) {
+  const allowed = ALLOWED_ORIGINS.includes(origin || "") ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowed,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+  };
+}
 
 serve(async (req) => {
+  const origin = req.headers.get("Origin");
+  const corsHeaders = getCorsHeaders(origin);
+
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    let productId: string | null = null;
-    let outfitId: string | null = null;
-    let userId: string | null = null;
-
-    if (req.method === "POST") {
-      const body = await req.json();
-      productId = body.product_id || body.productId;
-      outfitId = body.outfit_id || body.outfitId;
-      userId = body.user_id || body.userId;
-    } else {
-      const url = new URL(req.url);
-      productId = url.searchParams.get("product_id") || url.searchParams.get("productId");
-      outfitId = url.searchParams.get("outfit_id") || url.searchParams.get("outfitId");
-      userId = url.searchParams.get("user_id") || url.searchParams.get("userId");
+    if (req.method !== "POST") {
+      return new Response(JSON.stringify({ error: "Method not allowed" }), {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const ipAddress = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
-    const userAgent = req.headers.get("user-agent") || "";
-
-    if (!productId) throw new Error("Missing product_id");
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
     );
 
-    // Record click
-    await supabase.from("clicks").insert({
-      user_id: userId || null,
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const body = await req.json();
+    const productId = body.product_id;
+    const outfitId = body.outfit_id || null;
+
+    if (!productId || typeof productId !== "string") {
+      return new Response(JSON.stringify({ error: "Missing or invalid product_id" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const ipAddress = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
+    const userAgent = (req.headers.get("user-agent") || "").slice(0, 500);
+
+    const { error: insertError } = await supabase.from("clicks").insert({
+      user_id: user.id,
       product_id: productId,
-      outfit_id: outfitId || null,
+      outfit_id: outfitId,
       source: "affiliate",
       ip_address: ipAddress,
-      user_agent: userAgent.slice(0, 500),
+      user_agent: userAgent,
     });
 
-    // Get affiliate URL
+    if (insertError) {
+      console.error("Click insert failed:", insertError.message);
+    }
+
     const { data: product } = await supabase
       .from("products")
       .select("affiliate_url")
       .eq("id", productId)
       .single();
 
-    const affiliateUrl = product?.affiliate_url;
-
-    // POST = API call (return JSON), GET = redirect
-    if (req.method === "POST") {
-      return new Response(JSON.stringify({ tracked: true, affiliate_url: affiliateUrl }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    if (affiliateUrl) {
-      return Response.redirect(affiliateUrl, 302);
-    }
-
-    return new Response(JSON.stringify({ error: "Product not found" }), {
-      status: 404,
+    return new Response(JSON.stringify({
+      tracked: true,
+      affiliate_url: product?.affiliate_url || null,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
-      status: 400,
+    console.error("track-click error:", err);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

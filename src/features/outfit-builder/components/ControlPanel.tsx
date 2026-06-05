@@ -1,4 +1,5 @@
-import { Loader2, Sparkles, SlidersHorizontal, Upload, Shirt } from "lucide-react";
+import { Loader2, Sparkles, SlidersHorizontal, Upload, Shirt, X } from "lucide-react";
+import { useRef } from "react";
 
 interface ControlPanelProps {
   input: string;
@@ -9,6 +10,19 @@ interface ControlPanelProps {
   setStyle: (v: string) => void;
   isLoading: boolean;
   onGenerate: () => void;
+
+  // Model photo props
+  humanImage: string | null;
+  setHumanImage: (v: string | null) => void;
+
+  // Clothing photo props
+  clothImage: string | null;
+  setClothImage: (v: string | null) => void;
+
+  // Try-on trigger props
+  isTryOnLoading: boolean;
+  onStartTryOn: () => void;
+  canTryOn: boolean;
 }
 
 const OCCASIONS = [
@@ -38,8 +52,50 @@ export default function ControlPanel({
   setStyle,
   isLoading,
   onGenerate,
+  humanImage,
+  setHumanImage,
+  clothImage,
+  setClothImage,
+  isTryOnLoading,
+  onStartTryOn,
+  canTryOn,
 }: ControlPanelProps) {
-  const canGenerate = input.trim().length > 0 && !isLoading;
+  const modelInputRef = useRef<HTMLInputElement>(null);
+  const clothInputRef = useRef<HTMLInputElement>(null);
+
+  const canCoordinate = input.trim().length > 0 && !isLoading;
+
+  const handleModelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Ảnh không được vượt quá 10MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setHumanImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleClothUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Ảnh không được vượt quá 10MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setClothImage(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <aside className="w-[320px] bg-card border-r border-border/30 flex flex-col py-6 px-4 gap-4 shrink-0 z-10 h-full">
@@ -60,47 +116,105 @@ export default function ControlPanel({
         <section className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-secondary text-foreground flex items-center justify-center text-xs font-medium font-body">1</div>
-            <h3 className="text-sm font-heading font-semibold text-foreground">Model</h3>
+            <h3 className="text-sm font-heading font-semibold text-foreground">Model Image</h3>
           </div>
-          <button className="w-full h-24 rounded-xl border-2 border-dashed border-border hover:border-foreground bg-card flex flex-col items-center justify-center gap-1 transition-colors group cursor-pointer">
-            <Upload className="w-5 h-5 text-foreground/40 group-hover:text-foreground transition-colors" />
-            <span className="text-xs font-body text-foreground/60 group-hover:text-foreground">Upload full-body photo</span>
-          </button>
+          <input
+            type="file"
+            ref={modelInputRef}
+            onChange={handleModelUpload}
+            accept="image/*"
+            className="hidden"
+          />
+
+          {humanImage ? (
+            <div className="relative w-full h-28 rounded-xl overflow-hidden group border border-border">
+              <img src={humanImage} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200">
+                <button
+                  onClick={() => modelInputRef.current?.click()}
+                  className="px-2.5 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-body font-semibold rounded-lg transition-all"
+                >
+                  Đổi ảnh
+                </button>
+                <button
+                  onClick={() => setHumanImage(null)}
+                  className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg transition-all"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => modelInputRef.current?.click()}
+              className="w-full h-24 rounded-xl border-2 border-dashed border-border hover:border-foreground bg-card flex flex-col items-center justify-center gap-1.5 transition-colors group cursor-pointer"
+            >
+              <Upload className="w-5 h-5 text-foreground/40 group-hover:text-foreground transition-colors" />
+              <span className="text-xs font-body text-foreground/60 group-hover:text-foreground">Upload human photo</span>
+            </button>
+          )}
         </section>
 
         {/* Step 2: Outfit */}
         <section className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-secondary text-foreground flex items-center justify-center text-xs font-medium font-body">2</div>
-            <h3 className="text-sm font-heading font-semibold text-foreground">Outfit</h3>
+            <h3 className="text-sm font-heading font-semibold text-foreground">Trang phục</h3>
           </div>
-          {/* Empty state */}
-          <div className="bg-card rounded-xl border border-border p-4 flex flex-col items-center justify-center gap-3 text-center py-6">
-            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-foreground/40">
-              <Shirt className="w-5 h-5" />
+          <input
+            type="file"
+            ref={clothInputRef}
+            onChange={handleClothUpload}
+            accept="image/*"
+            className="hidden"
+          />
+
+          {clothImage ? (
+            <div className="relative w-full h-28 rounded-xl overflow-hidden group border border-border">
+              <img src={clothImage} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200">
+                <button
+                  onClick={() => clothInputRef.current?.click()}
+                  className="px-2.5 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-body font-semibold rounded-lg transition-all"
+                >
+                  Tải ảnh khác
+                </button>
+                <button
+                  onClick={() => setClothImage(null)}
+                  className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg transition-all"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
-            <p className="text-xs font-body text-foreground/60">No outfit selected yet.</p>
-            <div className="flex flex-col gap-2 w-full">
-              <button className="w-full py-2 rounded-xl border border-foreground text-foreground text-xs font-body font-medium hover:bg-secondary/50 transition-colors cursor-pointer">
-                Add Outfit
-              </button>
-              <button className="w-full py-2 rounded-xl bg-secondary text-foreground text-xs font-body font-medium hover:bg-secondary/80 transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                <Sparkles className="w-3 h-3" /> AI Suggestion
+          ) : (
+            <div className="bg-card rounded-xl border border-border p-4 flex flex-col items-center justify-center gap-3 text-center py-5">
+              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-foreground/40">
+                <Shirt className="w-5 h-5" />
+              </div>
+              <p className="text-[11px] font-body text-foreground/60">
+                Chọn sản phẩm trong danh sách hoặc tải ảnh lên.
+              </p>
+              <button
+                onClick={() => clothInputRef.current?.click()}
+                className="w-full py-1.5 rounded-lg border border-border text-foreground text-xs font-body font-medium hover:bg-secondary/50 transition-colors cursor-pointer"
+              >
+                Tải ảnh trang phục
               </button>
             </div>
-          </div>
+          )}
         </section>
 
         {/* Step 3: Prompt & Style */}
         <section className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-secondary text-foreground flex items-center justify-center text-xs font-medium font-body">3</div>
-            <h3 className="text-sm font-heading font-semibold text-foreground">Prompt & Style</h3>
+            <h3 className="text-sm font-heading font-semibold text-foreground">AI Coordinate Suggestion</h3>
           </div>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="e.g., Minimalist weekend cafe outfit..."
+            placeholder="e.g., Phong cách cá tính dạo phố..."
             className="w-full bg-card border border-border rounded-xl p-3 text-xs font-body text-foreground focus:border-foreground focus:ring-1 focus:ring-foreground outline-none resize-none h-20 placeholder:text-foreground/40"
           />
           <div className="grid grid-cols-2 gap-2">
@@ -125,21 +239,36 @@ export default function ControlPanel({
               ))}
             </select>
           </div>
+
+          <button
+            onClick={onGenerate}
+            disabled={!canCoordinate}
+            className={`mt-1.5 w-full py-2 flex items-center justify-center gap-1.5 text-xs font-body font-semibold rounded-xl border border-border/80 bg-background/50 hover:bg-secondary/40 transition-all ${
+              canCoordinate ? "text-foreground cursor-pointer" : "text-muted-foreground/60 cursor-not-allowed opacity-50"
+            }`}
+          >
+            {isLoading ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="w-3.5 h-3.5 text-muted-foreground" />
+            )}
+            Phối đồ bằng AI
+          </button>
         </section>
       </div>
 
       {/* Footer CTA */}
       <div className="pt-3 border-t border-border/30 shrink-0">
         <button
-          onClick={onGenerate}
-          disabled={!canGenerate}
-          className={`w-full h-12 rounded-xl font-body font-medium text-sm flex items-center justify-center gap-2 transition-all ${
-            canGenerate
-              ? "bg-foreground text-background hover:bg-foreground/90 cursor-pointer"
-              : "bg-secondary text-foreground/40 cursor-not-allowed opacity-70"
+          onClick={onStartTryOn}
+          disabled={!canTryOn || isTryOnLoading}
+          className={`w-full h-12 rounded-xl font-body font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+            canTryOn && !isTryOnLoading
+              ? "bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-md"
+              : "bg-secondary text-foreground/40 cursor-not-allowed opacity-60"
           }`}
         >
-          {isLoading ? (
+          {isTryOnLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
             <Sparkles className="w-4 h-4" />

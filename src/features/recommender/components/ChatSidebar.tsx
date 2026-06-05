@@ -1,8 +1,10 @@
 import { recommenderService } from "@/features/recommender/services/recommender.service";
-import type { ChatMessage, Outfit } from "@/features/recommender/types";
-import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle, Send, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { LoginPromptOverlay } from "@/features/auth/components/LoginPromptOverlay";
+import type { Outfit } from "@/features/recommender/types";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight, Clock, Send, Sparkles } from "lucide-react";
+import { useState } from "react";
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -12,64 +14,58 @@ interface ChatSidebarProps {
   setIsGenerating: (v: boolean) => void;
 }
 
-const quickPrompts = [
-  { icon: "☕", label: "Hẹn hò dưới 1tr", prompt: "Outfit đi hẹn hò tối nay dưới 1 triệu" },
-  { icon: "💼", label: "Office Hàn Quốc", prompt: "Office look phong cách Hàn Quốc" },
-  { icon: "👟", label: "Minimal cuối tuần", prompt: "Outfit minimal cho cuối tuần" },
-  { icon: "🔥", label: "Streetwear concert", prompt: "Streetwear đi concert cá tính" },
-  { icon: "🌙", label: "Dạ tiệc sang trọng", prompt: "Dạ tiệc sang trọng tối nay" },
-  { icon: "💰", label: "Dưới 500k", prompt: "Outfit đẹp dưới 500 nghìn" },
+const QUICK_SUGGESTIONS = [
+  { label: "Dạ tiệc", prompt: "Dạ tiệc sang trọng tối nay" },
+  { label: "Đi học", prompt: "Outfit đi học năng động" },
+  { label: "Đi chơi", prompt: "Outfit đi chơi cuối tuần thoải mái" },
+  { label: "Công sở", prompt: "Style công sở nữ tính" },
+  { label: "Hẹn hò", prompt: "Outfit đi hẹn hò lãng mạn" },
 ];
 
 const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIsGenerating }: ChatSidebarProps) => {
-  const [chat, setChat] = useState<ChatMessage[]>([
-    {
-      role: "ai",
-      text: "Chào bạn! Mình là Redo, AI stylist cá nhân.\n\nBạn muốn mặc gì hôm nay? Ví dụ:\n\n• \"Outfit đi cafe cuối tuần\"\n• \"Streetwear Hàn Quốc\"\n• \"Office look thanh lịch\"",
-    },
-  ]);
-  const [suggestions, setSuggestions] = useState<{ label: string; prompt: string }[]>([]);
+  const { session } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [input, setInput] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [recentHistory, setRecentHistory] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("redo_recent_prompts");
+      return saved ? JSON.parse(saved) : ["Dạ tiệc sang trọng", "Outfit đi cafe", "Style công sở nữ tính"];
+    } catch {
+      return ["Dạ tiệc sang trọng", "Outfit đi cafe", "Style công sở nữ tính"];
+    }
+  });
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chat, isGenerating]);
+  const saveHistory = (items: string[]) => {
+    setRecentHistory(items);
+    try {
+      localStorage.setItem("redo_recent_prompts", JSON.stringify(items));
+    } catch (e) {
+      console.warn("Failed to save history to localStorage:", e);
+    }
+  };
 
   const sendMsg = async (text?: string) => {
     const msg = (text || input).trim();
     if (!msg || isGenerating) return;
 
+    // Guest users cannot use AI features
+    if (!session) {
+      setShowLoginPrompt(true);
+      return;
+    }
+
     setInput("");
-    setChat((c) => [...c, { role: "user", text: msg }]);
+
+    // Update history list
+    const nextHistory = [msg, ...recentHistory.filter((h) => h !== msg)].slice(0, 5);
+    saveHistory(nextHistory);
+
     setIsGenerating(true);
-
-    setChat((c) => [
-      ...c,
-      { role: "ai", text: "Đang phân tích style của bạn." },
-    ]);
-
     try {
       const result = await recommenderService.converse(msg);
-      setChat((c) => {
-        const updated = [...c];
-        updated[updated.length - 1] = {
-          role: "ai",
-          text: `${result.reply}\n\n${result.outfits.map((o, i) => `${i + 1}. **${o.title}**, ${o.aiComment}`).join("\n")}\n\nBạn thấy thế nào? Mình có thể điều chỉnh theo ý bạn!`,
-        };
-        return updated;
-      });
-      setSuggestions(result.suggestions);
       onOutfitsGenerated(result.outfits, msg);
-    } catch {
-      setChat((c) => {
-        const updated = [...c];
-        updated[updated.length - 1] = {
-          role: "ai",
-          text: "Rất tiếc, mình gặp lỗi khi tạo outfit. Bạn thử lại nhé!",
-        };
-        return updated;
-      });
+    } catch (e) {
+      console.error("converse failed:", e);
     } finally {
       setIsGenerating(false);
     }
@@ -77,128 +73,147 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
 
   return (
     <>
+      {showLoginPrompt && <LoginPromptOverlay />}
+      {/* Mobile Toggle Button */}
       <button
         onClick={onToggle}
-        className="md:hidden fixed bottom-6 left-6 z-50 w-14 h-14 rounded-xl bg-foreground text-background shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        className="md:hidden fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-foreground text-background shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
       >
-        {isOpen ? <X className="w-5 h-5" /> : <MessageCircle className="w-5 h-5" />}
+        {isOpen ? <ChevronLeft className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
       </button>
 
+      {/* Desktop Vertical Tab when collapsed */}
+      {!isOpen && (
+        <button
+          onClick={onToggle}
+          className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-40 bg-foreground text-background py-4 px-1.5 rounded-r-xl hover:pl-2.5 transition-all shadow-lg items-center gap-1.5 flex-col"
+          style={{ writingMode: "vertical-rl" }}
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span className="text-[10px] font-heading font-semibold tracking-wider uppercase whitespace-nowrap">
+            AI Stylist
+          </span>
+        </button>
+      )}
+
+      {/* Main Sidebar Drawer */}
       <motion.div
         initial={false}
-        animate={{ x: isOpen ? 0 : -380 }}
+        animate={{ x: isOpen ? 0 : -350, width: isOpen ? 320 : 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 220 }}
-        className={`fixed md:sticky md:top-16 z-40 w-[320px] lg:w-[340px] h-screen md:h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background ${
-          !isOpen ? "pointer-events-none md:pointer-events-auto hidden md:flex" : "flex"
+        className={`fixed md:sticky md:top-16 z-40 h-screen md:h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background border-r border-border/40 overflow-hidden ${
+          !isOpen ? "pointer-events-none opacity-0 md:w-0" : "w-[320px] opacity-100"
         }`}
       >
-        <div className="border-r border-border/60 h-full flex flex-col">
-          <div className="px-4 py-3.5 border-b border-border/60 shrink-0">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-md border border-border flex items-center justify-center shrink-0">
-                <span className="text-sm font-heading font-semibold text-foreground">R</span>
-              </div>
-              <h2 className="font-heading text-sm font-semibold text-foreground">
-                Redo AI Stylist
+        <div className="w-[320px] h-full flex flex-col p-5 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-border/40 pb-3">
+            <div>
+              <h2 className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-foreground/70" /> AI Stylist
               </h2>
+              <p className="text-[11px] font-body text-muted-foreground mt-0.5">
+                Bạn muốn mặc gì hôm nay?
+              </p>
             </div>
+            <button
+              onClick={onToggle}
+              className="hidden md:flex items-center gap-1 text-[10px] font-body text-muted-foreground hover:text-foreground border border-border/60 px-2 py-1 rounded-md transition-colors"
+            >
+              <ChevronLeft className="w-3 h-3" /> Thu gọn
+            </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3">
-            {chat.map((m, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
+          {/* Prompt Input Box */}
+          <div className="space-y-2">
+            <label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
+              Yêu cầu của bạn
+            </label>
+            <div className="relative">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void sendMsg();
+                  }
+                }}
+                placeholder="VD: phối đầm lụa dự tiệc tối sang trọng dưới 2 triệu..."
+                rows={3}
+                className="w-full bg-secondary/20 border border-border/60 p-3 pr-10 text-xs font-body rounded-xl focus:outline-none focus:ring-1 focus:ring-foreground/20 focus:border-foreground/30 transition-all placeholder:text-muted-foreground/50 resize-none"
+              />
+              <button
+                onClick={() => void sendMsg()}
+                disabled={!input.trim() || isGenerating}
+                className="absolute right-2 bottom-3 bg-foreground text-background p-2 rounded-lg active:scale-95 transition-all disabled:opacity-40"
               >
-                {m.role === "ai" && (
-                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border bg-background">
-                    <span className="text-[9px] font-heading font-bold text-foreground">R</span>
-                  </div>
-                )}
-                <div
-                  className={`max-w-[85%] px-3.5 py-2.5 text-xs font-body leading-relaxed whitespace-pre-line ${
-                    m.role === "user"
-                      ? "bg-foreground text-background rounded-xl"
-                      : "bg-secondary text-foreground rounded-xl"
-                  }`}
-                >
-                  {m.text}
-                </div>
-              </motion.div>
-            ))}
-
-            <AnimatePresence>
-              {isGenerating && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  className="flex items-center gap-2"
-                >
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border bg-background">
-                    <span className="text-[9px] font-heading font-bold text-foreground">R</span>
-                  </div>
-                  <span className="text-xs font-body text-muted-foreground">Đang phân tích style của bạn.</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <div ref={messagesEndRef} />
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          {suggestions.length > 0 && !isGenerating && (
-            <div className="px-3 pb-2 shrink-0">
-              <div className="flex flex-wrap gap-1.5">
-                {suggestions.map((s) => (
-                  <button
-                    key={s.label}
-                    onClick={() => sendMsg(s.prompt)}
-                    className="text-[10px] font-body px-2.5 py-1.5 rounded-md bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground active:scale-95 transition-all"
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="px-3 pb-2 shrink-0">
-            <p className="text-[9px] font-body text-muted-foreground mb-2 uppercase tracking-wider font-medium">
+          {/* Quick suggestions */}
+          <div className="space-y-2.5">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
               Gợi ý nhanh
-            </p>
+            </span>
             <div className="flex flex-wrap gap-1.5">
-              {quickPrompts.map((s) => (
+              {QUICK_SUGGESTIONS.map((s) => (
                 <button
                   key={s.label}
-                  onClick={() => sendMsg(s.prompt)}
+                  onClick={() => void sendMsg(s.prompt)}
                   disabled={isGenerating}
-                  className="text-[10px] font-body px-2.5 py-1.5 rounded-md bg-secondary/50 hover:bg-secondary hover:text-foreground active:scale-95 transition-all disabled:opacity-40"
+                  className="text-xs font-body px-3 py-1.5 rounded-full border border-border/60 bg-background/50 hover:border-foreground/20 hover:text-foreground hover:bg-secondary/30 transition-all disabled:opacity-40"
                 >
-                  {s.icon} {s.label}
+                  {s.label}
                 </button>
               ))}
             </div>
           </div>
 
-          <div className="p-3 border-t border-border/60 shrink-0">
-            <div className="relative">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMsg()}
-                placeholder="Mô tả outfit bạn muốn..."
-                className="w-full bg-secondary/30 px-3.5 py-3 pr-11 text-xs font-body rounded-md focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all placeholder:text-muted-foreground/50"
-              />
-              <button
-                onClick={() => sendMsg()}
-                disabled={!input.trim() || isGenerating}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-foreground text-background p-2 rounded-md active:scale-95 transition-all disabled:opacity-40"
-              >
-                <Send className="w-3.5 h-3.5" />
-              </button>
+          {/* Recent History */}
+          <div className="flex-1 space-y-2.5 overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
+                Lịch sử gần đây
+              </span>
+              {recentHistory.length > 0 && (
+                <button
+                  onClick={() => saveHistory([])}
+                  className="text-[10px] font-body text-muted-foreground/60 hover:text-destructive transition-colors"
+                >
+                  Xoá tất cả
+                </button>
+              )}
+            </div>
+            <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+              {recentHistory.length === 0 ? (
+                <p className="text-[11px] text-muted-foreground/40 font-body italic py-2">Chưa có lịch sử</p>
+              ) : (
+                recentHistory.map((h, idx) => (
+                  <div
+                    key={idx}
+                    className="group flex items-start gap-2 py-2 px-2.5 rounded-lg hover:bg-secondary/40 transition-colors"
+                  >
+                    <button
+                      onClick={() => void sendMsg(h)}
+                      disabled={isGenerating}
+                      className="flex-1 text-left flex items-start gap-2 text-xs font-body text-foreground/85 hover:text-foreground transition-colors disabled:opacity-50 min-w-0"
+                    >
+                      <Clock className="w-3.5 h-3.5 mt-0.5 text-muted-foreground/60 shrink-0 group-hover:text-foreground transition-colors" />
+                      <span className="truncate">{h}</span>
+                    </button>
+                    <button
+                      onClick={() => saveHistory(recentHistory.filter((_, i) => i !== idx))}
+                      className="opacity-0 group-hover:opacity-100 p-0.5 text-muted-foreground/50 hover:text-destructive transition-all shrink-0"
+                      title="Xoá"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

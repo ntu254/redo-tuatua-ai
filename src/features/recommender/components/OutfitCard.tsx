@@ -1,254 +1,165 @@
-import type { AIAction, Outfit } from "@/features/recommender/types";
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui";
+import type { Outfit } from "@/features/recommender/types";
 import { motion } from "framer-motion";
-import {
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  ShoppingCart,
-  Star,
-  X,
-} from "lucide-react";
-import { useState } from "react";
+import { ExternalLink, Star } from "lucide-react";
 import { supabase } from "@/shared/lib";
-
-const platformStyles: Record<string, { bg: string; text: string; icon: string }> = {
-  Shopee: { bg: "bg-shopee/8", text: "text-shopee", icon: "🟠" },
-  "TikTok Shop": { bg: "bg-[#FF0050]/8", text: "text-[#FF0050]", icon: "🎵" },
-};
-
-const AI_ACTIONS: { action: AIAction; label: string; icon: string }[] = [
-  { action: "more_casual", label: "Thoải mái hơn", icon: "🧘" },
-  { action: "more_luxury", label: "Sang trọng hơn", icon: "💎" },
-  { action: "cheaper", label: "Tiết kiệm hơn", icon: "💰" },
-  { action: "more_korean", label: "Hàn Quốc hơn", icon: "🇰🇷" },
-];
 
 interface OutfitCardProps {
   outfit: Outfit;
   index: number;
-  onSave: (id: number) => void;
-  onLike: (id: number, liked: boolean | null) => void;
-  onHide: (id: number) => void;
-  onReport: (id: number) => void;
-  onAction: (id: number, action: AIAction) => void;
-  onShare: (outfit: Outfit) => void;
+  onSave?: (id: number) => void;
+  onLike?: (id: number, liked: boolean | null) => void;
+  onHide?: (id: number) => void;
+  onReport?: (id: number) => void;
+  onAction?: (id: number, action: any) => void;
+  onShare?: (outfit: Outfit) => void;
 }
 
-const OutfitCard = ({ outfit, index, onSave, onLike, onHide, onReport, onAction, onShare }: OutfitCardProps) => {
-  const [expanded, setExpanded] = useState(false);
+function getProductCategoryLabel(name: string): string {
+  const n = name.toLowerCase();
+  if (n.includes("đầm") || n.includes("váy") || n.includes("dress") || n.includes("sườn xám")) return "Đầm";
+  if (n.includes("giày") || n.includes("sandal") || n.includes("boot") || n.includes("dép") || n.includes("sneaker")) return "Giày";
+  if (n.includes("túi") || n.includes("clutch") || n.includes("bag") || n.includes("ví")) return "Túi";
+  if (n.includes("áo") || n.includes("shirt") || n.includes("tee") || n.includes("blazer") || n.includes("sweater") || n.includes("hoodie")) return "Áo";
+  if (n.includes("quần") || n.includes("jean") || n.includes("pants") || n.includes("skirt")) return "Quần";
+  if (n.includes("khuyên tai") || n.includes("bông tai") || n.includes("nhẫn") || n.includes("vòng cổ") || n.includes("dây truyền") || n.includes("dây chuyền") || n.includes("kính") || n.includes("mắt kính") || n.includes("thắt lưng") || n.includes("earring") || n.includes("necklace") || n.includes("belt")) return "Phụ kiện";
+  return "Sản phẩm khác";
+}
 
+const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
   if (outfit.userHidden) return null;
 
   const trackAffiliateClick = async (productId?: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from("clicks").insert({
-        user_id: user?.id || null,
-        product_id: productId || null,
-        outfit_id: outfit.dbId || null,
-        source: "affiliate",
-        traffic_source: "direct",
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) return;
+
+      await supabase.functions.invoke("track-click", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: {
+          product_id: productId || null,
+          outfit_id: outfit.dbId || null,
+          source: "affiliate",
+          traffic_source: "direct",
+        },
       });
-    } catch (err) {
-      console.warn("Click tracking failed:", err);
+    } catch {
+      // silent — tracking is best-effort
     }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="bg-card rounded-xl overflow-hidden transition-all duration-300"
+      transition={{ delay: index * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="bg-card/60 backdrop-blur-md border border-border/50 rounded-2xl p-6 shadow-sm space-y-6"
     >
-      {/* Header: tags + actions */}
-      <div className="px-4 pt-3.5 pb-2 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {outfit.styleTags.map((tag) => (
-            <span key={tag} className="bg-secondary/60 text-muted-foreground text-[10px] font-body font-medium px-2 py-0.5 rounded-md">
-              {tag}
-            </span>
-          ))}
-        </div>
-        <div className="flex items-center gap-1">
-          {outfit.matchScore && (
-            <span className="text-[11px] font-body font-bold text-foreground/50 mr-1">{outfit.matchScore}%</span>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="text-xs font-body">
-              <DropdownMenuItem onClick={() => onHide(outfit.id)}>
-                <X className="h-3.5 w-3.5 mr-2" /> Ẩn outfit
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      {/* Image */}
-      <div className="relative w-full h-[320px]">
-        <img
-          src={outfit.tryOnImage || outfit.image}
-          alt={outfit.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
-          <h3 className="font-heading text-lg font-semibold text-foreground leading-tight">
-            {outfit.title}
+      {/* Header Info */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/40">
+        <div>
+          <h3 className="font-heading text-lg md:text-xl font-bold text-foreground">
+            Set {index + 1} - {outfit.title}
           </h3>
+          <p className="text-xs font-body text-muted-foreground mt-1 tracking-wide">
+            {outfit.styleTags.join(" · ")}
+          </p>
         </div>
+        {outfit.matchScore && (
+          <div className="shrink-0 self-start sm:self-center flex items-center bg-foreground/5 px-3 py-1.5 rounded-lg border border-border/60">
+            <span className="text-xs font-body font-bold text-foreground/80">
+              {outfit.matchScore}% phù hợp
+            </span>
+          </div>
+        )}
       </div>
 
       {/* AI Comment */}
-      <div className="px-4 pt-3">
-        <div className="bg-secondary/40 rounded-xl px-3.5 py-2.5">
-          <p className="text-xs font-body text-foreground/70 leading-relaxed">
-            <span className="text-foreground/50 font-semibold">Redo AI:</span> {outfit.aiComment}
-          </p>
-        </div>
+      <div className="bg-secondary/20 border border-border/30 rounded-xl p-4">
+        <p className="text-[10px] font-body font-bold text-muted-foreground/60 uppercase tracking-wider mb-1">
+          AI Note
+        </p>
+        <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed">
+          {outfit.aiComment}
+        </p>
       </div>
 
-      {/* Products */}
-      <div className="px-4 pt-3 pb-4">
-        {(expanded ? outfit.products : outfit.products.slice(0, 3)).map((p, i) => (
-          <div key={i} className="flex items-center gap-3 py-2">
-            <div className="w-10 h-10 rounded-xl bg-secondary/60 shrink-0 overflow-hidden ring-1 ring-border/30">
-              <img src={p.image || outfit.image || "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80"} alt={p.name} className="w-full h-full object-cover" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1 mb-0.5">
-                <span className="text-[10px]">{platformStyles[p.platform]?.icon}</span>
-                <span className={`text-[10px] font-body font-medium ${platformStyles[p.platform]?.text}`}>{p.platform}</span>
-                {p.badge && (
-                  <span className={`text-[9px] font-body px-1 py-0.5 rounded ${platformStyles[p.platform]?.bg} ${platformStyles[p.platform]?.text}`}>
-                    {p.badge}
+      {/* Product List */}
+      <div className="space-y-4">
+        <h4 className="text-xs font-heading font-bold text-muted-foreground/60 uppercase tracking-wider border-b border-border/20 pb-1.5">
+          Sản phẩm trong set
+        </h4>
+        {outfit.products.map((p, idx) => (
+          <div key={idx} className="space-y-1.5">
+            <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
+              {getProductCategoryLabel(p.name)}
+            </span>
+            <div className="flex items-center justify-between gap-4 p-3 bg-secondary/10 hover:bg-secondary/20 border border-border/40 rounded-xl transition-all">
+              <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-border/30 bg-secondary/40">
+                <img
+                  src={p.image || "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80"}
+                  alt={p.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs md:text-sm font-body font-medium text-foreground truncate">
+                  {p.name}
+                </p>
+                <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-1 flex-wrap">
+                  <span className="font-semibold text-foreground/80">{p.platform}</span>
+                  <span>·</span>
+                  <span className="flex items-center gap-0.5">
+                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" /> {p.rating || 5.0}
                   </span>
-                )}
+                  <span>·</span>
+                  <span className="font-bold text-foreground">{p.price}</span>
+                </div>
               </div>
-              <p className="text-xs font-body text-foreground truncate">{p.name}</p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
-                <span className="text-[10px] text-muted-foreground">{p.rating} · đã bán {p.sold}</span>
-              </div>
+              <a
+                href={p.affiliateUrl || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (!p.affiliateUrl) {
+                    e.preventDefault();
+                  } else {
+                    void trackAffiliateClick(p.id);
+                  }
+                }}
+                className="flex items-center gap-1 text-xs font-body font-semibold px-4.5 py-2 border border-border bg-background hover:bg-secondary text-foreground rounded-lg transition-all shrink-0 active:scale-95 shadow-sm"
+              >
+                Mở link <ExternalLink className="w-3 h-3 text-muted-foreground" />
+              </a>
             </div>
-            <div className="text-right shrink-0">
-              <span className="text-sm font-body font-bold text-accent">{p.price}</span>
-              {p.oldPrice && <span className="text-[10px] text-muted-foreground line-through block">{p.oldPrice}</span>}
-            </div>
-            <motion.a href={p.affiliateUrl || "#"} target="_blank" rel="noopener noreferrer"
-              whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-xl bg-foreground text-background opacity-0 hover:opacity-100 transition-opacity shrink-0 shadow-sm"
-              onClick={(e) => {
-                if (!p.affiliateUrl) {
-                  e.preventDefault();
-                } else {
-                  trackAffiliateClick();
-                }
-              }}
-            >
-              <ExternalLink className="w-3 h-3" />
-            </motion.a>
           </div>
         ))}
+      </div>
 
-        {outfit.products.length > 3 && (
-          <button onClick={() => setExpanded(!expanded)}
-            className="flex items-center justify-center gap-1 text-xs font-body text-muted-foreground hover:text-foreground py-2 transition-colors w-full"
-          >
-            {expanded ? <>Thu gọn <ChevronUp className="w-3.5 h-3.5" /></> : <>Xem thêm {outfit.products.length - 3} sản phẩm <ChevronDown className="w-3.5 h-3.5" /></>}
-          </button>
-        )}
-
-        {/* Owned + Missing */}
-        {outfit.userOwnsItems && outfit.userOwnsItems.length > 0 && (
-          <div className="mt-3 p-2.5 rounded-xl bg-secondary/40">
-            <p className="text-[10px] font-body font-semibold text-foreground/60 uppercase tracking-wider mb-1">Đã có</p>
-            <div className="flex flex-wrap gap-1.5">
-              {outfit.userOwnsItems.map((item) => (
-                <span key={item} className="text-[11px] font-body text-foreground/60 flex items-center gap-1">
-                  <span className="w-3 h-3 rounded-full bg-foreground/10 flex items-center justify-center"><span className="text-[7px]">✓</span></span>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {outfit.missingItems && outfit.missingItems.length > 0 && (
-          <div className="mt-2 p-2.5 rounded-xl bg-secondary/40">
-            <p className="text-[10px] font-body font-semibold text-foreground/60 uppercase tracking-wider mb-1">Cần mua</p>
-            <div className="space-y-1">
-              {outfit.missingItems.map((item, i) => (
-                <div key={i} className="flex items-center justify-between text-xs font-body">
-                  <span className="text-foreground/80">{item.name} <span className="text-muted-foreground/60">— {item.reason}</span></span>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-foreground font-medium">{item.price}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-foreground/5 text-muted-foreground">{item.platform}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Bottom bar */}
-        <div className="mt-3 pt-3 border-t border-border/40 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Tổng</p>
-            <p className="text-lg font-heading font-bold text-foreground">{outfit.totalPrice}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" className="text-xs rounded-xl px-5 py-2 bg-foreground text-background hover:bg-foreground/92"
-              onClick={() => {
-                trackAffiliateClick();
-                outfit.products.forEach((p) => {
-                  if (p.affiliateUrl) window.open(p.affiliateUrl, "_blank");
-                });
-              }}
-            >
-              <ShoppingCart className="w-3 h-3" /> Mua ngay
-            </Button>
-          </div>
+      {/* Footer Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-border/40">
+        <div>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider block">
+            Tổng set
+          </span>
+          <span className="text-lg md:text-xl font-heading font-bold text-foreground">
+            {outfit.totalPrice}
+          </span>
         </div>
-
-        {/* Platforms */}
-        <div className="mt-2 flex items-center gap-1.5">
-          <span className="text-[10px] text-muted-foreground">Có trên:</span>
-          {[...new Set(outfit.products.map((p) => p.platform))].map((plat) => (
-            <span key={plat} className="text-[10px] font-body px-1.5 py-0.5 rounded bg-secondary/60 text-foreground/60">
-              {plat}
-            </span>
-          ))}
-        </div>
-
-        {/* AI actions */}
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
-            onClick={() => onAction(outfit.id, "regenerate")}
-            className="flex items-center gap-1 text-[10px] font-body font-medium px-3 py-1.5 rounded-full bg-secondary text-foreground border border-border/40 hover:bg-secondary/80 transition-all"
-          >
-            Tạo lại
-          </motion.button>
-          {AI_ACTIONS.map((a) => (
-            <motion.button key={a.action} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
-              onClick={() => onAction(outfit.id, a.action)}
-              className="text-[10px] font-body font-medium px-3 py-1.5 rounded-full border border-border/60 bg-background/40 hover:border-foreground/20 hover:text-foreground hover:bg-secondary/40 transition-all"
-            >
-              {a.icon} {a.label}
-            </motion.button>
-          ))}
-        </div>
+        <button
+          onClick={() => {
+            void trackAffiliateClick();
+            outfit.products.forEach((p) => {
+              if (p.affiliateUrl) {
+                window.open(p.affiliateUrl, "_blank");
+              }
+            });
+          }}
+          className="flex items-center justify-center gap-1.5 text-xs font-body font-semibold px-6 py-3 bg-foreground text-background hover:bg-foreground/90 rounded-xl transition-all shadow-md active:scale-95"
+        >
+          <ExternalLink className="w-3.5 h-3.5" /> Mở tất cả link
+        </button>
       </div>
     </motion.div>
   );
