@@ -23,6 +23,7 @@ import {
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { supabase } from "@/shared/lib";
 import { Button } from "@/shared/ui";
+import { apiConfig } from "@/shared/api/config";
 
 const navLinks = [
   { label: "Trang chủ", href: "/" },
@@ -49,6 +50,12 @@ const Navbar = ({ compact = false }: NavbarProps) => {
   const { data: credits } = useQuery({
     queryKey: ["navbar-credits", userId],
     queryFn: async () => {
+      if (apiConfig.useMockApi) {
+        return {
+          balance: 10,
+          limit: 10,
+        };
+      }
       const { data: sub } = await supabase
         .from("subscriptions")
         .select("plans(ai_generations_limit)")

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { SlidersHorizontal, Shirt, Sparkles } from "lucide-react";
 
 import { Navbar } from "@/shared/layout";
@@ -9,6 +9,9 @@ import { LoginPromptOverlay } from "@/features/auth/components/LoginPromptOverla
 import ControlPanel from "../components/ControlPanel";
 import TryOnCanvas from "../components/TryOnCanvas";
 import AIStylistReport from "../components/AIStylistReport";
+import { useQuery } from "@tanstack/react-query";
+import { apiConfig } from "@/shared/api/config";
+import { toast } from "@/hooks/use-toast";
 
 const MAX_POLL_RETRIES = 60;
 const POLL_INTERVAL_MS = 3000;
@@ -34,6 +37,7 @@ interface Outfit {
 
 export default function OutfitBuilderPage() {
   const { session } = useAuth();
+  const navigate = useNavigate();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [searchParams] = useSearchParams();
   const [input, setInput] = useState("");
@@ -57,6 +61,30 @@ export default function OutfitBuilderPage() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollCountRef = useRef(0);
 
+  const userId = session?.user?.id ?? "";
+
+  const { data: creditBalance = 0 } = useQuery({
+    queryKey: ["user-credits-balance", userId],
+    queryFn: async () => {
+      if (apiConfig.useMockApi) {
+        return 10;
+      }
+      try {
+        const { data: uc, error } = await supabase
+          .from("user_credits")
+          .select("balance")
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return (uc as any)?.balance ?? 0;
+      } catch (err) {
+        console.error("Failed to fetch user credits:", err);
+        return 0;
+      }
+    },
+    enabled: !!userId,
+  });
+
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -69,6 +97,17 @@ export default function OutfitBuilderPage() {
       setShowLoginPrompt(true);
       return;
     }
+
+    if (creditBalance <= 0) {
+      toast({
+        title: "Không đủ credit",
+        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
+        variant: "destructive",
+      });
+      navigate("/pricing");
+      return;
+    }
+
     if (pollRef.current) clearInterval(pollRef.current);
     setIsLoading(true);
     setError("");
@@ -114,6 +153,16 @@ export default function OutfitBuilderPage() {
     if (!humanImage || !clothImage || tryOnStatus === "submitting" || tryOnStatus === "processing") return;
     if (!session) {
       setShowLoginPrompt(true);
+      return;
+    }
+
+    if (creditBalance <= 0) {
+      toast({
+        title: "Không đủ credit",
+        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
+        variant: "destructive",
+      });
+      navigate("/pricing");
       return;
     }
 

@@ -5,6 +5,11 @@ import type { Outfit } from "@/features/recommender/types";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Clock, Send, Sparkles } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/shared/lib";
+import { apiConfig } from "@/shared/api/config";
+import { toast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -24,6 +29,7 @@ const QUICK_SUGGESTIONS = [
 
 const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIsGenerating }: ChatSidebarProps) => {
   const { session } = useAuth();
+  const navigate = useNavigate();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [input, setInput] = useState("");
   const [recentHistory, setRecentHistory] = useState<string[]>(() => {
@@ -33,6 +39,30 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
     } catch {
       return ["Dạ tiệc sang trọng", "Outfit đi cafe", "Style công sở nữ tính"];
     }
+  });
+
+  const userId = session?.user?.id ?? "";
+
+  const { data: creditBalance = 0 } = useQuery({
+    queryKey: ["user-credits-balance", userId],
+    queryFn: async () => {
+      if (apiConfig.useMockApi) {
+        return 10;
+      }
+      try {
+        const { data: uc, error } = await supabase
+          .from("user_credits")
+          .select("balance")
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return (uc as any)?.balance ?? 0;
+      } catch (err) {
+        console.error("Failed to fetch user credits:", err);
+        return 0;
+      }
+    },
+    enabled: !!userId,
   });
 
   const saveHistory = (items: string[]) => {
@@ -51,6 +81,16 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
     // Guest users cannot use AI features
     if (!session) {
       setShowLoginPrompt(true);
+      return;
+    }
+
+    if (creditBalance <= 0) {
+      toast({
+        title: "Không đủ credit",
+        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
+        variant: "destructive",
+      });
+      navigate("/pricing");
       return;
     }
 

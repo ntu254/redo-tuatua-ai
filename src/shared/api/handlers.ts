@@ -175,6 +175,7 @@ export const mockHandlers: Record<string, MockHandler> = {
     mockProfile = {
       ...mockProfile,
       style_dna: body.styleDna,
+      avatar_url: body.avatarUrl || mockProfile.avatar_url,
       quiz_completed: true,
       updated_at: new Date().toISOString(),
     };

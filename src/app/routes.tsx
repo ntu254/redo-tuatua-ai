@@ -1,10 +1,11 @@
-import { lazy, Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { BrowserRouter, Route, Routes, useNavigate, useLocation } from "react-router-dom";
 
 import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 import { AdminAuthProvider } from "@/features/admin/hooks/useAdminAuth";
 import { AdminAuthGuard, AdminLayout } from "@/features/admin/components";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const Login = lazy(() => import("@/features/auth/pages/LoginPage"));
 const AuthCallback = lazy(() => import("@/features/auth/pages/AuthCallbackPage"));
@@ -63,23 +64,56 @@ function RouteLoadingFallback() {
   );
 }
 
+function QuizRedirectHandler() {
+  const { session, quizCompleted, loading, role } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (loading) return;
+
+    // If logged in, has not completed quiz, not an admin
+    if (session && !quizCompleted && role !== "admin") {
+      const path = location.pathname;
+      const allowedPaths = [
+        "/quiz",
+        "/login",
+        "/signup",
+        "/auth/callback",
+        "/forgot-password",
+        "/reset-password",
+        "/pricing",
+        "/payment/result",
+      ];
+      const isAdminPath = path.startsWith("/admin");
+
+      if (!allowedPaths.includes(path) && !isAdminPath) {
+        navigate("/quiz", { replace: true, state: { from: path } });
+      }
+    }
+  }, [session, quizCompleted, loading, role, location.pathname, navigate]);
+
+  return null;
+}
+
 export function AppRoutes() {
   return (
     <BrowserRouter>
+      <QuizRedirectHandler />
       <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-          <Route path="/recommender" element={<ProtectedRoute><Recommender /></ProtectedRoute>} />
-          <Route path="/outfit-builder" element={<ProtectedRoute><OutfitBuilder /></ProtectedRoute>} />
-          <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/recommender" element={<Recommender />} />
+          <Route path="/outfit-builder" element={<OutfitBuilder />} />
+          <Route path="/trends" element={<Trends />} />
           <Route path="/style-profile" element={<ProtectedRoute><StyleProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/payment/result" element={<PaymentResultPage />} />
           <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
