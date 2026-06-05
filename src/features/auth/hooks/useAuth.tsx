@@ -1,4 +1,5 @@
 import { authService, type AuthResult } from "@/features/auth/services/auth.service";
+import { profileService } from "@/features/profile/services/profile.service";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 interface AuthContextType {
@@ -6,6 +7,7 @@ interface AuthContextType {
   user: AuthResult["user"] | null;
   role: "user" | "admin" | null;
   is_banned: boolean;
+  quizCompleted: boolean;
   loading: boolean;
   refreshSession: () => Promise<AuthResult | null>;
   login: (email: string, password: string) => Promise<AuthResult>;
@@ -18,6 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<AuthResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quizCompleted, setQuizCompleted] = useState(false);
 
   const refreshSession = useCallback(async () => {
     const current = await authService.getSession();
@@ -28,18 +31,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    authService
-      .getSession()
-      .then((current) => {
-        if (mounted) setSession(current);
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
+    const bootstrap = async () => {
+      const current = await authService.getSession();
+      if (!mounted) return;
+      setSession(current);
+      if (current?.user?.id) {
+        try {
+          const profile = await profileService.getProfile(current.user.id);
+          if (!mounted) return;
+          setQuizCompleted(profile.quiz_completed ?? false);
+        } catch {
+          if (!mounted) return;
+          setQuizCompleted(false);
+        }
+      }
+      setLoading(false);
+    };
+
+    bootstrap();
 
     const { data } = authService.onAuthStateChange((nextSession) => {
       setSession(nextSession);
       setLoading(false);
+      if (nextSession?.user?.id) {
+        profileService
+          .getProfile(nextSession.user.id)
+          .then((profile) => setQuizCompleted(profile.quiz_completed ?? false))
+          .catch(() => setQuizCompleted(false));
+      } else {
+        setQuizCompleted(false);
+      }
     });
 
     return () => {
@@ -51,6 +72,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const nextSession = await authService.login(email, password);
     setSession(nextSession);
+    if (nextSession?.user?.id) {
+      try {
+        const profile = await profileService.getProfile(nextSession.user.id);
+        setQuizCompleted(profile.quiz_completed ?? false);
+      } catch {
+        setQuizCompleted(false);
+      }
+    }
     return nextSession;
   }, []);
 
@@ -59,12 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (nextSession?.session?.access_token) {
       setSession(nextSession);
     }
+    if (nextSession?.user?.id) {
+      setQuizCompleted(false);
+    }
     return nextSession;
   }, []);
 
   const logout = useCallback(async () => {
     await authService.logout();
     setSession(null);
+    setQuizCompleted(false);
   }, []);
 
   const value = useMemo(
@@ -73,13 +106,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user: session?.user ?? null,
       role: session?.role ?? null,
       is_banned: session?.is_banned ?? false,
+      quizCompleted,
       loading,
       refreshSession,
       login,
       signup,
       logout,
     }),
-    [loading, login, logout, refreshSession, session, signup],
+    [loading, login, logout, refreshSession, session, signup, quizCompleted],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

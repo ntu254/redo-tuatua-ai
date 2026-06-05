@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { sampleOutfits } from "@/features/recommender/data";
 
 import heroImg from "@/assets/hero-fashion-2.jpg";
 import lookbook1 from "@/assets/lookbook-1.jpg";
@@ -220,14 +221,85 @@ const AnalyzingScreen = ({ onDone }: { onDone: () => void }) => {
   );
 };
 
-const ResultScreen = () => {
+interface ResultScreenProps {
+  answers: Record<string, string[]>;
+}
+
+const ResultScreen = ({ answers }: ResultScreenProps) => {
   const navigate = useNavigate();
+
+  const colorHexMap: Record<string, string> = {
+    white: "#FFFFFF",
+    beige: "#F5F0E8",
+    black: "#1C1C1C",
+    navy: "#1B2A4A",
+    sage: "#9CAF88",
+    earth: "#8B7355",
+    blush: "#E8B4B8",
+    denim: "#6B8DAD",
+  };
+
+  const styleLabelMap: Record<string, string> = {
+    minimal: "Tối giản",
+    casual: "Casual",
+    streetwear: "Streetwear",
+    office: "Công sở",
+    party: "Dự tiệc",
+    athleisure: "Athleisure",
+  };
+
+  const generateAiInsight = () => {
+    const styleNames = answers.style?.map((s) => styleLabelMap[s] || s) || [];
+    const colorsList = answers.colors?.map((c) => {
+      const labelMap: Record<string, string> = {
+        white: "trắng tinh tế",
+        beige: "be ấm áp",
+        black: "đen cá tính",
+        navy: "xanh navy thanh lịch",
+        sage: "xanh sage dịu nhẹ",
+        earth: "tông đất mộc mạc",
+        blush: "hồng blush lãng mạn",
+        denim: "xanh denim phóng khoáng",
+      };
+      return labelMap[c] || c;
+    }) || [];
+
+    const occasionMap: Record<string, string> = {
+      school: "đi học",
+      work: "đi làm",
+      hangout: "đi chơi/cà phê",
+      party: "dự tiệc",
+      travel: "du lịch",
+      date: "hẹn hò",
+    };
+    const occasionsList = answers.occasion?.map((o) => occasionMap[o] || o) || [];
+
+    const stylesStr = styleNames.join(", ");
+    const colorsStr = colorsList.slice(0, 3).join(", ");
+    const occasionsStr = occasionsList.join(" và ");
+
+    return `Dựa trên phân tích, bạn có thiên hướng phong cách ${stylesStr || "hài hòa"}. Bảng màu ưa thích của bạn tập trung vào các tông như ${colorsStr || "trung tính"}, mang lại sự dễ dàng khi phối hợp. AI Stylist đã chuẩn bị các gợi ý outfit giúp bạn luôn tự tin và nổi bật khi ${occasionsStr || "ra ngoài hàng ngày"}.`;
+  };
+
+  const matchedOutfits = sampleOutfits.filter((outfit) => {
+    if (!answers.style || answers.style.length === 0) return true;
+    return outfit.styleTags.some(tag => 
+      answers.style?.map(s => s.toLowerCase()).includes(tag.toLowerCase())
+    );
+  });
+  const recommendedOutfits = matchedOutfits.length >= 3 ? matchedOutfits.slice(0, 3) : sampleOutfits.slice(0, 3);
+
+  const getStyleTitle = () => {
+    if (!answers.style || answers.style.length === 0) return "Personalized Style";
+    const styles = answers.style.map(s => styleLabelMap[s] || s);
+    return `${styles[0]} ${styles[1] ? "& " + styles[1] : ""}`;
+  };
 
   return (
     <motion.div {...pageTransition} className="h-screen flex overflow-hidden">
       <div className="hidden lg:block lg:w-[34%] xl:w-[32%] relative">
         <img
-          src={lookbook1}
+          src={recommendedOutfits[0]?.image || lookbook1}
           alt="Style preview"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -238,7 +310,7 @@ const ResultScreen = () => {
             Phong cách của bạn
           </p>
           <h3 className="font-heading text-3xl font-semibold text-background">
-            Urban Minimalist
+            {getStyleTitle()}
           </h3>
         </div>
       </div>
@@ -269,12 +341,12 @@ const ResultScreen = () => {
               Phong cách chính
             </p>
             <div className="flex flex-wrap gap-2">
-              {["Tối giản", "Casual", "Office"].map((s) => (
+              {answers.style?.map((s) => (
                 <span
                   key={s}
-                  className="px-3 py-1.5 bg-secondary text-foreground text-xs font-body font-semibold"
+                  className="px-3 py-1.5 bg-secondary text-foreground text-xs font-body font-semibold border border-border/40 rounded-full"
                 >
-                  {s}
+                  {styleLabelMap[s] || s}
                 </span>
               ))}
             </div>
@@ -285,15 +357,14 @@ const ResultScreen = () => {
               Bảng màu ưa thích
             </p>
             <div className="flex gap-2">
-              {["#FFFFFF", "#F5F0E8", "#1C1C1C", "#1B2A4A", "#9CAF88"].map(
-                (c) => (
-                  <div
-                    key={c}
-                    className="w-10 h-10 border border-border"
-                    style={{ backgroundColor: c }}
-                  />
-                ),
-              )}
+              {answers.colors?.map((c) => (
+                <div
+                  key={c}
+                  className="w-10 h-10 border border-border rounded-lg shadow-sm"
+                  style={{ backgroundColor: colorHexMap[c] || "#FFFFFF" }}
+                  title={c}
+                />
+              ))}
             </div>
           </div>
 
@@ -302,29 +373,32 @@ const ResultScreen = () => {
               AI Insight
             </p>
             <p className="font-body text-sm text-foreground/70 leading-relaxed">
-              Phong cách của bạn thiên hướng tối giản hiện đại, ưu tiên tông
-              trung tính với các outfit linh hoạt giữa công sở và đời thường.
+              {generateAiInsight()}
             </p>
           </div>
 
           <div className="border border-border p-5 mb-6">
             <p className="text-[10px] font-body font-semibold text-foreground/40 uppercase tracking-widest mb-3">
-              Outfit gợi ý
+              Outfit gợi ý theo quiz
             </p>
             <div className="grid grid-cols-3 gap-2">
-              {[lookbook1, lookbook2, styleMinimal].map((img, i) => (
+              {recommendedOutfits.map((outfit, i) => (
                 <motion.div
-                  key={i}
-                  className="aspect-[3/4] overflow-hidden border border-border"
+                  key={outfit.id}
+                  className="aspect-[3/4] overflow-hidden border border-border rounded-lg group relative"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 + i * 0.1 }}
                 >
                   <img
-                    src={img}
-                    alt=""
-                    className="w-full h-full object-cover"
+                    src={outfit.image}
+                    alt={outfit.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col justify-end">
+                    <p className="text-[9px] text-white/70 font-semibold">{outfit.style}</p>
+                    <p className="text-[11px] text-white font-bold leading-tight truncate">{outfit.title}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -642,7 +716,7 @@ const QuizPage = () => {
     return <WelcomeScreen onStart={() => setPhase("quiz")} />;
   if (phase === "analyzing")
     return <AnalyzingScreen onDone={() => setPhase("result")} />;
-  if (phase === "result") return <ResultScreen />;
+  if (phase === "result") return <ResultScreen answers={answers} />;
 
   return (
     <div className="h-screen bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.4)_0%,transparent_34%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--off-white))_100%)] flex flex-col overflow-hidden">

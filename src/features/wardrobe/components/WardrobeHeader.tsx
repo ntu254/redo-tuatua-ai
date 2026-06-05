@@ -7,6 +7,7 @@ interface WardrobeHeaderProps {
   savedOutfits: number;
   aiSuggestions: number;
   onAddClick?: () => void;
+  onViewSavedAiOutfits?: () => void;
 }
 
 const WardrobeHeader = ({
@@ -14,6 +15,7 @@ const WardrobeHeader = ({
   savedOutfits,
   aiSuggestions,
   onAddClick,
+  onViewSavedAiOutfits,
 }: WardrobeHeaderProps) => {
   const stats = [
     {
@@ -90,7 +92,10 @@ const WardrobeHeader = ({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.25 + i * 0.08 }}
-              className="flex items-center gap-3 bg-card rounded-xl border border-border px-4 py-3 shadow-sm hover:shadow-md transition-shadow"
+              onClick={stat.label === "Outfit đã lưu" ? onViewSavedAiOutfits : undefined}
+              className={`flex items-center gap-3 bg-card rounded-xl border border-border px-4 py-3 shadow-sm hover:shadow-md transition-shadow ${
+                stat.label === "Outfit đã lưu" ? "cursor-pointer" : ""
+              }`}
             >
               <div
                 className={`w-8 h-8 rounded-lg flex items-center justify-center ${stat.accent}`}

@@ -130,12 +130,9 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
   const [isPaused, setIsPaused] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string[]>([]);
   const [likedIds, setLikedIds] = useState<Set<number>>(new Set());
-  const progressRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
 
   const hotOutfits = realOutfits && realOutfits.length > 0 ? outfitsToHot(realOutfits) : HOT_OUTFITS;
-  const total = hotOutfits.length;
 
   const filtered = hotOutfits.filter((o) => {
     if (activeFilter.length === 0) return true;
@@ -150,23 +147,20 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
     return true;
   });
 
+  const displayOutfits = filtered.length > 0 ? filtered : hotOutfits;
+  const total = displayOutfits.length;
+
+  useEffect(() => {
+    if (activeIndex >= total) {
+      setActiveIndex(0);
+    }
+  }, [total, activeIndex]);
+
   const resetTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
-    startTimeRef.current = Date.now();
-    if (progressRef.current) {
-      progressRef.current.style.transition = "none";
-      progressRef.current.style.width = "0%";
-      void progressRef.current.offsetHeight;
-    }
-    if (isAutoPlay && !isPaused) {
+    if (isAutoPlay && !isPaused && total > 0) {
       timerRef.current = setInterval(() => {
         setActiveIndex((prev) => (prev + 1) % total);
-        startTimeRef.current = Date.now();
-        if (progressRef.current) {
-          progressRef.current.style.transition = "none";
-          progressRef.current.style.width = "0%";
-          void progressRef.current.offsetHeight;
-        }
       }, AUTO_SLIDE_MS);
     }
   }, [isAutoPlay, isPaused, total]);
@@ -178,33 +172,19 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
     };
   }, [resetTimer]);
 
-  useEffect(() => {
-    if (!isAutoPlay || isPaused) return;
-    let frame: number;
-    const animate = () => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const pct = Math.min((elapsed / AUTO_SLIDE_MS) * 100, 100);
-      if (progressRef.current) {
-        progressRef.current.style.transition = "none";
-        progressRef.current.style.width = `${pct}%`;
-      }
-      if (pct < 100) frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [isAutoPlay, isPaused, activeIndex]);
-
   const goTo = (idx: number) => {
     setActiveIndex(idx);
     resetTimer();
   };
 
   const goPrev = () => {
+    if (total === 0) return;
     setActiveIndex((prev) => (prev - 1 + total) % total);
     resetTimer();
   };
 
   const goNext = () => {
+    if (total === 0) return;
     setActiveIndex((prev) => (prev + 1) % total);
     resetTimer();
   };
@@ -220,7 +200,9 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
 
   const getVisibleIndices = () => {
     const indices: { idx: number; offset: number }[] = [];
-    for (let offset = -1; offset <= 2; offset++) {
+    if (total === 0) return [];
+    // We only need 3 cards (-1, 0, 1) to perfectly center the active card (0) symmetrically
+    for (let offset = -1; offset <= 1; offset++) {
       const idx = (activeIndex + offset + total) % total;
       indices.push({ idx, offset });
     }
@@ -229,30 +211,31 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
 
   return (
     <div
-      className="space-y-6"
+      className="space-y-8 py-4 select-none relative"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <Flame className="w-4 h-4 text-accent" />
-          <span className="text-xs uppercase tracking-[0.18em] font-body font-semibold text-muted-foreground/70">
-            Gợi ý nổi bật
+      {/* Header - Centered & Premium Editorial Style */}
+      <div className="relative z-10 flex flex-col items-center text-center space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="editorial-divider" />
+          <span className="editorial-label text-accent flex items-center gap-1">
+            <Flame className="w-3.5 h-3.5 fill-accent/10" /> Gợi ý nổi bật
           </span>
+          <div className="editorial-divider" />
         </div>
-        <h2 className="font-heading text-xl md:text-2xl font-bold text-foreground">
+        <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground tracking-tight max-w-xl leading-tight">
           {realOutfits && realOutfits.length > 0
             ? `Khám phá ${realOutfits.length} set hot hôm nay`
-            : "Khám phá set hot hôm nay"}
+            : "Khám phá các set đồ hot hôm nay"}
         </h2>
-        <p className="text-xs font-body text-muted-foreground mt-1">
-          Chưa biết mặc gì? Xem ngay các set đang thịnh hành.
+        <p className="text-xs md:text-sm font-body text-muted-foreground max-w-md">
+          Chưa biết mặc gì? Xem ngay những công thức phối đồ thịnh hành nhất được gợi ý riêng cho bạn.
         </p>
       </div>
 
-      {/* Filter Chips */}
-      <div className="flex flex-wrap gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+      {/* Filter Chips - Centered */}
+      <div className="flex flex-wrap justify-center gap-2 overflow-x-auto scrollbar-hide pb-1 z-10 relative">
         {FILTER_CHIPS.map((chip) => {
           const isSelected = activeFilter.includes(chip);
           return (
@@ -261,10 +244,10 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
               onClick={() => {
                 setActiveFilter(isSelected ? activeFilter.filter((c) => c !== chip) : [...activeFilter, chip]);
               }}
-              className={`text-xs font-body px-3 py-1.5 rounded-full border whitespace-nowrap transition-all shrink-0 ${
+              className={`text-xs font-body px-4 py-2 rounded-full border whitespace-nowrap transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98] ${
                 isSelected
-                  ? "bg-foreground text-background border-foreground font-medium"
-                  : "border-border/60 text-muted-foreground hover:border-foreground/30 hover:text-foreground bg-background/30"
+                  ? "bg-foreground text-background border-foreground font-semibold shadow-md shadow-foreground/5"
+                  : "border-border/60 text-muted-foreground hover:border-foreground/30 hover:text-foreground bg-background/40 backdrop-blur-sm"
               }`}
             >
               {chip}
@@ -274,46 +257,60 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
       </div>
 
       {/* Carousel Container */}
-      <div className="relative">
+      <div className="relative overflow-visible py-4">
+        {/* Background Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.25)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.25)_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_80%,transparent_100%)] pointer-events-none" />
+
+        {/* Soft Ambient Light Blobs */}
+        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[300px] bg-accent/8 rounded-full blur-[100px] pointer-events-none animate-float z-0" />
+        <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[350px] h-[350px] bg-teal/6 rounded-full blur-[120px] pointer-events-none animate-float z-0" style={{ animationDelay: "1.5s" }} />
+
         {/* Arrow Left */}
         <button
           onClick={goPrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-20 w-10 h-10 rounded-full bg-card border border-border/60 shadow-md flex items-center justify-center text-foreground/70 hover:text-foreground hover:shadow-lg transition-all cursor-pointer hidden md:flex"
+          className="absolute left-2 md:-translate-x-4 lg:-translate-x-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/60 shadow-md flex items-center justify-center text-foreground/70 hover:text-foreground hover:scale-105 active:scale-95 hover:shadow-lg transition-all cursor-pointer hidden md:flex"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
 
         {/* Cards */}
-        <div className="overflow-hidden px-2 py-4">
-          <div className="flex items-center justify-center gap-5 transition-transform duration-500 ease-out">
+        <div className="overflow-hidden px-2 py-4 relative z-10">
+          <div className="flex items-center justify-center gap-6 transition-transform duration-500 ease-out">
             {getVisibleIndices().map(({ idx, offset }) => {
-              const outfit = filtered[idx % filtered.length] || hotOutfits[idx];
-              const isActive = offset === 1;
-              const isLeft = offset === 0;
-              const isRight = offset === 2;
-              const isFar = offset === -1;
+              const outfit = displayOutfits[idx];
+              if (!outfit) return null;
+
+              const isActive = offset === 0;
+              const isLeft = offset === -1;
+              const isRight = offset === 1;
 
               return (
                 <motion.div
                   key={`${outfit.id}-${offset}`}
                   initial={false}
                   animate={{
-                    scale: isActive ? 1 : 0.85,
-                    opacity: isFar || offset > 2 ? 0 : isActive ? 1 : isLeft || isRight ? 0.5 : 0.3,
+                    scale: isActive ? 1.05 : 0.9,
+                    opacity: isActive ? 1 : 0.65,
+                    filter: isActive ? "grayscale(0%)" : "grayscale(15%)",
                     x: 0,
                   }}
                   transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className={`shrink-0 transition-all duration-500 ${
+                  className={`relative shrink-0 transition-all duration-500 ${
                     isActive
-                      ? "w-[280px] md:w-[320px] z-10"
-                      : "w-[200px] md:w-[240px] z-0"
+                      ? "w-[290px] md:w-[330px] z-10"
+                      : "w-[210px] md:w-[250px] z-0"
                   }`}
                 >
+                  {/* Glowing active backdrop (rendered outside overflow-hidden) */}
+                  {isActive && (
+                    <div className="absolute -inset-4 bg-gradient-to-tr from-accent/25 via-coral/5 to-teal/15 rounded-[28px] blur-2xl opacity-75 z-[-1] animate-pulse duration-[3000ms] pointer-events-none" />
+                  )}
+
                   <div
                     className={`rounded-2xl overflow-hidden border transition-all duration-500 ${
                       isActive
-                        ? "border-foreground/30 shadow-lg shadow-foreground/8 bg-card"
-                        : "border-border/30 shadow-sm bg-card/80"
+                        ? "border-accent/25 shadow-xl shadow-foreground/5 bg-card"
+                        : "border-border/40 shadow-sm bg-card/75 backdrop-blur-sm"
                     }`}
                   >
                     {/* Image */}
@@ -325,14 +322,14 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                         loading="lazy"
                       />
                       {/* Badge */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1 bg-foreground/85 text-background px-2.5 py-1 rounded-full text-xs font-body font-semibold backdrop-blur-sm">
+                      <div className="absolute top-3 left-3 flex items-center gap-1 bg-foreground/85 text-background px-2.5 py-1 rounded-full text-xs font-body font-semibold backdrop-blur-sm shadow-sm">
                         {outfit.badgeIcon}
                         {outfit.badge}
                       </div>
                       {/* Like */}
                       <button
                         onClick={(e) => { e.stopPropagation(); toggleLike(outfit.id); }}
-                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center border border-border/30 hover:scale-110 transition-transform cursor-pointer"
+                        className="absolute top-3 right-3 w-8 h-8 rounded-full bg-card/85 backdrop-blur-sm flex items-center justify-center border border-border/30 hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-sm text-foreground"
                       >
                         <Heart
                           className={`w-4 h-4 transition-colors ${
@@ -343,13 +340,13 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                     </div>
 
                     {/* Content */}
-                    <div className={`p-4 ${isActive ? "space-y-3" : "space-y-2"}`}>
-                      <h3 className={`font-heading font-bold text-foreground ${isActive ? "text-base" : "text-sm"}`}>
+                    <div className={`p-5 ${isActive ? "space-y-4" : "space-y-2.5"}`}>
+                      <h3 className={`font-heading font-extrabold text-foreground ${isActive ? "text-base" : "text-sm"}`}>
                         {outfit.title}
                       </h3>
 
                       {isActive && (
-                        <p className="text-xs font-body text-muted-foreground">{outfit.description}</p>
+                        <p className="text-xs font-body text-muted-foreground leading-relaxed">{outfit.description}</p>
                       )}
 
                       {/* Tags */}
@@ -357,7 +354,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                         {outfit.tags.slice(0, isActive ? 3 : 2).map((tag) => (
                           <span
                             key={tag}
-                            className="text-xs font-body px-2 py-0.5 rounded-full bg-secondary/60 text-muted-foreground"
+                            className="text-[10px] font-body font-semibold px-2.5 py-1 rounded-full bg-secondary/80 text-muted-foreground border border-border/30"
                           >
                             {tag}
                           </span>
@@ -365,12 +362,14 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                       </div>
 
                       {/* Price + Platform */}
-                      <div className="flex items-center justify-between">
-                        <span className={`font-body font-bold text-foreground ${isActive ? "text-sm" : "text-xs"}`}>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className={`font-body font-extrabold text-foreground ${isActive ? "text-sm" : "text-xs"}`}>
                           {outfit.price}
                         </span>
-                        <span className={`text-xs font-body font-semibold px-2 py-0.5 rounded-full ${
-                          outfit.platform === "Shopee" ? "bg-shopee/10 text-shopee" : "bg-tiktok/10 text-tiktok"
+                        <span className={`text-[10px] font-body font-bold px-2.5 py-1 rounded-full border ${
+                          outfit.platform === "Shopee" 
+                            ? "bg-shopee/10 border-shopee/20 text-shopee" 
+                            : "bg-tiktok/10 border-tiktok/20 text-tiktok"
                         }`}>
                           {outfit.platform}
                         </span>
@@ -378,7 +377,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
 
                       {/* CTA */}
                       {isActive && (
-                        <button className="w-full h-10 rounded-full bg-foreground text-background text-xs font-body font-semibold flex items-center justify-center gap-1.5 hover:bg-foreground/90 transition-colors cursor-pointer">
+                        <button className="w-full h-10 rounded-full bg-foreground text-background text-xs font-body font-semibold flex items-center justify-center gap-1.5 hover:bg-foreground/90 transition-colors cursor-pointer shadow-sm">
                           Xem chi tiết set <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       )}
@@ -393,32 +392,25 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
         {/* Arrow Right */}
         <button
           onClick={goNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-20 w-10 h-10 rounded-full bg-card border border-border/60 shadow-md flex items-center justify-center text-foreground/70 hover:text-foreground hover:shadow-lg transition-all cursor-pointer hidden md:flex"
+          className="absolute right-2 md:translate-x-4 lg:translate-x-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-background/80 backdrop-blur-md border border-border/60 shadow-md flex items-center justify-center text-foreground/70 hover:text-foreground hover:scale-105 active:scale-95 hover:shadow-lg transition-all cursor-pointer hidden md:flex"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Controls */}
+      {/* Controls - Only Dots */}
       <div className="flex items-center justify-center gap-4 pt-2">
-        {/* Progress bar */}
-        <div className="flex-1 max-w-[200px] h-1 bg-secondary/60 rounded-full overflow-hidden">
-          <div
-            ref={progressRef}
-            className="h-full bg-foreground/40 rounded-full"
-            style={{ width: "0%", transition: "none" }}
-          />
-        </div>
-
-        {/* Dots */}
         <div className="flex items-center gap-1.5">
-          {Array.from({ length: total }).map((_, i) => (
+          {displayOutfits.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
-              className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
-                i === activeIndex ? "bg-foreground scale-110" : "bg-foreground/20 hover:bg-foreground/40"
+              className={`rounded-full transition-all cursor-pointer ${
+                i === activeIndex 
+                  ? "bg-foreground w-4 h-2" 
+                  : "bg-foreground/20 w-2 h-2 hover:bg-foreground/40"
               }`}
+              title={`Trang ${i + 1}`}
             />
           ))}
         </div>

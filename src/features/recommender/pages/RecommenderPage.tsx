@@ -88,7 +88,7 @@ const RecommenderPage = () => {
           setIsGenerating={setIsGenerating}
         />
 
-        <main className="flex-1 min-w-0 p-6 md:p-8 lg:p-10 max-w-4xl mx-auto space-y-6">
+        <main className={`flex-1 min-w-0 p-6 md:p-8 lg:p-10 mx-auto space-y-6 transition-all duration-500 ease-in-out ${chatOpen ? "max-w-4xl" : "max-w-6xl"}`}>
           {/* Loading State */}
           {isLoadingAny && !hasResults ? (
             <div className="py-20 flex flex-col items-center justify-center text-center">
