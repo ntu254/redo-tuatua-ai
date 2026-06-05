@@ -219,89 +219,94 @@ const Navbar = ({ compact = false }: NavbarProps) => {
                     <Menu className="w-5 h-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[280px] sm:w-[320px] flex flex-col p-6 bg-background border-l border-border/40">
-                  <SheetHeader className="text-left mb-6">
-                    <SheetTitle className="font-heading text-2xl italic tracking-tight text-foreground">
+                <SheetContent side="right" className="w-[290px] sm:w-[320px] flex flex-col p-6 bg-background border-l border-border/40">
+                  <SheetHeader className="text-left mb-4 pb-4 border-b border-border/40">
+                    <SheetTitle className="font-heading text-2xl italic tracking-tight text-foreground flex items-center justify-between">
                       Redo
+                      <span className="text-[10px] not-italic font-body uppercase tracking-[0.2em] text-muted-foreground/50 font-bold">
+                        AI Stylist
+                      </span>
                     </SheetTitle>
                   </SheetHeader>
                   
                   {/* Navigation Links */}
-                  <div className="flex flex-col gap-4 flex-1 overflow-y-auto pr-2">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        to={link.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`text-sm font-body font-medium transition-colors py-1 ${
-                          location.pathname === link.href
-                            ? "text-foreground font-semibold border-l-2 border-foreground pl-3"
-                            : "text-muted-foreground/80 hover:text-foreground pl-3"
-                        }`}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
+                  <div className="flex flex-col gap-2.5 flex-1 overflow-y-auto pr-2">
+                    {navLinks.map((link) => {
+                      const isActive = location.pathname === link.href;
+                      return (
+                        <Link
+                          key={link.href}
+                          to={link.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`text-sm font-body font-medium transition-all py-2.5 px-4 rounded-xl flex items-center justify-between ${
+                            isActive
+                              ? "bg-secondary text-foreground font-semibold shadow-sm border border-border/30"
+                              : "text-muted-foreground/80 hover:text-foreground hover:bg-secondary/40"
+                          }`}
+                        >
+                          {link.label}
+                          {isActive && <span className="w-1.5 h-1.5 rounded-full bg-accent" />}
+                        </Link>
+                      );
+                    })}
                   </div>
 
                   {/* User Profile / Actions in mobile menu drawer */}
                   <div className="border-t border-border/30 pt-6 mt-auto">
                     {user ? (
                       <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="w-10 h-10">
+                        <div className="flex items-center gap-3 p-3 rounded-2xl bg-secondary/35 border border-border/20">
+                          <Avatar className="w-10 h-10 border border-border/60">
                             <AvatarImage src={(profile as any)?.avatar_url ?? ""} />
                             <AvatarFallback className="text-xs font-semibold bg-secondary">{initial}</AvatarFallback>
                           </Avatar>
-                          <div className="min-w-0">
-                            <p className="truncate font-body text-sm font-semibold text-foreground">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-body text-sm font-bold text-foreground">
                               {displayName}
                             </p>
-                            <p className="text-xs font-body text-foreground/50 truncate">
+                            <p className="text-[11px] font-body text-muted-foreground/80 truncate">
                               {user.email}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between rounded-xl bg-secondary/40 px-3.5 py-2.5 text-xs font-body text-foreground/85">
-                          <span className="flex items-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 text-foreground/50" />
-                            Lượt tạo AI
+                        <div className="flex items-center justify-between rounded-2xl bg-secondary/50 px-4 py-3 text-xs font-body text-foreground/80 border border-border/20">
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <Sparkles className="w-3.5 h-3.5 text-accent" />
+                            Lượt tạo AI còn lại
                           </span>
-                          <span className="font-semibold">
+                          <span className="font-bold text-foreground">
                             {credits?.balance ?? 0}/{credits?.limit ?? 10}
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2 pt-2">
+                        <div className="grid grid-cols-2 gap-2.5 pt-1">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="rounded-full w-full justify-center text-xs h-9"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              window.location.assign("/profile");
-                            }}
+                            className="rounded-full w-full justify-center text-xs h-9.5 border-border/60 hover:bg-secondary/50 font-semibold"
+                            asChild
                           >
-                            Hồ sơ
+                            <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
+                              Hồ sơ
+                            </Link>
                           </Button>
                           <Button
                             variant="default"
                             size="sm"
-                            className="rounded-full w-full justify-center text-xs h-9 bg-foreground text-background hover:bg-foreground/90"
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              window.location.assign("/pricing");
-                            }}
+                            className="rounded-full w-full justify-center text-xs h-9.5 bg-foreground text-background hover:bg-foreground/90 transition-all font-semibold shadow-sm"
+                            asChild
                           >
-                            Nâng cấp
+                            <Link to="/pricing" onClick={() => setMobileMenuOpen(false)}>
+                              Nâng cấp
+                            </Link>
                           </Button>
                         </div>
 
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="w-full justify-center text-xs text-destructive hover:bg-destructive/10 rounded-full h-9 mt-2 gap-1.5"
+                          className="w-full justify-center text-xs text-destructive hover:bg-destructive/8 hover:text-destructive rounded-full h-9.5 mt-2 gap-1.5 font-semibold"
                           onClick={() => {
                             setMobileMenuOpen(false);
                             void logout();
@@ -316,24 +321,22 @@ const Navbar = ({ compact = false }: NavbarProps) => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-full w-full justify-center text-xs h-9"
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            window.location.assign("/login");
-                          }}
+                          className="rounded-full w-full justify-center text-xs h-9.5 font-semibold border-border/60 hover:bg-secondary/50"
+                          asChild
                         >
-                          Đăng nhập
+                          <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                            Đăng nhập
+                          </Link>
                         </Button>
                         <Button
                           variant="default"
                           size="sm"
-                          className="rounded-full w-full justify-center text-xs h-9 bg-foreground text-background"
-                          onClick={() => {
-                            setMobileMenuOpen(false);
-                            window.location.assign("/signup");
-                          }}
+                          className="rounded-full w-full justify-center text-xs h-9.5 font-semibold bg-foreground text-background hover:bg-foreground/90 shadow-sm"
+                          asChild
                         >
-                          Đăng ký
+                          <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                            Đăng ký
+                          </Link>
                         </Button>
                       </div>
                     )}
