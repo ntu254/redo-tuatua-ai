@@ -76,10 +76,10 @@ const RecommenderPage = () => {
   const hasResults = activePrompt && outfits.length > 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       <Navbar />
 
-      <div className="pt-16 flex min-h-[calc(100vh-4rem)]">
+      <div className="flex flex-1 overflow-hidden pt-16">
         <ChatSidebar
           isOpen={chatOpen}
           onToggle={() => setChatOpen(!chatOpen)}
@@ -88,7 +88,7 @@ const RecommenderPage = () => {
           setIsGenerating={setIsGenerating}
         />
 
-        <main className={`flex-1 min-w-0 p-6 md:p-8 lg:p-10 mx-auto space-y-6 transition-all duration-500 ease-in-out ${chatOpen ? "max-w-4xl" : "max-w-6xl"}`}>
+        <main className={`flex-1 min-w-0 p-6 md:p-8 lg:p-10 mx-auto space-y-6 transition-all duration-500 ease-in-out overflow-y-auto h-full ${chatOpen ? "max-w-4xl" : "max-w-6xl"}`}>
           {/* Loading State */}
           {isLoadingAny && !hasResults ? (
             <div className="py-20 flex flex-col items-center justify-center text-center">

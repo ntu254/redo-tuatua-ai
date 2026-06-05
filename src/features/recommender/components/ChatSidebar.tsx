@@ -154,7 +154,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
           !isOpen ? "pointer-events-none opacity-0 md:w-0" : "w-[320px] opacity-100"
         }`}
       >
-        <div className="w-[320px] h-full flex flex-col p-5 space-y-6">
+        <div className="w-[320px] h-full flex flex-col p-5 space-y-6 overflow-y-auto scrollbar-hide">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border/40 pb-3">
             <div>
