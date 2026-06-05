@@ -72,10 +72,10 @@ export default function TryOnCanvas({
       <header className="h-16 border-b border-border/30 flex items-center justify-between px-6 shrink-0">
         <h1 className="font-heading text-xl font-semibold text-foreground">Try-On Preview</h1>
         {/* Segmented Control */}
-        <div className="flex bg-secondary rounded-xl p-1 shrink-0">
+        <div className="flex bg-secondary rounded-full p-1 shrink-0">
           <button
             onClick={() => setViewMode("before")}
-            className={`py-1.5 px-4 rounded-xl text-xs font-body transition-all cursor-pointer ${
+            className={`py-1.5 px-4 rounded-full text-xs font-body transition-all cursor-pointer ${
               viewMode === "before" ? "bg-card text-foreground shadow-sm font-medium" : "text-foreground/60 hover:text-foreground"
             }`}
           >
@@ -83,7 +83,7 @@ export default function TryOnCanvas({
           </button>
           <button
             onClick={() => setViewMode("after")}
-            className={`py-1.5 px-4 rounded-xl text-xs font-body transition-all cursor-pointer ${
+            className={`py-1.5 px-4 rounded-full text-xs font-body transition-all cursor-pointer ${
               viewMode === "after" ? "bg-card text-foreground shadow-sm font-medium" : "text-foreground/60 hover:text-foreground"
             }`}
           >
@@ -119,7 +119,7 @@ export default function TryOnCanvas({
               className="h-full bg-card rounded-xl border border-border/50 shadow-sm flex flex-col items-center justify-center p-6"
             >
               <p className="text-sm font-body text-foreground/75 mb-4 text-center max-w-sm leading-relaxed">{error}</p>
-              <button onClick={onRetry} className="px-4.5 py-2 rounded-xl border border-foreground hover:bg-secondary text-foreground text-xs font-body font-semibold transition-colors cursor-pointer active:scale-95">
+              <button onClick={onRetry} className="px-4.5 py-2 rounded-full border border-foreground hover:bg-secondary text-foreground text-xs font-body font-semibold transition-colors cursor-pointer active:scale-95">
                 Thử lại
               </button>
             </motion.div>
@@ -145,8 +145,8 @@ export default function TryOnCanvas({
                           {outfit.style}
                         </h2>
                         {outfit.trending && (
-                          <span className="flex items-center gap-1 text-[10px] font-body font-bold uppercase tracking-wider text-orange-600">
-                            <Flame className="w-3 h-3" /> Trending
+                          <span className="flex items-center gap-1 text-xs font-body font-bold uppercase tracking-wider text-orange-600">
+                            <Flame className="w-3 h-3" /> Xu hướng
                           </span>
                         )}
                       </div>
@@ -177,8 +177,8 @@ export default function TryOnCanvas({
                               }`}
                             >
                               {isSelected && (
-                                <div className="absolute top-2.5 left-2.5 bg-foreground text-background px-2.5 py-1 rounded-[6px] text-[9px] font-body font-bold uppercase tracking-wider shadow-sm z-10">
-                                  Selected
+                                <div className="absolute top-2.5 left-2.5 bg-foreground text-background px-2.5 py-1 rounded-full text-xs font-body font-bold uppercase tracking-wider shadow-sm z-10">
+                                  Đã chọn
                                 </div>
                               )}
                               <div className="aspect-[3/4] bg-secondary/50 flex items-center justify-center overflow-hidden relative">
@@ -194,19 +194,19 @@ export default function TryOnCanvas({
                                 )}
                               </div>
                               <div className="p-3.5">
-                                <span className="text-[10px] font-body font-semibold uppercase tracking-wider text-foreground/45">
+                                <span className="text-xs font-body font-semibold uppercase tracking-wider text-foreground/45">
                                   {SLOT_LABELS[item.slot] || item.slot}
                                 </span>
-                                <p className="text-xs md:text-sm font-body font-medium text-foreground mt-1 line-clamp-1">{item.name}</p>
+                                <p className="text-sm font-body font-medium text-foreground mt-1 line-clamp-1">{item.name}</p>
                                 {item.brand && (
-                                  <p className="text-[11px] text-foreground/45 font-body line-clamp-1 mt-0.5">{item.brand}</p>
+                                  <p className="text-xs text-foreground/45 font-body line-clamp-1 mt-0.5">{item.brand}</p>
                                 )}
                                 <div className="flex items-baseline justify-between mt-2">
-                                  <p className="text-xs md:text-sm font-body font-semibold text-foreground">
+                                  <p className="text-sm font-body font-semibold text-foreground">
                                     {item.price > 0 ? `${item.price.toLocaleString()}đ` : "Liên hệ"}
                                   </p>
                                   {item.click_count > 5 && (
-                                    <span className="flex items-center gap-0.5 text-[10px] text-foreground/55 font-body">
+                                    <span className="flex items-center gap-0.5 text-xs text-foreground/55 font-body">
                                       <BadgeCheck className="w-2.5 h-2.5" /> {item.click_count}
                                     </span>
                                   )}
@@ -220,7 +220,7 @@ export default function TryOnCanvas({
                                       e.stopPropagation();
                                       trackClick(item.id);
                                     }}
-                                    className="mt-3 w-full inline-flex items-center justify-center gap-1.5 text-xs h-9 font-body font-medium bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-xl"
+                                    className="mt-3 w-full inline-flex items-center justify-center gap-1.5 text-xs h-9 font-body font-medium bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-full"
                                   >
                                     Xem sản phẩm <ArrowRight className="w-3 h-3" />
                                   </a>
@@ -235,7 +235,7 @@ export default function TryOnCanvas({
                       {outfit.items.length > 0 && (
                         <div className="flex items-center justify-between border-t border-border/30 pt-4 mt-5">
                           <div>
-                            <p className="text-[10px] font-body font-semibold uppercase tracking-wider text-foreground/45 mb-1">
+                            <p className="text-xs font-body font-semibold uppercase tracking-wider text-foreground/45 mb-1">
                               Tổng outfit
                             </p>
                             <p className="font-heading text-xl font-bold text-foreground tracking-tight">
@@ -251,7 +251,7 @@ export default function TryOnCanvas({
                                 }
                               });
                             }}
-                            className="gap-2 h-11 px-5 font-body font-semibold bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-xl text-xs md:text-sm inline-flex items-center cursor-pointer active:scale-95"
+                            className="gap-2 h-11 px-5 font-body font-semibold bg-foreground text-background hover:bg-foreground/90 transition-colors rounded-full text-sm inline-flex items-center cursor-pointer active:scale-95"
                           >
                             <ShoppingBag className="w-4 h-4" />
                             Mua cả outfit
@@ -278,16 +278,16 @@ export default function TryOnCanvas({
                       <div className="bg-background rounded-xl border border-border/30 p-4 text-left inline-block w-full">
                         <ul className="flex flex-col gap-3">
                           <li className="flex items-center gap-3 text-foreground text-sm font-body">
-                            <span className="w-5 h-5 rounded-full border-2 border-foreground/30 flex items-center justify-center text-[10px] text-foreground/40 font-body font-semibold">1</span>
-                            <span>Upload your Model photo</span>
+                            <span className="w-5 h-5 rounded-full border-2 border-foreground/30 flex items-center justify-center text-xs text-foreground/40 font-body font-semibold">1</span>
+                            <span>Tải ảnh model</span>
                           </li>
                           <li className="flex items-center gap-3 text-foreground text-sm font-body">
-                            <span className="w-5 h-5 rounded-full border-2 border-foreground/30 flex items-center justify-center text-[10px] text-foreground/40 font-body font-semibold">2</span>
-                            <span>Coordinate an Outfit using AI Suggestion</span>
+                            <span className="w-5 h-5 rounded-full border-2 border-foreground/30 flex items-center justify-center text-xs text-foreground/40 font-body font-semibold">2</span>
+                            <span>Phối outfit bằng gợi ý AI</span>
                           </li>
                           <li className="flex items-center gap-3 text-foreground text-sm font-body">
-                            <span className="w-5 h-5 rounded-full border-2 border-foreground/30 flex items-center justify-center text-[10px] text-foreground/40 font-body font-semibold">3</span>
-                            <span>Select coordinated clothes or upload custom item</span>
+                            <span className="w-5 h-5 rounded-full border-2 border-foreground/30 flex items-center justify-center text-xs text-foreground/40 font-body font-semibold">3</span>
+                            <span>Chọn trang phục hoặc tải item riêng</span>
                           </li>
                         </ul>
                       </div>
@@ -295,7 +295,7 @@ export default function TryOnCanvas({
                   </motion.div>
                 )
               ) : (
-                // --- AFTER MODE (Kling virtual try-on) ---
+                // --- AFTER MODE (Redo virtual try-on) ---
                 <motion.div
                   key="tryon-after"
                   initial={{ opacity: 0 }}
@@ -308,7 +308,7 @@ export default function TryOnCanvas({
                       <Loader2 className="w-8 h-8 text-foreground/50 animate-spin" />
                       <h3 className="font-heading text-lg font-bold text-foreground">Đang xử lý thử đồ ảo...</h3>
                       <p className="text-xs font-body text-muted-foreground leading-relaxed animate-pulse">
-                        Kling AI đang tiến hành tạo hình ảnh ghép. Quá trình này thông thường sẽ mất từ 10 đến 30 giây. Vui lòng đợi trong giây lát!
+                        Redo đang tiến hành tạo hình ảnh ghép. Quá trình này thông thường sẽ mất từ 10 đến 30 giây. Vui lòng đợi trong giây lát!
                       </p>
                     </div>
                   ) : tryOnStatus === "succeed" && tryOnImage ? (
@@ -318,8 +318,8 @@ export default function TryOnCanvas({
                         alt="Try-on result"
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute bottom-3 left-3 bg-teal text-white px-2.5 py-1 rounded-[6px] text-[10px] font-body font-bold uppercase tracking-wider shadow-sm z-10 flex items-center gap-1">
-                        <BadgeCheck className="w-3.5 h-3.5" /> Tried-on by Kling AI
+                      <div className="absolute bottom-3 left-3 bg-teal text-background px-2.5 py-1 rounded-full text-xs font-body font-bold uppercase tracking-wider shadow-sm z-10 flex items-center gap-1">
+                        <BadgeCheck className="w-3.5 h-3.5" /> Redo
                       </div>
                     </div>
                   ) : (
@@ -348,7 +348,7 @@ export default function TryOnCanvas({
             {isLoading
               ? "Generating outfit..."
               : tryOnStatus === "submitting" || tryOnStatus === "processing"
-              ? "Kling AI is processing try-on..."
+              ? "Redo is processing try-on..."
               : "Status: Ready"}
           </span>
         </div>

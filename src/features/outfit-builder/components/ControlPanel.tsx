@@ -129,16 +129,16 @@ export default function ControlPanel({
           {humanImage ? (
             <div className="relative w-full h-28 rounded-xl overflow-hidden group border border-border">
               <img src={humanImage} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200">
+              <div className="absolute inset-0 bg-foreground/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200">
                 <button
                   onClick={() => modelInputRef.current?.click()}
-                  className="px-2.5 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-body font-semibold rounded-lg transition-all"
+                  className="px-2.5 py-1.5 bg-background text-foreground hover:bg-secondary text-xs font-body font-semibold rounded-full transition-all"
                 >
                   Đổi ảnh
                 </button>
                 <button
                   onClick={() => setHumanImage(null)}
-                  className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg transition-all"
+                  className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full transition-all"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -172,16 +172,16 @@ export default function ControlPanel({
           {clothImage ? (
             <div className="relative w-full h-28 rounded-xl overflow-hidden group border border-border">
               <img src={clothImage} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200">
+              <div className="absolute inset-0 bg-foreground/50 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200">
                 <button
                   onClick={() => clothInputRef.current?.click()}
-                  className="px-2.5 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-body font-semibold rounded-lg transition-all"
+                  className="px-2.5 py-1.5 bg-background text-foreground hover:bg-secondary text-xs font-body font-semibold rounded-full transition-all"
                 >
                   Tải ảnh khác
                 </button>
                 <button
                   onClick={() => setClothImage(null)}
-                  className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-lg transition-all"
+                  className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full transition-all"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -192,12 +192,12 @@ export default function ControlPanel({
               <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-foreground/40">
                 <Shirt className="w-5 h-5" />
               </div>
-              <p className="text-[11px] font-body text-foreground/60">
+              <p className="text-xs font-body text-foreground/60">
                 Chọn sản phẩm trong danh sách hoặc tải ảnh lên.
               </p>
               <button
                 onClick={() => clothInputRef.current?.click()}
-                className="w-full py-1.5 rounded-lg border border-border text-foreground text-xs font-body font-medium hover:bg-secondary/50 transition-colors cursor-pointer"
+                className="w-full py-1.5 rounded-full border border-border text-foreground text-xs font-body font-medium hover:bg-secondary/50 transition-colors cursor-pointer"
               >
                 Tải ảnh trang phục
               </button>
@@ -243,7 +243,7 @@ export default function ControlPanel({
           <button
             onClick={onGenerate}
             disabled={!canCoordinate}
-            className={`mt-1.5 w-full py-2 flex items-center justify-center gap-1.5 text-xs font-body font-semibold rounded-xl border border-border/80 bg-background/50 hover:bg-secondary/40 transition-all ${
+            className={`mt-1.5 w-full py-2 flex items-center justify-center gap-1.5 text-xs font-body font-semibold rounded-full border border-border/80 bg-background/50 hover:bg-secondary/40 transition-all ${
               canCoordinate ? "text-foreground cursor-pointer" : "text-muted-foreground/60 cursor-not-allowed opacity-50"
             }`}
           >
@@ -262,7 +262,7 @@ export default function ControlPanel({
         <button
           onClick={onStartTryOn}
           disabled={!canTryOn || isTryOnLoading}
-          className={`w-full h-12 rounded-xl font-body font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
+          className={`w-full h-12 rounded-full font-body font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
             canTryOn && !isTryOnLoading
               ? "bg-foreground text-background hover:bg-foreground/90 cursor-pointer shadow-md"
               : "bg-secondary text-foreground/40 cursor-not-allowed opacity-60"

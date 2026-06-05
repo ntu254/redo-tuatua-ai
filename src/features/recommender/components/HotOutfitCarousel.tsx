@@ -237,7 +237,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
       <div>
         <div className="flex items-center gap-2 mb-1">
           <Flame className="w-4 h-4 text-accent" />
-          <span className="text-[10px] uppercase tracking-[0.18em] font-body font-semibold text-muted-foreground/70">
+          <span className="text-xs uppercase tracking-[0.18em] font-body font-semibold text-muted-foreground/70">
             Gợi ý nổi bật
           </span>
         </div>
@@ -261,7 +261,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
               onClick={() => {
                 setActiveFilter(isSelected ? activeFilter.filter((c) => c !== chip) : [...activeFilter, chip]);
               }}
-              className={`text-[11px] font-body px-3 py-1.5 rounded-full border whitespace-nowrap transition-all shrink-0 ${
+              className={`text-xs font-body px-3 py-1.5 rounded-full border whitespace-nowrap transition-all shrink-0 ${
                 isSelected
                   ? "bg-foreground text-background border-foreground font-medium"
                   : "border-border/60 text-muted-foreground hover:border-foreground/30 hover:text-foreground bg-background/30"
@@ -285,7 +285,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
 
         {/* Cards */}
         <div className="overflow-hidden px-2 py-4">
-          <div className="flex items-center justify-center gap-5 transition-transform duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]">
+          <div className="flex items-center justify-center gap-5 transition-transform duration-500 ease-out">
             {getVisibleIndices().map(({ idx, offset }) => {
               const outfit = filtered[idx % filtered.length] || hotOutfits[idx];
               const isActive = offset === 1;
@@ -325,7 +325,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                         loading="lazy"
                       />
                       {/* Badge */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1 bg-foreground/85 text-background px-2.5 py-1 rounded-full text-[10px] font-body font-semibold backdrop-blur-sm">
+                      <div className="absolute top-3 left-3 flex items-center gap-1 bg-foreground/85 text-background px-2.5 py-1 rounded-full text-xs font-body font-semibold backdrop-blur-sm">
                         {outfit.badgeIcon}
                         {outfit.badge}
                       </div>
@@ -349,7 +349,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                       </h3>
 
                       {isActive && (
-                        <p className="text-[11px] font-body text-muted-foreground">{outfit.description}</p>
+                        <p className="text-xs font-body text-muted-foreground">{outfit.description}</p>
                       )}
 
                       {/* Tags */}
@@ -357,7 +357,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                         {outfit.tags.slice(0, isActive ? 3 : 2).map((tag) => (
                           <span
                             key={tag}
-                            className="text-[10px] font-body px-2 py-0.5 rounded-full bg-secondary/60 text-muted-foreground"
+                            className="text-xs font-body px-2 py-0.5 rounded-full bg-secondary/60 text-muted-foreground"
                           >
                             {tag}
                           </span>
@@ -369,7 +369,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                         <span className={`font-body font-bold text-foreground ${isActive ? "text-sm" : "text-xs"}`}>
                           {outfit.price}
                         </span>
-                        <span className={`text-[10px] font-body font-semibold px-2 py-0.5 rounded-full ${
+                        <span className={`text-xs font-body font-semibold px-2 py-0.5 rounded-full ${
                           outfit.platform === "Shopee" ? "bg-shopee/10 text-shopee" : "bg-tiktok/10 text-tiktok"
                         }`}>
                           {outfit.platform}
@@ -378,7 +378,7 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
 
                       {/* CTA */}
                       {isActive && (
-                        <button className="w-full h-10 rounded-xl bg-foreground text-background text-xs font-body font-semibold flex items-center justify-center gap-1.5 hover:bg-foreground/90 transition-colors cursor-pointer">
+                        <button className="w-full h-10 rounded-full bg-foreground text-background text-xs font-body font-semibold flex items-center justify-center gap-1.5 hover:bg-foreground/90 transition-colors cursor-pointer">
                           Xem chi tiết set <ChevronRight className="w-3.5 h-3.5" />
                         </button>
                       )}

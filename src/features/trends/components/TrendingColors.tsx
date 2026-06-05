@@ -69,13 +69,13 @@ const TrendingColors = () => {
               <h3 className="font-heading text-base italic text-foreground mb-1">
                 {c.name}
               </h3>
-              <p className="text-[11px] font-body text-muted-foreground leading-relaxed mb-2">
+              <p className="text-xs font-body text-muted-foreground leading-relaxed mb-2">
                 {c.desc}
               </p>
-              <p className="text-[9px] font-body font-medium uppercase tracking-wider text-accent">
+              <p className="text-xs font-body font-medium uppercase tracking-wider text-accent">
                 {c.stat}
               </p>
-              <div className="mt-2 flex items-center gap-1 text-[9px] font-body font-medium uppercase tracking-wider text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="mt-2 flex items-center gap-1 text-xs font-body font-medium uppercase tracking-wider text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                 Khám phá <ArrowRight className="w-2.5 h-2.5" />
               </div>
             </motion.button>

@@ -66,7 +66,7 @@ export default function AIStylistReport({
           </h2>
           <p className="text-xs font-body text-foreground/60">Analysis & Virtual Fitting Insights</p>
         </div>
-        <span className="px-2.5 py-1 bg-teal/10 text-teal border border-teal/20 rounded-xl text-[10px] font-body font-bold uppercase tracking-wider animate-pulse">
+        <span className="px-2.5 py-1 bg-teal/10 text-teal border border-teal/20 rounded-full text-xs font-body font-bold uppercase tracking-wider animate-pulse">
           Premium
         </span>
       </div>
@@ -108,7 +108,7 @@ export default function AIStylistReport({
             <div className="flex-1 bg-secondary/20 rounded-xl border border-dashed border-border/50 flex flex-col items-center justify-center p-6 text-center">
               <BarChart3 className="w-8 h-8 text-foreground/30 mb-2.5" />
               <p className="text-xs font-body text-foreground/70 mb-1 font-medium">Báo cáo đang bị khóa</p>
-              <p className="text-[11px] font-body text-foreground/50 mb-5 max-w-[200px] leading-relaxed">
+              <p className="text-xs font-body text-foreground/50 mb-5 max-w-[200px] leading-relaxed">
                 Hoàn thành thử đồ ảo (Virtual Try-On) để mở khóa báo cáo chi tiết từ AI.
               </p>
               
@@ -146,11 +146,11 @@ export default function AIStylistReport({
               <div className="bg-gradient-to-br from-teal/10 via-teal/[0.02] to-transparent rounded-xl border border-teal/20 p-4 flex items-center justify-between shadow-sm relative overflow-hidden">
                 <div className="absolute right-0 top-0 w-24 h-24 bg-teal/5 rounded-full blur-2xl pointer-events-none" />
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-body font-bold text-teal/80 uppercase tracking-widest">
+                  <span className="text-xs font-body font-bold text-teal/80 uppercase tracking-widest">
                     Style Match Grade
                   </span>
                   <span className="text-3xl font-heading font-black text-foreground">{report.grade}</span>
-                  <span className="text-[11px] font-body text-foreground/60">Tuyệt hảo & Sang trọng</span>
+                  <span className="text-xs font-body text-foreground/60">Tuyệt hảo & Sang trọng</span>
                 </div>
                 
                 <div className="flex gap-4 border-l border-border/40 pl-4">
@@ -182,7 +182,7 @@ export default function AIStylistReport({
                     ))}
                   </div>
                   <div className="flex-1">
-                    <p className="text-[11px] font-body text-foreground/75 leading-relaxed">
+                    <p className="text-xs font-body text-foreground/75 leading-relaxed">
                       Sử dụng các màu {report.colors.map(c => c.name).join(", ")} làm điểm nhấn tương thích.
                     </p>
                   </div>
@@ -202,7 +202,7 @@ export default function AIStylistReport({
                       style={{ width: `${report.fitScore}%` }}
                     />
                   </div>
-                  <p className="text-[11px] font-body text-foreground/60 leading-relaxed mt-2.5">
+                  <p className="text-xs font-body text-foreground/60 leading-relaxed mt-2.5">
                     {report.fitAnalysis}
                   </p>
                 </div>
@@ -211,7 +211,7 @@ export default function AIStylistReport({
                   <h4 className="text-xs font-body font-bold text-foreground/75 uppercase tracking-wider flex items-center gap-1.5 mb-2">
                     <Heart className="w-3.5 h-3.5 text-foreground/45" /> Phối Màu Sắc & Ánh Sáng
                   </h4>
-                  <p className="text-[11px] font-body text-foreground/60 leading-relaxed">
+                  <p className="text-xs font-body text-foreground/60 leading-relaxed">
                     {report.colorAnalysis}
                   </p>
                 </div>
@@ -224,7 +224,7 @@ export default function AIStylistReport({
                 </div>
                 <div className="flex-grow">
                   <h4 className="text-xs font-body font-bold text-foreground/80 mb-1">Lời Khuyên Từ Stylist</h4>
-                  <p className="text-[11px] font-body text-foreground/65 leading-relaxed">
+                  <p className="text-xs font-body text-foreground/65 leading-relaxed">
                     {report.recommendation}
                   </p>
                 </div>

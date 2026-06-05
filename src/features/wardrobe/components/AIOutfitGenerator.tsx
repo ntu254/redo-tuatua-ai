@@ -46,7 +46,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
             <p className="text-sm font-body font-semibold text-foreground">
               AI tạo outfit
             </p>
-            <p className="text-[11px] text-muted-foreground font-body leading-snug mt-0.5">
+            <p className="text-xs text-muted-foreground font-body leading-snug mt-0.5">
               {selectedIds.length > 0
                 ? `${selectedIds.length} món đồ đã chọn — AI sẽ phối quanh chúng`
                 : `Tạo bộ outfit từ ${availableItems} món đồ trong tủ của bạn`}
@@ -57,7 +57,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
         {!generated ? (
           <Button
             variant="teal"
-            className="w-full gap-2 rounded-xl shadow-sm"
+            className="w-full gap-2 rounded-full shadow-sm"
             onClick={handleGenerate}
             disabled={spinning}
           >
@@ -92,10 +92,10 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[11px] font-body font-medium text-foreground truncate">
+                      <p className="text-xs font-body font-medium text-foreground truncate">
                         {piece.name}
                       </p>
-                      <p className="text-[9px] text-muted-foreground font-body uppercase tracking-wider">
+                      <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
                         {piece.role}
                       </p>
                     </div>
@@ -111,7 +111,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex-1 rounded-xl gap-1 text-[11px] h-8"
+                  className="flex-1 rounded-full gap-1 text-xs h-8"
                   onClick={handleRegenerate}
                 >
                   <RefreshCw
@@ -122,7 +122,7 @@ const AIOutfitGenerator = ({ items, selectedIds }: AIOutfitGeneratorProps) => {
                 <Button
                   variant="teal"
                   size="sm"
-                  className="flex-1 rounded-xl gap-1 text-[11px] h-8"
+                  className="flex-1 rounded-full gap-1 text-xs h-8"
                 >
                   Lưu <ChevronRight className="w-3 h-3" />
                 </Button>

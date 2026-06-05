@@ -2,10 +2,10 @@ import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 if (!GEMINI_API_KEY) {
-  console.error("GEMINI_API_KEY not set");
+  throw new Error("GEMINI_API_KEY environment variable is required for Gemini API access");
 }
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY ?? "");
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const MODEL = "gemini-3.1-flash-lite";
 

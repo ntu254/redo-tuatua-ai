@@ -78,7 +78,7 @@ export function NotificationDropdown({
             <Bell className="w-4 h-4 text-accent" />
             <span className="font-body text-sm font-semibold text-foreground">Thông báo</span>
             {hasUnread && (
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-500 text-white leading-none">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-destructive text-destructive-foreground leading-none">
                 {inbox.filter((n) => !n.is_read).length}
               </span>
             )}
@@ -88,7 +88,7 @@ export function NotificationDropdown({
             <button
               type="button"
               onClick={() => { onMarkAllAsRead(); }}
-              className="flex items-center gap-1 text-[11px] font-body text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1 text-xs font-body text-muted-foreground hover:text-foreground transition-colors"
               title="Đánh dấu tất cả đã đọc"
             >
               <CheckCheck className="w-3.5 h-3.5" />
@@ -106,7 +106,7 @@ export function NotificationDropdown({
                 <Bell className="w-5 h-5 text-foreground/30" />
               </div>
               <p className="font-body text-sm font-medium text-foreground/60">Không có thông báo</p>
-              <p className="font-body text-[11px] text-foreground/40 mt-1">
+              <p className="font-body text-xs text-foreground/40 mt-1">
                 Thông báo mới sẽ xuất hiện ở đây
               </p>
             </div>
@@ -145,10 +145,10 @@ export function NotificationDropdown({
                       <ExternalLink className="w-3 h-3 text-foreground/30 shrink-0 mt-0.5" />
                     )}
                   </div>
-                  <p className="font-body text-[11px] text-foreground/55 mt-0.5 line-clamp-2 leading-relaxed">
+                  <p className="font-body text-xs text-foreground/55 mt-0.5 line-clamp-2 leading-relaxed">
                     {item.body}
                   </p>
-                  <p className="font-body text-[10px] text-foreground/35 mt-1.5">
+                  <p className="font-body text-xs text-foreground/35 mt-1.5">
                     {formatDistanceToNow(new Date(item.created_at), {
                       addSuffix: true,
                       locale: vi,
@@ -168,7 +168,7 @@ export function NotificationDropdown({
         {/* Footer */}
         {inbox.length > 0 && (
           <div className="px-4 py-2.5 border-t border-border bg-secondary/30">
-            <p className="font-body text-[10px] text-foreground/40 text-center">
+            <p className="font-body text-xs text-foreground/40 text-center">
               Hiển thị {inbox.length} thông báo gần nhất
             </p>
           </div>

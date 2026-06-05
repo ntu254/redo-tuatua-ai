@@ -132,91 +132,91 @@ async function callEdgeAnalyzeWardrobe(items: any[]): Promise<WardrobeAnalysis |
 
 export const wardrobeService = {
   listItems: async (): Promise<WardrobeItem[]> => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from("wardrobe_items")
-        .select("id, name, image_url, color, is_favorite, created_at, category_id, style_preset_id")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-        
-      if (error) {
-        if (
-          error.message.includes("schema cache") ||
-          error.message.includes("permission denied") ||
-          error.code === "PGRST204" ||
-          error.code === "PGRST116" ||
-          error.code === "42P01" ||
-          error.code === "42501" ||
-          error.code === "PGRST301"
-        ) {
-          return [];
-        }
-        throw error;
-      }
-      
-      if (data && data.length > 0) return data.map(mapDbItem);
-      return [];
+    if (apiConfig.useMockApi) {
+      return apiClient.get<WardrobeItem[]>("/api/wardrobe/items");
     }
-    return apiClient.get<WardrobeItem[]>("/api/wardrobe/items");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    const { data, error } = await supabase
+      .from("wardrobe_items")
+      .select("id, name, image_url, color, is_favorite, created_at, category_id, style_preset_id")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      if (
+        error.message.includes("schema cache") ||
+        error.message.includes("permission denied") ||
+        error.code === "PGRST204" ||
+        error.code === "PGRST116" ||
+        error.code === "42P01" ||
+        error.code === "42501" ||
+        error.code === "PGRST301"
+      ) {
+        return [];
+      }
+      throw error;
+    }
+
+    if (data && data.length > 0) return data.map(mapDbItem);
+    return [];
   },
 
   getOverview: async (): Promise<WardrobeOverview> => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { itemCount: 0, savedOutfits: 0, aiSuggestions: 0 };
-      
-      let itemCount = 0;
-      let savedOutfits = 0;
-      
-      try {
-        const { count: ic, error: e1 } = await supabase
-          .from("wardrobe_items")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id);
-        if (!e1) itemCount = ic ?? 0;
-        
-        const { count: so, error: e2 } = await supabase
-          .from("outfits")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("is_saved", true);
-        if (!e2) savedOutfits = so ?? 0;
-      } catch (err) {
-        // ignore schema errors
-      }
-      
-      return {
-        itemCount,
-        savedOutfits,
-        aiSuggestions: 0,
-      };
+    if (apiConfig.useMockApi) {
+      return apiClient.get<WardrobeOverview>("/api/wardrobe/overview");
     }
-    return apiClient.get<WardrobeOverview>("/api/wardrobe/overview");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { itemCount: 0, savedOutfits: 0, aiSuggestions: 0 };
+    
+    let itemCount = 0;
+    let savedOutfits = 0;
+    
+    try {
+      const { count: ic, error: e1 } = await supabase
+        .from("wardrobe_items")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id);
+      if (!e1) itemCount = ic ?? 0;
+      
+      const { count: so, error: e2 } = await supabase
+        .from("outfits")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_saved", true);
+      if (!e2) savedOutfits = so ?? 0;
+    } catch (err) {
+      // ignore schema errors
+    }
+    
+    return {
+      itemCount,
+      savedOutfits,
+      aiSuggestions: 0,
+    };
   },
 
   getSuggestion: async () => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      const { data: items } = await supabase
-        .from("wardrobe_items")
-        .select("id, name, color, category_id")
-        .eq("user_id", user.id);
-      if (!items || items.length === 0) return [];
-
-      const categories = new Set(items.map((i) => i.category_id));
-      const suggestions: { role: string; name: string; color: string }[] = [];
-
-      if (!categories.has("Shoes")) suggestions.push({ role: "Core", name: "Giày sneaker trắng", color: "Trắng" });
-      if (!categories.has("Outerwear")) suggestions.push({ role: "Layer", name: "Áo khoác denim", color: "Xanh" });
-      if (!categories.has("Accessories")) suggestions.push({ role: "Statement", name: "Túi tote da", color: "Nâu" });
-      if (items.length < 3) suggestions.push({ role: "Core", name: "Áo thun trắng basic", color: "Trắng" });
-
-      return suggestions;
+    if (apiConfig.useMockApi) {
+      return apiClient.get<Array<{ role: string; name: string; color: string }>>("/api/wardrobe/suggestion");
     }
-    return apiClient.get<Array<{ role: string; name: string; color: string }>>("/api/wardrobe/suggestion");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    const { data: items } = await supabase
+      .from("wardrobe_items")
+      .select("id, name, color, category_id")
+      .eq("user_id", user.id);
+    if (!items || items.length === 0) return [];
+
+    const categories = new Set(items.map((i) => i.category_id));
+    const suggestions: { role: string; name: string; color: string }[] = [];
+
+    if (!categories.has("Shoes")) suggestions.push({ role: "Core", name: "Giày sneaker trắng", color: "Trắng" });
+    if (!categories.has("Outerwear")) suggestions.push({ role: "Layer", name: "Áo khoác denim", color: "Xanh" });
+    if (!categories.has("Accessories")) suggestions.push({ role: "Statement", name: "Túi tote da", color: "Nâu" });
+    if (items.length < 3) suggestions.push({ role: "Core", name: "Áo thun trắng basic", color: "Trắng" });
+
+    return suggestions;
   },
 
   analyzeUpload: async (file?: File): Promise<WardrobeUploadAnalysis> => {
@@ -230,45 +230,42 @@ export const wardrobeService = {
   },
 
   addItem: async (payload: CreateItemPayload): Promise<WardrobeItem | null> => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
 
-      let imageUrl: string | null = null;
-      if (payload.imageBase64) {
-        const ext = payload.mimeType.split("/")[1] || "png";
-        const fileName = `${user.id}/${Date.now()}.${ext}`;
-        const { error: uploadError } = await supabase.storage
+    let imageUrl: string | null = null;
+    if (payload.imageBase64) {
+      const ext = payload.mimeType.split("/")[1] || "png";
+      const fileName = `${user.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("wardrobe")
+        .upload(fileName, base64ToBlob(payload.imageBase64, payload.mimeType), {
+          contentType: payload.mimeType,
+          upsert: false,
+        });
+      if (!uploadError) {
+        const { data: { publicUrl } } = supabase.storage
           .from("wardrobe")
-          .upload(fileName, base64ToBlob(payload.imageBase64, payload.mimeType), {
-            contentType: payload.mimeType,
-            upsert: false,
-          });
-        if (!uploadError) {
-          const { data: { publicUrl } } = supabase.storage
-            .from("wardrobe")
-            .getPublicUrl(fileName);
-          imageUrl = publicUrl;
-        }
+          .getPublicUrl(fileName);
+        imageUrl = publicUrl;
       }
-
-      const { data, error } = await supabase
-        .from("wardrobe_items")
-        .insert({
-          user_id: user.id,
-          name: payload.name,
-          color: payload.color,
-          image_url: imageUrl,
-          category_id: CATEGORY_UUIDS[payload.category] ?? null,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      if (data) return mapDbItem(data);
-      return null;
     }
-    return apiClient.post<WardrobeItem>("/api/wardrobe/items", { json: payload });
+
+    const { data, error } = await supabase
+      .from("wardrobe_items")
+      .insert({
+        user_id: user.id,
+        name: payload.name,
+        color: payload.color,
+        image_url: imageUrl,
+        category_id: CATEGORY_UUIDS[payload.category] ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    if (data) return mapDbItem(data);
+    return null;
   },
 
   getAnalysis: async (): Promise<WardrobeAnalysis> => {
@@ -314,48 +311,48 @@ export const wardrobeService = {
   },
 
   deleteItem: async (id: number) => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: items, error: selectError } = await supabase
-        .from("wardrobe_items")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(100);
-      if (selectError) throw selectError;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data: items, error: selectError } = await supabase
+      .from("wardrobe_items")
+      .select("id")
+      .eq("user_id", user.id)
+      .limit(100);
 
-      const dbItem = items?.find((item) => UUID_TO_ID(item.id) === id);
-      if (dbItem) {
-        const { error: deleteError } = await supabase.from("wardrobe_items").delete().eq("id", dbItem.id);
-        if (deleteError) throw deleteError;
-      }
-      return;
+    if (selectError) {
+      if (selectError.code === "PGRST116" || selectError.code === "42P01") return;
+      throw selectError;
     }
-    return apiClient.delete<void>(`/api/wardrobe/items/${id}`);
+
+    const dbItem = items?.find((item) => UUID_TO_ID(item.id) === id);
+    if (dbItem) {
+      const { error: deleteError } = await supabase.from("wardrobe_items").delete().eq("id", dbItem.id);
+      if (deleteError) throw deleteError;
+    }
   },
 
   updateItem: async (id: number, payload: ItemUpdatePayload) => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { id, ...payload } as WardrobeItem;
-      const { data: items, error: selectError } = await supabase
-        .from("wardrobe_items")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(100);
-      if (selectError) throw selectError;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { id, ...payload } as WardrobeItem;
 
-      const dbItem = items?.find((item) => UUID_TO_ID(item.id) === id);
-      if (dbItem) {
-        const { error: updateError } = await supabase.from("wardrobe_items").update({
-          name: payload.name,
-          color: payload.color,
-          category_id: payload.category ? (CATEGORY_UUIDS[payload.category] ?? null) : undefined,
-        } as any).eq("id", dbItem.id);
-        if (updateError) throw updateError;
-      }
-      return { id, ...payload } as WardrobeItem;
+    const updatePayload: Record<string, unknown> = {};
+    if (payload.name !== undefined) updatePayload.name = payload.name;
+    if (payload.color !== undefined) updatePayload.color = payload.color;
+    if (payload.category !== undefined) updatePayload.category_id = CATEGORY_UUIDS[payload.category] ?? null;
+
+    const { data, error } = await supabase
+      .from("wardrobe_items")
+      .update(updatePayload)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "PGRST116" || error.code === "42P01") return { id, ...payload } as WardrobeItem;
+      throw error;
     }
-    return apiClient.patch<WardrobeItem>(`/api/wardrobe/items/${id}`, { json: payload });
+
+    if (data) return mapDbItem(data);
+    return { id, ...payload } as WardrobeItem;
   },
 };

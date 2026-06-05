@@ -101,7 +101,7 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
               alt={outfit.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 flex items-center justify-center transition-colors">
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 flex items-center justify-center transition-colors">
               <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-80 transition-opacity" />
             </div>
           </div>
