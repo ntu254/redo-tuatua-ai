@@ -123,15 +123,15 @@ const Navbar = ({ compact = false }: NavbarProps) => {
             </div>
           </div>
         ) : (
-          <div className="hidden xl:flex flex-1 items-center justify-center gap-1 xl:gap-2 2xl:gap-4">
+          <div className="hidden xl:flex flex-1 items-center justify-center gap-2 xl:gap-2.5 2xl:gap-3">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`shrink-0 text-xs font-body transition-colors md:text-sm ${
+                className={`soft-chip shrink-0 border px-3.5 py-1.5 text-[11px] font-body transition-all uppercase tracking-[0.1em] ${
                   location.pathname === link.href
-                    ? "text-foreground font-medium"
-                    : "text-muted-foreground/60 hover:text-foreground"
+                    ? "border-primary bg-primary text-primary-foreground shadow-[0_12px_24px_-14px_hsl(var(--primary)/0.8)] font-semibold"
+                    : "border-border/80 bg-background/88 text-foreground/78 hover:border-accent/30 hover:bg-secondary/92 hover:text-foreground"
                 }`}
               >
                 {link.label}
