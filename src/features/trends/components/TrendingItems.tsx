@@ -45,14 +45,14 @@ const TrendingItems = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-heading text-sm md:text-base italic text-foreground">{item.name}</h3>
-                  <span className="text-[9px] font-body font-semibold text-accent">{item.growth}</span>
+                  <span className="text-xs font-body font-semibold text-accent">{item.growth}</span>
                 </div>
-                <p className="text-[11px] font-body text-muted-foreground leading-relaxed line-clamp-2">{item.insight}</p>
+                <p className="text-xs font-body text-muted-foreground leading-relaxed line-clamp-2">{item.insight}</p>
                 <div className="mt-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="flex items-center gap-1 text-[9px] font-body font-medium uppercase tracking-wider text-accent">
+                  <span className="flex items-center gap-1 text-xs font-body font-medium uppercase tracking-wider text-accent">
                     Tạo outfit <ArrowRight className="w-2.5 h-2.5" />
                   </span>
-                  <span className="flex items-center gap-1 text-[9px] font-body font-medium uppercase tracking-wider text-foreground">
+                  <span className="flex items-center gap-1 text-xs font-body font-medium uppercase tracking-wider text-foreground">
                     <ShoppingCart className="w-2.5 h-2.5" /> Mua
                   </span>
                 </div>

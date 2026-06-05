@@ -113,7 +113,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`shrink-0 text-xs font-body transition-colors md:text-[13px] ${
+                className={`shrink-0 text-xs font-body transition-colors md:text-sm ${
                   location.pathname === link.href
                     ? "text-foreground font-medium"
                     : "text-muted-foreground/60 hover:text-foreground"
@@ -129,7 +129,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
           {user ? (
             <>
               {!compact && (
-                <div className="flex items-center gap-1.5 bg-secondary/60 px-3 py-1.5 text-xs font-body text-foreground/70">
+                <div className="flex items-center gap-1.5 rounded-full bg-secondary/60 px-3 py-1.5 text-xs font-body text-foreground/70">
                   <Sparkles className="w-3 h-3 text-foreground/50" />
                   <span>
                     {credits?.balance ?? 0}/{credits?.limit ?? 10}
@@ -143,7 +143,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
                 <DropdownMenuTrigger asChild>
                   <button
                     type="button"
-                    className="w-8 h-8 rounded-md overflow-hidden hover:ring-2 hover:ring-foreground/20 transition-all"
+                    className="w-8 h-8 rounded-full overflow-hidden hover:ring-2 hover:ring-foreground/20 transition-all"
                   >
                     <Avatar className="w-full h-full">
                       <AvatarImage src={profile?.avatar_url ?? ""} />
@@ -154,7 +154,7 @@ const Navbar = ({ compact = false }: NavbarProps) => {
                 <DropdownMenuContent align="end" className="w-52">
                   <DropdownMenuLabel>
                     <p className="truncate font-body text-sm font-semibold">{displayName}</p>
-                    <p className="text-[11px] font-body text-foreground/50 truncate">{user.email}</p>
+                    <p className="text-xs font-body text-foreground/50 truncate">{user.email}</p>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -188,11 +188,11 @@ const Navbar = ({ compact = false }: NavbarProps) => {
                 asChild
                 variant={location.pathname === "/login" ? "secondary" : "outline"}
                 size="sm"
-                className="rounded-md"
+                className="rounded-full"
               >
                 <Link to="/login">Đăng nhập</Link>
               </Button>
-              <Button asChild variant="default" size="sm" className="rounded-md">
+              <Button asChild variant="default" size="sm" className="rounded-full">
                 <Link to="/signup">Đăng ký</Link>
               </Button>
             </>

@@ -23,14 +23,14 @@ export function NotificationBell() {
         aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="relative w-8 h-8 flex items-center justify-center border border-border/60 bg-background/80 text-foreground/50 hover:text-foreground hover:border-accent/30 transition-colors"
+        className="relative w-8 h-8 flex items-center justify-center rounded-full border border-border/60 bg-background/80 text-foreground/50 hover:text-foreground hover:border-accent/30 transition-colors"
       >
         <Bell className="w-4 h-4" />
 
         {/* Badge số chưa đọc */}
         {unreadCount > 0 && (
           <span
-            className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold leading-none animate-in zoom-in-50 duration-200"
+            className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold leading-none animate-in zoom-in-50 duration-200"
             aria-hidden="true"
           >
             {unreadCount > 99 ? "99+" : unreadCount}

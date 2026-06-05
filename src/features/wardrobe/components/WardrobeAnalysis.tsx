@@ -29,56 +29,56 @@ export function WardrobeAnalysis({ analysis }: WardrobeAnalysisProps) {
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 text-accent mb-1">
             <Sparkles className="w-4 h-4" />
-            <span className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-body font-medium uppercase tracking-wider text-muted-foreground">
               Consistency
             </span>
           </div>
           <p className="text-2xl font-heading font-semibold text-foreground">
             {analysis.consistencyScore}%
           </p>
-          <p className="text-[10px] font-body text-muted-foreground mt-0.5">
+          <p className="text-xs font-body text-muted-foreground mt-0.5">
             Phong cách {analysis.dominantStyles[0] || "—"}
           </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 text-teal mb-1">
             <Palette className="w-4 h-4" />
-            <span className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-body font-medium uppercase tracking-wider text-muted-foreground">
               Top Color
             </span>
           </div>
           <p className="text-2xl font-heading font-semibold text-foreground">
             {analysis.topColor}
           </p>
-          <p className="text-[10px] font-body text-muted-foreground mt-0.5">
+          <p className="text-xs font-body text-muted-foreground mt-0.5">
             Màu chủ đạo trong tủ đồ
           </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 text-accent mb-1">
             <Shirt className="w-4 h-4" />
-            <span className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-body font-medium uppercase tracking-wider text-muted-foreground">
               Top Category
             </span>
           </div>
           <p className="text-2xl font-heading font-semibold text-foreground">
             {analysis.topCategory}
           </p>
-          <p className="text-[10px] font-body text-muted-foreground mt-0.5">
+          <p className="text-xs font-body text-muted-foreground mt-0.5">
             {analysis.totalItems} items total
           </p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center gap-2 text-amber-600 mb-1">
             <ShoppingBag className="w-4 h-4" />
-            <span className="text-[10px] font-body font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-body font-medium uppercase tracking-wider text-muted-foreground">
               Missing
             </span>
           </div>
           <p className="text-2xl font-heading font-semibold text-foreground">
             {analysis.missingEssentials.length}
           </p>
-          <p className="text-[10px] font-body text-muted-foreground mt-0.5">
+          <p className="text-xs font-body text-muted-foreground mt-0.5">
             Items cần bổ sung
           </p>
         </div>
@@ -138,8 +138,8 @@ export function WardrobeAnalysis({ analysis }: WardrobeAnalysisProps) {
                   className="w-10 h-10 rounded-xl border-2 border-border shadow-sm"
                   style={{ backgroundColor: c.color }}
                 />
-                <span className="text-[9px] font-body text-muted-foreground">{c.label}</span>
-                <span className="text-[8px] font-body text-muted-foreground">{c.count}</span>
+                <span className="text-xs font-body text-muted-foreground">{c.label}</span>
+                <span className="text-xs font-body text-muted-foreground">{c.count}</span>
               </div>
             ))}
           </div>
@@ -166,7 +166,7 @@ export function WardrobeAnalysis({ analysis }: WardrobeAnalysisProps) {
               </span>
             ))}
           </div>
-          <p className="text-[10px] font-body text-muted-foreground mt-3">
+          <p className="text-xs font-body text-muted-foreground mt-3">
             AI đề xuất bổ sung những item này để tăng khả năng phối đồ
           </p>
         </div>
@@ -182,7 +182,7 @@ export function WardrobeAnalysis({ analysis }: WardrobeAnalysisProps) {
             {analysis.seasonBreakdown.map((s) => (
               <div key={s.season} className="flex-1 text-center">
                 <p className="text-lg font-heading font-semibold text-foreground">{s.count}</p>
-                <p className="text-[10px] font-body text-muted-foreground">{s.season}</p>
+                <p className="text-xs font-body text-muted-foreground">{s.season}</p>
               </div>
             ))}
           </div>

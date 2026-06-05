@@ -58,11 +58,11 @@ const Footer = () => (
       ))}
     </div>
     <div className="border-t border-border px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
-      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">
+      <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
         © 2026 Redo. Bảo lưu mọi quyền.
       </p>
-      <p className="text-[10px] text-muted-foreground font-body uppercase tracking-wider">
-        Xây dựng với Lovable ❤️
+      <p className="text-xs text-muted-foreground font-body uppercase tracking-wider">
+        Xây dựng với Lovable
       </p>
     </div>
   </footer>

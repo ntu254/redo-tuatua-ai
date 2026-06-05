@@ -64,10 +64,10 @@ const AITrendInsights = () => {
                 {ins.stat}
               </div>
               <div className="flex-1">
-                <span className="text-[9px] font-body font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <span className="text-xs font-body font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   {ins.category}
                 </span>
-                <p className="text-[12px] font-body text-foreground leading-relaxed mt-1">
+                <p className="text-xs font-body text-foreground leading-relaxed mt-1">
                   {ins.text}
                 </p>
               </div>

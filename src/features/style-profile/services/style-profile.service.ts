@@ -10,7 +10,8 @@ async function callEdgeRecommendations(styleDna: any, favoriteColors: string[], 
     });
     if (error) throw error;
     return data;
-  } catch {
+  } catch (error) {
+    console.error("style-recommendations edge function failed:", error);
     return null;
   }
 }

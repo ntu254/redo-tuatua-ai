@@ -2,10 +2,36 @@
  * Verify all admin service CRUD operations work against real Supabase.
  * Uses service_role key to simulate what frontend services do.
  */
+import fs from "fs";
 import { createClient } from "@supabase/supabase-js";
 
-const URL = "https://trywdfggzrzbwndwrerg.supabase.co";
-const SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyeXdkZmdnenJ6YnduZHdyZXJnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTc3Njc3NCwiZXhwIjoyMDk1MzUyNzc0fQ.cYTf_WS8LRh1zMaPl7XWJ_g20qCgXh77nCq1g0gJTiE";
+function loadDotEnv() {
+  const env = {};
+  try {
+    const content = fs.readFileSync(".env", "utf8");
+    for (const line of content.split(/\r?\n/)) {
+      const match = line.match(/^\s*([^#=]+?)\s*=\s*(.*)$/);
+      if (!match) continue;
+      let [, key, value] = match;
+      value = value.trim();
+      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      env[key.trim()] = value;
+    }
+  } catch {
+    // file may not exist in all environments
+  }
+  return env;
+}
+
+const env = loadDotEnv();
+const URL = process.env.SUPABASE_URL ?? env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? env.VITE_SUPABASE_URL;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY ?? env.SUPABASE_SERVICE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY ?? env.SUPABASE_SERVICE_ROLE_KEY;
+if (!URL || !SERVICE_KEY) {
+  console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_KEY. Set them in environment or in .env.");
+  process.exit(1);
+}
 
 const sb = createClient(URL, SERVICE_KEY);
 

@@ -1,10 +1,10 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Loader2 } from "lucide-react";
 
 import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 import { AdminAuthProvider } from "@/features/admin/hooks/useAdminAuth";
 import { AdminAuthGuard, AdminLayout } from "@/features/admin/components";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Login = lazy(() => import("@/features/auth/pages/LoginPage"));
 const AuthCallback = lazy(() => import("@/features/auth/pages/AuthCallbackPage"));
@@ -37,8 +37,27 @@ const AdminSettings = lazy(() => import("@/features/admin/pages").then((module) 
 
 function RouteLoadingFallback() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <Loader2 className="w-5 h-5 animate-spin text-accent" />
+    <div className="min-h-[100dvh] bg-background flex items-center justify-center px-6">
+      <div className="w-full max-w-sm rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-foreground text-background font-heading text-lg italic">
+            R
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-heading text-lg font-semibold text-foreground">Redo</p>
+            <p className="text-xs font-body text-muted-foreground">Đang chuẩn bị trải nghiệm của bạn</p>
+          </div>
+        </div>
+        <div className="mt-6 space-y-3">
+          <Skeleton className="h-3 w-11/12 rounded-full" />
+          <Skeleton className="h-3 w-8/12 rounded-full" />
+          <div className="grid grid-cols-3 gap-2 pt-2">
+            <Skeleton className="aspect-square rounded-xl" />
+            <Skeleton className="aspect-square rounded-xl" />
+            <Skeleton className="aspect-square rounded-xl" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

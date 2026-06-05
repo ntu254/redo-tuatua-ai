@@ -77,7 +77,8 @@ async function fetchProducts(limit = 12): Promise<Product[]> {
       image: p.image_url || "",
       affiliateUrl: p.affiliate_url || "",
     }));
-  } catch {
+  } catch (error) {
+    console.error("fetchProducts failed:", error);
     return [];
   }
 }
@@ -249,101 +250,91 @@ export const recommenderService = {
   },
 
   listOutfits: async (): Promise<Outfit[]> => {
-    if (!apiConfig.useMockApi) {
-      const products = await fetchProducts(12);
-      if (products.length === 0) return [];
+    const products = await fetchProducts(12);
+    if (products.length === 0) return [];
 
-      const shuffled = [...products].sort(() => Math.random() - 0.5);
-      const groups: Outfit[] = [];
+    const shuffled = [...products].sort(() => Math.random() - 0.5);
+    const groups: Outfit[] = [];
 
-      for (let i = 0; i < Math.min(shuffled.length, 9); i += 3) {
-        const chunk = shuffled.slice(i, i + 3);
-        if (chunk.length === 0) break;
-        const total = chunk.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
-        groups.push({
-          id: Date.now() + i,
-          title: `Outfit ${groups.length + 1}`,
-          emoji: ["✨", "🔥", "💡"][groups.length] || "✨",
-          image: chunk[0]?.image || pickFallbackImage(String(i)),
-          style: "Casual",
-          styleTags: ["Casual"],
-          aiMatch: true,
-          aiComment: `Phối đồ từ ${chunk.length} sản phẩm.`,
-          totalPrice: `${total.toLocaleString("vi-VN")}đ`,
-          products: chunk,
-          matchScore: 85 + Math.floor(Math.random() * 10),
-          season: "all_year",
-          occasion: "casual",
-          mood: "Gợi ý",
-        });
-      }
-
-      return addRuntimeFields(groups);
+    for (let i = 0; i < Math.min(shuffled.length, 9); i += 3) {
+      const chunk = shuffled.slice(i, i + 3);
+      if (chunk.length === 0) break;
+      const total = chunk.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+      groups.push({
+        id: Date.now() + i,
+        title: `Outfit ${groups.length + 1}`,
+        emoji: ["✨", "🔥", "💡"][groups.length] || "✨",
+        image: chunk[0]?.image || pickFallbackImage(String(i)),
+        style: "Casual",
+        styleTags: ["Casual"],
+        aiMatch: true,
+        aiComment: `Phối đồ từ ${chunk.length} sản phẩm.`,
+        totalPrice: `${total.toLocaleString("vi-VN")}đ`,
+        products: chunk,
+        matchScore: 85 + Math.floor(Math.random() * 10),
+        season: "all_year",
+        occasion: "casual",
+        mood: "Gợi ý",
+      });
     }
-    return apiClient.get<Outfit[]>("/api/recommender/outfits");
+
+    return addRuntimeFields(groups);
   },
 
   generate: async (req: GenerateRequest): Promise<Outfit[]> => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await (supabase as any)
-          .from("outfits")
-          .insert({ user_id: user.id, name: req.prompt.slice(0, 100), source: "ai" } as any);
-      }
-      const edgeResult = await callEdgeGenerate(req);
-      if (edgeResult) return edgeResult;
-      return fallbackGenerate(req);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await (supabase as any)
+        .from("outfits")
+        .insert({ user_id: user.id, name: req.prompt.slice(0, 100), source: "ai" } as any);
     }
-    return apiClient.post<Outfit[]>("/api/recommender/generate", { json: req });
+    const edgeResult = await callEdgeGenerate(req);
+    if (edgeResult) return edgeResult;
+    return fallbackGenerate(req);
   },
 
   converse: async (prompt: string): Promise<EdgeResponse> => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      const edgeResult = await callEdgeConverse(prompt);
-      if (edgeResult) return edgeResult;
-      if (user) return fallbackConverse(prompt);
-    }
-    return apiClient.post("/api/recommender/converse", { json: { prompt } });
+    const { data: { user } } = await supabase.auth.getUser();
+    const edgeResult = await callEdgeConverse(prompt);
+    if (edgeResult) return edgeResult;
+    if (user) return fallbackConverse(prompt);
+    return {
+      reply: "Bạn hãy đăng nhập để nhận gợi ý cá nhân hóa nhé!",
+      outfits: [],
+      suggestions: [],
+    };
   },
 
   applyAction: async (outfitId: number, action: AIAction): Promise<Outfit[]> => {
-    if (!apiConfig.useMockApi) {
-      const edgeResult = await callEdgeGenerate({ prompt: `Apply ${action} to outfit ${outfitId}` });
-      if (edgeResult) return edgeResult;
-      return fallbackGenerate({ prompt: action });
-    }
-    return apiClient.post("/api/recommender/action", { json: { outfitId, action } });
+    const edgeResult = await callEdgeGenerate({ prompt: `Apply ${action} to outfit ${outfitId}` });
+    if (edgeResult) return edgeResult;
+    return fallbackGenerate({ prompt: action });
   },
 
   toggleSave: async (id: number, saved: boolean): Promise<boolean> => {
-    if (!apiConfig.useMockApi) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-      const { data: outfits } = await (supabase as any)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data: outfits } = await (supabase as any)
+      .from("outfits")
+      .select("id")
+      .eq("user_id", user.id)
+      .limit(100);
+    const dbOutfit = outfits?.find((o: any) => uuidToId(o.id) === id);
+    if (dbOutfit) {
+      const { error } = await (supabase as any)
         .from("outfits")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(100);
-      const dbOutfit = outfits?.find((o: any) => uuidToId(o.id) === id);
-      if (dbOutfit) {
-        const { error } = await (supabase as any)
-          .from("outfits")
-          .update({ is_saved: saved } as any)
-          .eq("id", (dbOutfit as any).id);
-        if (!error) {
-          await (supabase as any).from("user_activity_log").insert({
-            user_id: user.id,
-            activity_type: "outfit_saved",
-            description: saved ? `Đã lưu outfit` : `Đã bỏ lưu outfit`,
-            metadata: { outfit_id: (dbOutfit as any).id }
-          } as any);
-          return true;
-        }
+        .update({ is_saved: saved } as any)
+        .eq("id", (dbOutfit as any).id);
+      if (!error) {
+        await (supabase as any).from("user_activity_log").insert({
+          user_id: user.id,
+          activity_type: "outfit_saved",
+          description: saved ? `Đã lưu outfit` : `Đã bỏ lưu outfit`,
+          metadata: { outfit_id: (dbOutfit as any).id }
+        } as any);
+        return true;
       }
-      return false;
     }
-    return true;
+    return false;
   },
 };
