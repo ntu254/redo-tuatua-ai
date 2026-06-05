@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 
 import { Navbar } from "@/shared/layout";
 import { supabase } from "@/shared/lib";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { LoginPromptOverlay } from "@/features/auth/components/LoginPromptOverlay";
 import ControlPanel from "../components/ControlPanel";
 import TryOnCanvas from "../components/TryOnCanvas";
 import AIStylistReport from "../components/AIStylistReport";
@@ -30,6 +32,8 @@ interface Outfit {
 }
 
 export default function OutfitBuilderPage() {
+  const { session } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [searchParams] = useSearchParams();
   const [input, setInput] = useState("");
   const [occasion, setOccasion] = useState("");
@@ -59,6 +63,10 @@ export default function OutfitBuilderPage() {
 
   const buildOutfit = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    if (!session) {
+      setShowLoginPrompt(true);
+      return;
+    }
     if (pollRef.current) clearInterval(pollRef.current);
     setIsLoading(true);
     setError("");
@@ -101,6 +109,10 @@ export default function OutfitBuilderPage() {
 
   const startTryOn = async () => {
     if (!humanImage || !clothImage || tryOnStatus === "submitting" || tryOnStatus === "processing") return;
+    if (!session) {
+      setShowLoginPrompt(true);
+      return;
+    }
 
     setTryOnStatus("submitting");
     setTryOnError(null);
@@ -196,6 +208,7 @@ export default function OutfitBuilderPage() {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
+      {showLoginPrompt && <LoginPromptOverlay />}
       <Navbar />
       <main className="flex flex-1 overflow-hidden pt-16">
         <ControlPanel

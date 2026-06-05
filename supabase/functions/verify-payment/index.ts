@@ -8,6 +8,29 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info, x-supabase-auth-referer",
 };
 
+/**
+ * Map PayOS status to internal payment status.
+ * verify-payment is a one-shot fallback — it can skip intermediate states
+ * (pending → completed) unlike the webhook which uses a 2-step state machine.
+ */
+function resolveNewStatus(currentStatus: string, payosStatus: string): string | null {
+  if (currentStatus === "completed") return null; // already final
+  if (currentStatus === "refunded") return null;  // already final
+
+  switch (payosStatus) {
+    case "PAID":
+      return "completed";
+    case "CANCELLED":
+      return "failed";
+    case "EXPIRED":
+      return "expired";
+    case "PROCESSING":
+      return currentStatus === "pending" ? "processing" : null;
+    default:
+      return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -33,6 +56,7 @@ serve(async (req) => {
     const payosApiKey = Deno.env.get("PAYOS_API_KEY");
     if (!payosClientId || !payosApiKey) throw new Error("PayOS not configured");
 
+    // Query PayOS API for the real payment status
     const response = await fetch(
       `https://api-merchant.payos.vn/v2/payment-requests/${orderCode}`,
       { headers: { "x-client-id": payosClientId, "x-api-key": payosApiKey } },
@@ -43,6 +67,7 @@ serve(async (req) => {
     const payosData = payosResult.data;
     const payStatus = payosData?.status;
 
+    // Query payment from DB — order_code is stored as string
     const { data: payments } = await supabase
       .from("payments")
       .select("id, user_id, plan_id, billing_cycle, status, amount")
@@ -55,20 +80,25 @@ serve(async (req) => {
       throw new Error("Unauthorized");
     }
 
+    // Already completed — return immediately
     if (payment.status === "completed") {
       return new Response(JSON.stringify({ status: "completed" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    let newStatus: string | null = null;
-    if (payStatus === "PAID") newStatus = "completed";
-    else if (payStatus === "CANCELLED") newStatus = "failed";
-    else if (payStatus === "EXPIRED") newStatus = "expired";
+    const newStatus = resolveNewStatus(payment.status, payStatus);
 
     if (newStatus && newStatus !== payment.status) {
       if (newStatus === "completed") {
         const now = new Date().toISOString();
+
+        // First transition to processing (for consistency with webhook state machine)
+        if (payment.status === "pending") {
+          await supabase.from("payments").update({ status: "processing", updated_at: now }).eq("id", payment.id);
+        }
+
+        // Then mark as completed
         await supabase.from("payments").update({ status: "completed", paid_at: now, updated_at: now }).eq("id", payment.id);
 
         const { data: plan } = await supabase.from("plans").select("*").eq("id", payment.plan_id).single();
@@ -79,6 +109,7 @@ serve(async (req) => {
         if (bc === "yearly") endDate.setFullYear(endDate.getFullYear() + 1);
         else endDate.setMonth(endDate.getMonth() + 1);
 
+        // Upsert subscription
         const { data: existingSub } = await supabase.from("subscriptions").select("id").eq("user_id", payment.user_id).maybeSingle();
         if (existingSub) {
           await supabase.from("subscriptions").update({ plan_id: plan.id, status: "active", billing_cycle: bc, current_period_end: endDate.toISOString(), updated_at: now }).eq("id", existingSub.id);
@@ -86,6 +117,7 @@ serve(async (req) => {
           await supabase.from("subscriptions").insert({ user_id: payment.user_id, plan_id: plan.id, status: "active", billing_cycle: bc, current_period_start: now, current_period_end: endDate.toISOString() });
         }
 
+        // Add credits
         const creditAmount = plan.credits_per_month || 0;
         const { data: credits } = await supabase.from("user_credits").select("id, balance, lifetime_earned").eq("user_id", payment.user_id).maybeSingle();
         if (credits) {
@@ -97,11 +129,13 @@ serve(async (req) => {
         await supabase.from("credit_transactions").insert({ user_id: payment.user_id, amount: creditAmount, type: "purchase", reference_type: "subscription", description: `Subscription credits for ${plan.name}` });
         await supabase.from("billing_events").insert({ user_id: payment.user_id, event_type: "payment_success", data: { amount: payosData?.amount, provider: "payos", plan: plan.name, billing_cycle: bc } });
 
+        // Create invoice
         const invoiceCount = (await supabase.from("invoices").select("id", { count: "exact", head: true })).count ?? 0;
         const invoiceNum = `INV-${now.slice(0, 10).replace(/-/g, "").slice(0, 6)}-${String(invoiceCount + 1).padStart(5, "0")}`;
         const { data: profile } = await supabase.from("profiles").select("display_name, email").eq("id", payment.user_id).single();
         await supabase.from("invoices").insert({ user_id: payment.user_id, subscription_id: existingSub?.id || null, invoice_number: invoiceNum, amount: payment.amount ?? Number(payosData?.amount ?? 0), currency: "VND", status: "paid", paid_at: now });
 
+        // Send invoice email
         const resendKey = Deno.env.get("RESEND_API_KEY");
         if (resendKey && profile) {
           try {
@@ -123,6 +157,7 @@ serve(async (req) => {
         await supabase.from("payments").update({ status: newStatus, updated_at: new Date().toISOString() }).eq("id", payment.id);
       }
 
+      // Log the verification event
       await supabase.from("payments_log").insert({
         payment_id: payment.id,
         event_type: "api_verify",

@@ -69,11 +69,11 @@ export function AppRoutes() {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/quiz" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-          <Route path="/recommender" element={<ProtectedRoute><Recommender /></ProtectedRoute>} />
-          <Route path="/outfit-builder" element={<ProtectedRoute><OutfitBuilder /></ProtectedRoute>} />
+          <Route path="/recommender" element={<Recommender />} />
+          <Route path="/outfit-builder" element={<OutfitBuilder />} />
           <Route path="/wardrobe" element={<ProtectedRoute><Wardrobe /></ProtectedRoute>} />
-          <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
-          <Route path="/style-profile" element={<ProtectedRoute><StyleProfile /></ProtectedRoute>} />
+          <Route path="/trends" element={<Trends />} />
+          <Route path="/style-profile" element={<StyleProfile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
