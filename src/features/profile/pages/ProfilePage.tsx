@@ -726,12 +726,22 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
     queryKey: ["payments", userId],
     queryFn: () => profileService.listPayments(userId),
     enabled: !!userId,
+    refetchInterval: (query) => {
+      const data = query.state.data as any[] | undefined;
+      const hasPending = data?.some((p) => p.status === "pending" || p.status === "processing");
+      return hasPending ? 3000 : false;
+    },
   });
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["invoices", userId],
     queryFn: () => profileService.listInvoices(userId),
     enabled: !!userId,
+    refetchInterval: (query) => {
+      const data = query.state.data as any[] | undefined;
+      const hasPending = data?.some((i) => i.status === "pending" || i.status === "processing");
+      return hasPending ? 3000 : false;
+    },
   });
 
   const queryClient = useQueryClient();

@@ -484,7 +484,7 @@ const QuizPage = () => {
     }
   };
 
-  const { user } = useAuth();
+  const { user, markQuizCompleted } = useAuth();
 
   const next = () => {
     if (step < steps.length - 1) setStep(step + 1);
@@ -495,6 +495,8 @@ const QuizPage = () => {
         occasions: answers.occasion ?? [],
         budget: (answers.budget ?? [])[0],
         colors: answers.colors ?? [],
+      }).then(() => {
+        markQuizCompleted();
       }).catch(() => {});
       setPhase("analyzing");
     }
