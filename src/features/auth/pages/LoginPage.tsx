@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import heroImg from "@/assets/hero-fashion-1.jpg";
 import { Button, Input, Label } from "@/shared/ui";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AlertCircle, Eye, EyeOff, Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -23,6 +23,8 @@ const LoginPage = () => {
     ?? searchParams.get("error_description")
     ?? (searchParams.get("error_code") ? "Đăng nhập OAuth thất bại. Vui lòng thử lại." : null);
 
+  const [isRedirecting, setIsRedirecting] = useState<SocialProvider | null>(null);
+
   const loginMutation = useMutation({
     mutationFn: () => login(email, password),
     onSuccess: (result) => {
@@ -35,8 +37,10 @@ const LoginPage = () => {
   });
 
   const socialMutation = useMutation({
-    mutationFn: (provider: SocialProvider) => authService.loginWithProvider(provider),
-    onSuccess: () => navigate(from, { replace: true }),
+    mutationFn: async (provider: SocialProvider) => {
+      setIsRedirecting(provider);
+      return authService.loginWithProvider(provider);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,6 +50,31 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex">
+      {/* Redirect loading overlay */}
+      <AnimatePresence>
+        {isRedirecting && (
+          <motion.div
+            key="redirect-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm"
+          >
+            <div className="flex items-center gap-2 mb-6">
+              <Sparkles className="w-5 h-5 text-accent" />
+              <span className="font-heading text-xl font-semibold text-foreground">Redo</span>
+            </div>
+            <Loader2 className="w-8 h-8 animate-spin text-accent mb-3" />
+            <p className="font-body text-sm text-foreground/60">
+              {isRedirecting === "google"
+                ? "Đang chuyển hướng đến Google..."
+                : isRedirecting === "apple"
+                ? "Đang chuyển hướng đến Apple..."
+                : "Đang chuyển hướng..."}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="hidden lg:flex lg:w-[42%] xl:w-[40%] relative overflow-hidden">
         <motion.div
           className="absolute inset-0"

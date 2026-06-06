@@ -156,7 +156,7 @@ export default function TryOnCanvas({
                     </div>
 
                     {/* Items Grid */}
-                    <div className="flex-1 overflow-y-auto px-6 pb-4">
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 pb-4 [scrollbar-gutter:stable]">
                       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                         {sortedItems.map((item, i) => {
                           const isSelected = selectedClothId === item.id;

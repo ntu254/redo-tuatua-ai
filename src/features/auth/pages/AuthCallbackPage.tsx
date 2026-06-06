@@ -49,7 +49,9 @@ export default function AuthCallbackPage() {
         } else if (isLinking) {
           if (!cancelled) navigate("/profile", { replace: true });
         } else {
-          if (!cancelled) navigate("/", { replace: true });
+          // Navigate directly to the app rather than "/" to avoid a flash
+          // through the landing page while QuizRedirectHandler processes.
+          if (!cancelled) navigate("/recommender", { replace: true });
         }
       } catch (err) {
         if (!cancelled) {
