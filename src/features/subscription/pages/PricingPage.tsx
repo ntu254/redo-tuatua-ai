@@ -5,6 +5,7 @@ import { Crown, Check, Loader2, ArrowLeft, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { subscriptionService } from "../services/subscription.service";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const FEATURES: Record<string, { label: string; included: (plan: any) => boolean }[]> = {
   common: [
@@ -18,6 +19,7 @@ const FEATURES: Record<string, { label: string; included: (plan: any) => boolean
 };
 
 export default function PricingPage() {
+  const { session } = useAuth();
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [networkError, setNetworkError] = useState<string | null>(null);
@@ -30,6 +32,12 @@ export default function PricingPage() {
   });
 
   const handleSelect = async (planId: string, planSlug?: string) => {
+    // Redirect guests to login before purchasing
+    if (!session) {
+      navigate("/login", { state: { from: "/pricing" } });
+      return;
+    }
+
     setLoadingId(planId);
     setNetworkError(null);
 

@@ -726,13 +726,47 @@ const SubscriptionPanel = ({ userId }: { userId: string }) => {
     queryKey: ["payments", userId],
     queryFn: () => profileService.listPayments(userId),
     enabled: !!userId,
+    refetchInterval: (query) => {
+      const data = query.state.data as any[] | undefined;
+      const hasPending = data?.some((p) => p.status === "pending" || p.status === "processing");
+      return hasPending ? 3000 : false;
+    },
   });
 
   const { data: invoices = [] } = useQuery({
     queryKey: ["invoices", userId],
     queryFn: () => profileService.listInvoices(userId),
     enabled: !!userId,
+    refetchInterval: (query) => {
+      const data = query.state.data as any[] | undefined;
+      const hasPending = data?.some((i) => i.status === "pending" || i.status === "processing");
+      return hasPending ? 3000 : false;
+    },
   });
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`profile-subscription-${userId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "payments", filter: `user_id=eq.${userId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["payments", userId] });
+        queryClient.invalidateQueries({ queryKey: ["subscription", userId] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "invoices", filter: `user_id=eq.${userId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["invoices", userId] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${userId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["subscription", userId] });
+      })
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [userId, queryClient]);
 
   const planName = (plan?.sub as any)?.plans?.name ?? "Free";
   const aiLimit = (plan?.sub as any)?.plans?.ai_generations_limit ?? 10;

@@ -86,7 +86,7 @@ function QuizRedirectHandler() {
         "/payment/result",
       ];
       const isAdminPath = path.startsWith("/admin");
-
+      // Also skip if the path itself is /auth/callback (handles OAuth return race)
       if (!allowedPaths.includes(path) && !isAdminPath) {
         navigate("/quiz", { replace: true, state: { from: path } });
       }

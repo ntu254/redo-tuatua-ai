@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<AuthResult>;
   signup: (email: string, password: string, displayName?: string) => Promise<AuthResult>;
   logout: () => Promise<void>;
+  markQuizCompleted: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -100,6 +101,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setQuizCompleted(false);
   }, []);
 
+  const markQuizCompleted = useCallback(() => {
+    setQuizCompleted(true);
+  }, []);
+
   const value = useMemo(
     () => ({
       session,
@@ -112,8 +117,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       login,
       signup,
       logout,
+      markQuizCompleted,
     }),
-    [loading, login, logout, refreshSession, session, signup, quizCompleted],
+    [loading, login, logout, refreshSession, session, signup, quizCompleted, markQuizCompleted],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -16,8 +16,10 @@ export default function PaymentResultPage() {
   const planName = searchParams.get("planName");
   const planId = searchParams.get("planId");
 
+  const cancelParam = searchParams.get("cancel");
+
   const [pageStatus, setPageStatus] = useState<"processing" | "success" | "cancelled" | "failed" | "timeout">(() => {
-    if (statusParam === "cancelled") return "cancelled";
+    if (statusParam === "cancelled" || statusParam === "CANCELLED" || cancelParam === "true") return "cancelled";
     return "processing";
   });
   const [retryCount, setRetryCount] = useState(0);
@@ -39,7 +41,7 @@ export default function PaymentResultPage() {
   });
 
   useEffect(() => {
-    if (!orderCode) return;
+    if (!orderCode || pageStatus === "cancelled" || pageStatus === "failed" || pageStatus === "success") return;
 
     const currentOc = orderCode;
 

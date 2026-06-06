@@ -157,6 +157,9 @@ export const authService = {
       provider,
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        // Force the account-picker so returning users are not silently
+        // re-authenticated with the account they used previously.
+        queryParams: { prompt: "select_account" },
       },
     });
     if (error) throw error;
