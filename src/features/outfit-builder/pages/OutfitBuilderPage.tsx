@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiConfig } from "@/shared/api/config";
 import { toast } from "@/hooks/use-toast";
 import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import { allFeaturesCompleted, markFeatureCompleted } from "@/shared/survey/surveyConfig";
 import SurveyModal from "@/shared/components/SurveyModal";
 
 const MAX_POLL_RETRIES = 60;
@@ -99,7 +100,8 @@ export default function OutfitBuilderPage() {
       survey.checkTriggers &&
       tryOnStatus === "succeed" &&
       tryOnImage &&
-      viewMode === "after"
+      viewMode === "after" &&
+      allFeaturesCompleted()
     ) {
       survey.checkTriggers([
         {
@@ -108,6 +110,7 @@ export default function OutfitBuilderPage() {
           getContext: () => ({ taskId: tryOnTaskId, hasOutfit: !!outfit }),
         },
       ]);
+      markFeatureCompleted("outfitbuilder");
     }
   }, [tryOnStatus, tryOnImage, viewMode, tryOnTaskId, outfit, survey.checkTriggers]);
 

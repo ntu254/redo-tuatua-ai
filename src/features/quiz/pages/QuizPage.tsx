@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { sampleOutfits } from "@/features/recommender/data";
 import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import { markFeatureCompleted } from "@/shared/survey/surveyConfig";
 import SurveyModal from "@/shared/components/SurveyModal";
 
 import heroImg from "@/assets/hero-fashion-2.jpg";
@@ -491,14 +492,7 @@ const QuizPage = () => {
 
   useEffect(() => {
     if (phase === "result") {
-      survey.checkTriggers([
-        {
-          feature: "quiz",
-          check: () => true,
-          getContext: () => ({ answers }),
-          delayMs: 1500,
-        },
-      ]);
+      markFeatureCompleted("quiz");
     }
   }, [phase]);
 
@@ -734,26 +728,7 @@ const QuizPage = () => {
     return <WelcomeScreen onStart={() => setPhase("quiz")} />;
   if (phase === "analyzing")
     return <AnalyzingScreen onDone={() => setPhase("result")} />;
-  if (phase === "result")
-    return (
-      <>
-        <ResultScreen answers={answers} />
-        <SurveyModal
-          isOpen={survey.isOpen}
-          featureConfig={survey.featureConfig!}
-          responses={survey.responses}
-          currentStep={survey.currentStep}
-          isSubmitting={survey.isSubmitting}
-          submitError={survey.submitError}
-          onDismiss={survey.dismissSurvey}
-          onResponseChange={survey.handleResponseChange}
-          onNext={survey.nextStep}
-          onPrev={survey.prevStep}
-          onGoToStep={survey.goToStep}
-          onSubmit={survey.submitSurvey}
-        />
-      </>
-    );
+  if (phase === "result") return <ResultScreen answers={answers} />;
 
   return (
     <div className="h-screen bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.4)_0%,transparent_34%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--off-white))_100%)] flex flex-col overflow-hidden">

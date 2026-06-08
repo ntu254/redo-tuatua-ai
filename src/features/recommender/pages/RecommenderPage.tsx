@@ -7,6 +7,7 @@ import DetailedOutfitSetCard from "../components/DetailedOutfitSetCard";
 import MiniSetCard from "../components/MiniSetCard";
 import { recommenderService } from "../services/recommender.service";
 import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import { markFeatureCompleted } from "@/shared/survey/surveyConfig";
 import SurveyModal from "@/shared/components/SurveyModal";
 import type { Outfit } from "../types";
 
@@ -54,14 +55,8 @@ const RecommenderPage = () => {
       setActiveOutfitIndex(0);
       setGenerationCount((prev) => {
         const newCount = prev + 1;
-        if (newCount >= 3 && survey.checkTriggers) {
-          survey.checkTriggers([
-            {
-              feature: "recommender",
-              check: () => true,
-              getContext: () => ({ generations: newCount, lastPrompt: message }),
-            },
-          ]);
+        if (newCount >= 3) {
+          markFeatureCompleted("recommender");
         }
         return newCount;
       });
@@ -230,21 +225,6 @@ const RecommenderPage = () => {
           </div>
         </main>
       </div>
-
-      <SurveyModal
-        isOpen={survey.isOpen}
-        featureConfig={survey.featureConfig!}
-        responses={survey.responses}
-        currentStep={survey.currentStep}
-        isSubmitting={survey.isSubmitting}
-        submitError={survey.submitError}
-        onDismiss={survey.dismissSurvey}
-        onResponseChange={survey.handleResponseChange}
-        onNext={survey.nextStep}
-        onPrev={survey.prevStep}
-        onGoToStep={survey.goToStep}
-        onSubmit={survey.submitSurvey}
-      />
     </div>
   );
 };

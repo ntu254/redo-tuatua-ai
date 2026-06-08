@@ -287,3 +287,15 @@ export function shouldShowSurvey(
   if (isDismissed(feature)) return false;
   return true;
 }
+
+export function markFeatureCompleted(feature: string): void {
+  localStorage.setItem(`feature_completed_${feature}`, "true");
+}
+
+export function isFeatureCompleted(feature: string): boolean {
+  return localStorage.getItem(`feature_completed_${feature}`) === "true";
+}
+
+export function allFeaturesCompleted(): boolean {
+  return isFeatureCompleted("quiz") && isFeatureCompleted("recommender");
+}
