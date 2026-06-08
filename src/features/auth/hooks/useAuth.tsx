@@ -51,17 +51,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     bootstrap();
 
-    const { data } = authService.onAuthStateChange((nextSession) => {
+    const { data } = authService.onAuthStateChange(async (nextSession) => {
       setSession(nextSession);
-      setLoading(false);
       if (nextSession?.user?.id) {
-        profileService
-          .getProfile(nextSession.user.id)
-          .then((profile) => setQuizCompleted(profile.quiz_completed ?? false))
-          .catch(() => setQuizCompleted(false));
+        try {
+          const profile = await profileService.getProfile(nextSession.user.id);
+          setQuizCompleted(profile.quiz_completed ?? false);
+        } catch {
+          setQuizCompleted(false);
+        }
       } else {
         setQuizCompleted(false);
       }
+      setLoading(false);
     });
 
     return () => {
