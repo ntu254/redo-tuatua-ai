@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   Bell,
   Check,
+  ClipboardList,
   Crown,
   Edit2,
   ExternalLink,
@@ -31,6 +32,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { authService, type SocialProvider } from "@/features/auth/services/auth.service";
 import { supabase } from "@/shared/lib";
+import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import SurveyModal from "@/shared/components/SurveyModal";
 import {
   profileService,
   type Profile,
@@ -983,6 +986,7 @@ const ProfilePage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { session, user, logout } = useAuth();
+  const survey = useSurveyTrigger();
 
   const userId = user?.id ?? "";
 
@@ -1106,7 +1110,18 @@ const ProfilePage = () => {
         <div className="container mx-auto px-4 md:px-6 py-5">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             <p className="text-[11px] font-body font-semibold text-muted-foreground uppercase tracking-widest mb-1">Tài khoản</p>
-            <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Cài đặt tài khoản</h1>
+            <div className="flex items-center justify-between">
+              <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">Cài đặt tài khoản</h1>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 font-body"
+                onClick={() => survey.openSurvey("survey", {})}
+              >
+                <ClipboardList className="w-4 h-4" />
+                Khảo sát
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -1177,6 +1192,21 @@ const ProfilePage = () => {
           )}
         </main>
       </div>
+
+      <SurveyModal
+        isOpen={survey.isOpen}
+        featureConfig={survey.featureConfig!}
+        responses={survey.responses}
+        currentStep={survey.currentStep}
+        isSubmitting={survey.isSubmitting}
+        submitError={survey.submitError}
+        onDismiss={survey.dismissSurvey}
+        onResponseChange={survey.handleResponseChange}
+        onNext={survey.nextStep}
+        onPrev={survey.prevStep}
+        onGoToStep={survey.goToStep}
+        onSubmit={survey.submitSurvey}
+      />
     </div>
   );
 };

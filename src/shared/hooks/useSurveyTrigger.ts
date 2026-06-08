@@ -12,6 +12,13 @@ import {
 import { supabase } from "@/shared/lib";
 import { toast } from "@/hooks/use-toast";
 
+const TEST_EMAIL = "nttu254.vn@gmail.com";
+
+async function isTestUser(): Promise<boolean> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.user?.email === TEST_EMAIL;
+}
+
 interface SurveyState {
   isOpen: boolean;
   feature: string;
@@ -37,9 +44,10 @@ const initialState: SurveyState = {
 export function useSurveyTrigger() {
   const [state, setState] = useState<SurveyState>(initialState);
 
-  const checkTriggers = useCallback((triggers: SurveyTriggerConfig[]) => {
+  const checkTriggers = useCallback(async (triggers: SurveyTriggerConfig[]) => {
+    const testUser = await isTestUser();
     for (const trigger of triggers) {
-      if (!shouldShowSurvey(trigger.feature, trigger.check())) continue;
+      if (!testUser && !shouldShowSurvey(trigger.feature, trigger.check())) continue;
       openSurvey(trigger.feature, trigger.getContext());
       break;
     }

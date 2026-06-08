@@ -239,6 +239,12 @@ export const FEATURE_CONFIGS: Record<string, FeatureSurveyConfig> = {
     description: "Bạn vừa dùng Try-On ảo. Kết quả có giống thực tế không?",
     triggerDescription: "Sau khi xem kết quả Try-On",
   },
+  survey: {
+    feature: "survey",
+    title: "Khảo sát trải nghiệm",
+    description: "Đánh giá trải nghiệm tổng quan của bạn với Redo",
+    triggerDescription: "Từ trang Cá nhân",
+  },
 };
 
 export function getFeatureConfig(feature: string): FeatureSurveyConfig {
