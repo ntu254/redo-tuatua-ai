@@ -229,21 +229,6 @@ interface ResultScreenProps {
 
 const ResultScreen = ({ answers }: ResultScreenProps) => {
   const navigate = useNavigate();
-  const survey = useSurveyTrigger();
-
-  useEffect(() => {
-    const checkTriggers = survey.checkTriggers;
-    if (checkTriggers) {
-      checkTriggers([
-        {
-          feature: "quiz",
-          check: () => true,
-          getContext: () => ({ answers }),
-          delayMs: 1500,
-        },
-      ]);
-    }
-  }, []);
 
   const colorHexMap: Record<string, string> = {
     white: "#FFFFFF",
@@ -449,6 +434,7 @@ const QuizPage = () => {
   const [phase, setPhase] = useState<Phase>("welcome");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const survey = useSurveyTrigger();
 
   const steps = [
     {
@@ -502,6 +488,19 @@ const QuizPage = () => {
   };
 
   const { user, markQuizCompleted } = useAuth();
+
+  useEffect(() => {
+    if (phase === "result") {
+      survey.checkTriggers([
+        {
+          feature: "quiz",
+          check: () => true,
+          getContext: () => ({ answers }),
+          delayMs: 1500,
+        },
+      ]);
+    }
+  }, [phase]);
 
   const next = () => {
     if (step < steps.length - 1) setStep(step + 1);
