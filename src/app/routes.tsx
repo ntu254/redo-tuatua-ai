@@ -36,6 +36,7 @@ const AdminAnalytics = lazy(() => import("@/features/admin/pages").then((module)
 const AdminNotifications = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminNotifications })));
 const AdminFeedback = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminFeedback })));
 const AdminSettings = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminSettings })));
+const AdminSurvey = lazy(() => import("@/features/admin/pages/AdminSurvey"));
 
 function RouteLoadingFallback() {
   return (
@@ -130,6 +131,7 @@ export function AppRoutes() {
             <Route path="analytics" element={<AdminAnalytics />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="feedback" element={<AdminFeedback />} />
+            <Route path="survey" element={<AdminSurvey />} />
             <Route path="settings" element={<AdminSettings />} />
           </Route>
 

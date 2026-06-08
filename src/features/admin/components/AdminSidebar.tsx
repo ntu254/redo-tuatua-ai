@@ -23,6 +23,7 @@ import {
   TrendingUp,
   Users,
   Zap,
+  ClipboardList,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAdminAuth } from "../hooks/useAdminAuth";
@@ -37,6 +38,7 @@ const navItems = [
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3, module: "analytics" },
   { title: "Notifications", url: "/admin/notifications", icon: Megaphone, module: "notifications" },
   { title: "Reports", url: "/admin/feedback", icon: MessageSquare, module: "reports" },
+  { title: "Survey", url: "/admin/survey", icon: ClipboardList, module: "reports" },
   { title: "Settings", url: "/admin/settings", icon: Settings, module: "settings" },
 ];
 

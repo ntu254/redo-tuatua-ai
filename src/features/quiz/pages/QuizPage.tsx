@@ -14,6 +14,8 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { sampleOutfits } from "@/features/recommender/data";
+import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import SurveyModal from "@/shared/components/SurveyModal";
 
 import heroImg from "@/assets/hero-fashion-2.jpg";
 import lookbook1 from "@/assets/lookbook-1.jpg";
@@ -227,6 +229,21 @@ interface ResultScreenProps {
 
 const ResultScreen = ({ answers }: ResultScreenProps) => {
   const navigate = useNavigate();
+  const survey = useSurveyTrigger();
+
+  useEffect(() => {
+    const checkTriggers = survey.checkTriggers;
+    if (checkTriggers) {
+      checkTriggers([
+        {
+          feature: "quiz",
+          check: () => true,
+          getContext: () => ({ answers }),
+          delayMs: 1500,
+        },
+      ]);
+    }
+  }, []);
 
   const colorHexMap: Record<string, string> = {
     white: "#FFFFFF",
@@ -718,7 +735,26 @@ const QuizPage = () => {
     return <WelcomeScreen onStart={() => setPhase("quiz")} />;
   if (phase === "analyzing")
     return <AnalyzingScreen onDone={() => setPhase("result")} />;
-  if (phase === "result") return <ResultScreen answers={answers} />;
+  if (phase === "result")
+    return (
+      <>
+        <ResultScreen answers={answers} />
+        <SurveyModal
+          isOpen={survey.isOpen}
+          featureConfig={survey.featureConfig!}
+          responses={survey.responses}
+          currentStep={survey.currentStep}
+          isSubmitting={survey.isSubmitting}
+          submitError={survey.submitError}
+          onDismiss={survey.dismissSurvey}
+          onResponseChange={survey.handleResponseChange}
+          onNext={survey.nextStep}
+          onPrev={survey.prevStep}
+          onGoToStep={survey.goToStep}
+          onSubmit={survey.submitSurvey}
+        />
+      </>
+    );
 
   return (
     <div className="h-screen bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.4)_0%,transparent_34%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--off-white))_100%)] flex flex-col overflow-hidden">

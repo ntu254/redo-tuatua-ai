@@ -12,6 +12,8 @@ import AIStylistReport from "../components/AIStylistReport";
 import { useQuery } from "@tanstack/react-query";
 import { apiConfig } from "@/shared/api/config";
 import { toast } from "@/hooks/use-toast";
+import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import SurveyModal from "@/shared/components/SurveyModal";
 
 const MAX_POLL_RETRIES = 60;
 const POLL_INTERVAL_MS = 3000;
@@ -60,6 +62,7 @@ export default function OutfitBuilderPage() {
   const trafficRef = searchParams.get("ref") || "direct";
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollCountRef = useRef(0);
+  const survey = useSurveyTrigger();
 
   const userId = session?.user?.id ?? "";
 
@@ -90,6 +93,23 @@ export default function OutfitBuilderPage() {
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (
+      survey.checkTriggers &&
+      tryOnStatus === "succeed" &&
+      tryOnImage &&
+      viewMode === "after"
+    ) {
+      survey.checkTriggers([
+        {
+          feature: "tryon",
+          check: () => true,
+          getContext: () => ({ taskId: tryOnTaskId, hasOutfit: !!outfit }),
+        },
+      ]);
+    }
+  }, [tryOnStatus, tryOnImage, viewMode, tryOnTaskId, outfit, survey.checkTriggers]);
 
   const buildOutfit = async (text: string) => {
     if (!text.trim() || isLoading) return;
@@ -351,6 +371,21 @@ export default function OutfitBuilderPage() {
           />
         </div>
       </main>
+
+      <SurveyModal
+        isOpen={survey.isOpen}
+        featureConfig={survey.featureConfig!}
+        responses={survey.responses}
+        currentStep={survey.currentStep}
+        isSubmitting={survey.isSubmitting}
+        submitError={survey.submitError}
+        onDismiss={survey.dismissSurvey}
+        onResponseChange={survey.handleResponseChange}
+        onNext={survey.nextStep}
+        onPrev={survey.prevStep}
+        onGoToStep={survey.goToStep}
+        onSubmit={survey.submitSurvey}
+      />
     </div>
   );
 }

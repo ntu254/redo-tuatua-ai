@@ -6,6 +6,8 @@ import HotOutfitCarousel from "../components/HotOutfitCarousel";
 import DetailedOutfitSetCard from "../components/DetailedOutfitSetCard";
 import MiniSetCard from "../components/MiniSetCard";
 import { recommenderService } from "../services/recommender.service";
+import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import SurveyModal from "@/shared/components/SurveyModal";
 import type { Outfit } from "../types";
 
 const LOADING_STEPS = [
@@ -28,7 +30,9 @@ const RecommenderPage = () => {
   const [activePrompt, setActivePrompt] = useState("");
   const [loadingStep, setLoadingStep] = useState(0);
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
+  const [generationCount, setGenerationCount] = useState(0);
   const cancelledRef = useRef(false);
+  const survey = useSurveyTrigger();
 
   useEffect(() => {
     recommenderService.fetchTrendingOutfits().then(setTrendingOutfits);
@@ -48,8 +52,21 @@ const RecommenderPage = () => {
       setActivePrompt(message);
       setIsLoading(false);
       setActiveOutfitIndex(0);
+      setGenerationCount((prev) => {
+        const newCount = prev + 1;
+        if (newCount >= 3 && survey.checkTriggers) {
+          survey.checkTriggers([
+            {
+              feature: "recommender",
+              check: () => true,
+              getContext: () => ({ generations: newCount, lastPrompt: message }),
+            },
+          ]);
+        }
+        return newCount;
+      });
     },
-    []
+    [survey.checkTriggers]
   );
 
   const filtered = outfits.filter((o) => {
@@ -213,6 +230,21 @@ const RecommenderPage = () => {
           </div>
         </main>
       </div>
+
+      <SurveyModal
+        isOpen={survey.isOpen}
+        featureConfig={survey.featureConfig!}
+        responses={survey.responses}
+        currentStep={survey.currentStep}
+        isSubmitting={survey.isSubmitting}
+        submitError={survey.submitError}
+        onDismiss={survey.dismissSurvey}
+        onResponseChange={survey.handleResponseChange}
+        onNext={survey.nextStep}
+        onPrev={survey.prevStep}
+        onGoToStep={survey.goToStep}
+        onSubmit={survey.submitSurvey}
+      />
     </div>
   );
 };
