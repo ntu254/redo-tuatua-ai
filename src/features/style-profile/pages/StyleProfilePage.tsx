@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/shared/layout";
 import { Badge, Button } from "@/shared/ui";
@@ -9,6 +10,7 @@ import {
   Shirt,
   Sparkles,
   TrendingUp,
+  RefreshCw
 } from "lucide-react";
 import {
   Area,
@@ -27,6 +29,10 @@ import {
   YAxis,
 } from "recharts";
 
+import { styleProfileService } from "../services/style-profile.service";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import type { StyleProfile, StyleRecommendation } from "../types";
+
 import blackBlazer from "@/assets/wardrobe/black-blazer.jpg";
 import blueJeans from "@/assets/wardrobe/blue-jeans.jpg";
 import grayHoodie from "@/assets/wardrobe/gray-hoodie.jpg";
@@ -39,93 +45,16 @@ import styleMinimal from "@/assets/style-minimal-new.jpg";
 import styleOffice from "@/assets/style-office-new.jpg";
 import styleStreet from "@/assets/style-streetwear-new.jpg";
 
-const styleDna = [
-  { style: "Minimal", value: 70 },
-  { style: "Streetwear", value: 15 },
-  { style: "Casual", value: 10 },
-  { style: "Elegant", value: 5 },
-  { style: "Athleisure", value: 8 },
-  { style: "Classic", value: 12 },
-];
-
-const favoriteColors = [
-  { name: "White", hex: "#FFFFFF", pct: 35 },
-  { name: "Beige", hex: "#F5F0E8", pct: 25 },
-  { name: "Black", hex: "#1C1C1C", pct: 20 },
-  { name: "Navy", hex: "#1B2A4A", pct: 12 },
-  { name: "Sage Green", hex: "#9CAF88", pct: 8 },
-];
-
-const outfitTypes = [
-  { name: "Casual", value: 42, color: "hsl(0 0% 75%)" },
-  { name: "Office", value: 28, color: "hsl(0 0% 45%)" },
-  { name: "Streetwear", value: 15, color: "hsl(0 100% 70%)" },
-  { name: "Party", value: 10, color: "hsl(0 0% 25%)" },
-  { name: "Sport", value: 5, color: "hsl(166 65% 50%)" },
-];
-
-const evolution = [
-  { month: "Jan", Minimal: 30, Casual: 50, Office: 20 },
-  { month: "Feb", Minimal: 35, Casual: 45, Office: 20 },
-  { month: "Mar", Minimal: 50, Casual: 30, Office: 20 },
-  { month: "Apr", Minimal: 55, Casual: 25, Office: 20 },
-  { month: "May", Minimal: 60, Casual: 20, Office: 20 },
-  { month: "Jun", Minimal: 70, Casual: 10, Office: 20 },
-];
-
-const wardrobeFavorites = [
-  { name: "White T-shirt", img: whiteTshirt, worn: 47 },
-  { name: "Blue Jeans", img: blueJeans, worn: 38 },
-  { name: "Black Blazer", img: blackBlazer, worn: 31 },
-  { name: "White Sneakers", img: whiteSneakers, worn: 29 },
-  { name: "Gray Hoodie", img: grayHoodie, worn: 24 },
-  { name: "Pink Silk Shirt", img: pinkSilkShirt, worn: 18 },
-];
-
-const insights = [
-  "Bạn thường chọn tông màu trung tính — phong cách minimal rất rõ nét.",
-  "Bạn ưa chuộng silhouette tối giản và đường cắt sạch.",
-  "Rất hiếm khi bạn mặc màu sắc rực rỡ — thử thêm pastel nhé!",
-  "Outfit casual chiếm phần lớn tủ đồ — linh hoạt cho mọi dịp.",
-];
-
-const styleRecommendations = [
-  { prompt: "outfit minimal cho đi làm", label: "Đi làm — Minimal", style: "Minimal" },
-  { prompt: "outfit streetwear cá tính", label: "Dạo phố — Streetwear", style: "Streetwear" },
-  { prompt: "outfit casual cuối tuần", label: "Cuối tuần — Casual", style: "Casual" },
-  { prompt: "outfit tối giản sang trọng", label: "Hẹn hò — Minimal", style: "Minimal" },
-];
-
-const missingEssentials = [
-  { item: "Sneaker trắng basic", reason: "Phù hợp mọi outfit casual & minimal", priority: "high" as const },
-  { item: "Blazer đen", reason: "Nâng cấp office look ngay lập tức", priority: "high" as const },
-  { item: "Túi tote đa năng", reason: "Phụ kiện thiết yếu cho ngày dài", priority: "medium" as const },
-  { item: "Áo len cashmere", reason: "Layer mỏng nhẹ cho thu/đông", priority: "medium" as const },
-  { item: "Đồng hồ tối giản", reason: "Điểm nhấn tinh tế cho style minimal", priority: "low" as const },
-];
-
-const suggestedStyles = [
-  {
-    name: "Quiet Luxury",
-    img: styleMinimal,
-    desc: "Thanh lịch, chất liệu cao cấp, không logo",
-  },
-  {
-    name: "Soft Minimal",
-    img: styleOffice,
-    desc: "Nhẹ nhàng, trung tính, tinh tế",
-  },
-  {
-    name: "K-Fashion Casual",
-    img: kfashion,
-    desc: "Layer thông minh, phối màu pastel",
-  },
-  {
-    name: "Modern Streetwear",
-    img: styleStreet,
-    desc: "Phá cách, oversized, sneaker game",
-  },
-];
+// Map image names or use fallbacks for suggested styles if AI doesn't provide images
+const styleImages: Record<string, string> = {
+  "Quiet Luxury": styleMinimal,
+  "Soft Minimal": styleOffice,
+  "K-Fashion Casual": kfashion,
+  "Modern Streetwear": styleStreet,
+  "Minimal": styleMinimal,
+  "Office": styleOffice,
+  "Streetwear": styleStreet,
+};
 
 const Fade = ({
   children,
@@ -165,13 +94,83 @@ const CardLabel = ({ children }: { children: React.ReactNode }) => (
 
 const StyleProfilePage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<StyleProfile | null>(null);
+  const [recommendations, setRecommendations] = useState<StyleRecommendation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loadData = async (forceRefresh = false) => {
+    if (!user) return;
+    try {
+      if (forceRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
+      
+      const [profileData, recsData] = await Promise.all([
+        styleProfileService.getProfile(user.id, forceRefresh),
+        styleProfileService.getRecommendations(user.id)
+      ]);
+      setProfile(profileData);
+      setRecommendations(recsData);
+    } catch (err) {
+      console.error("Failed to load style profile:", err);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [user]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <Navbar />
+        <div className="flex flex-col items-center gap-4 text-center p-6">
+          <RefreshCw className="w-8 h-8 animate-spin text-accent" />
+          <div>
+            <h2 className="font-heading text-2xl text-foreground mt-2">AI đang phân tích tủ đồ...</h2>
+            <p className="text-muted-foreground font-body text-sm mt-1">Quá trình này có thể mất vài giây</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <Navbar />
+        <div className="text-center p-6">
+          <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-4" />
+          <h2 className="font-heading text-xl text-foreground">Không thể tải hồ sơ phong cách</h2>
+          <Button variant="outline" className="mt-4" onClick={() => loadData(true)}>Thử lại</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Use provided evolution or fallback
+  const evolution = profile.evolution?.length ? profile.evolution : [
+    { month: "Jan", [profile.dominantStyles?.[0] || "Casual"]: 100 }
+  ];
+
+  const topStyle = profile.styleDna?.length > 0 ? profile.styleDna.sort((a,b) => b.value - a.value)[0] : {style: "Casual", value: 100};
 
   return (
   <div className="min-h-screen bg-background">
     <Navbar />
 
-    <div className="pt-16">
-      <div className="border-b border-border px-6 py-12 md:py-16 text-center">
+    <div className="pt-16 relative">
+      <div className="absolute top-20 right-6 z-10 hidden md:block">
+        <Button variant="outline" size="sm" className="gap-2 text-xs" onClick={() => loadData(true)} disabled={isRefreshing}>
+          <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
+          Làm mới AI
+        </Button>
+      </div>
+      <div className="border-b border-border px-6 py-12 md:py-16 text-center relative">
         <p className="editorial-label mb-3">AI-Powered Analytics</p>
         <h1 className="font-heading text-3xl md:text-5xl font-medium text-foreground blur-text-reveal">
           Your <span className="italic">Style Profile</span>
@@ -179,6 +178,12 @@ const StyleProfilePage = () => {
         <p className="text-muted-foreground font-body mt-3 text-sm max-w-md mx-auto blur-text-reveal blur-text-reveal-delay-1">
           AI insights về tủ đồ và xu hướng thời trang cá nhân của bạn.
         </p>
+        <div className="mt-4 md:hidden">
+          <Button variant="outline" size="sm" className="gap-2 text-xs mx-auto" onClick={() => loadData(true)} disabled={isRefreshing}>
+            <RefreshCw className={`w-3 h-3 ${isRefreshing ? "animate-spin" : ""}`} />
+            Làm mới phân tích
+          </Button>
+        </div>
       </div>
     </div>
 
@@ -187,7 +192,7 @@ const StyleProfilePage = () => {
         <Card className="border-b md:border-b-0 md:border-r">
           <CardLabel>Style DNA</CardLabel>
           <ResponsiveContainer width="100%" height={240}>
-            <RadarChart data={styleDna} outerRadius="72%">
+            <RadarChart data={profile.styleDna} outerRadius="72%">
               <PolarGrid stroke="hsl(0 0% 90%)" />
               <PolarAngleAxis
                 dataKey="style"
@@ -208,18 +213,18 @@ const StyleProfilePage = () => {
           </ResponsiveContainer>
           <p className="text-center text-[11px] text-muted-foreground font-body mt-2">
             Chủ đạo:{" "}
-            <span className="text-foreground font-medium">Minimal · 70%</span>
+            <span className="text-foreground font-medium">{topStyle.style} · {topStyle.value}%</span>
           </p>
         </Card>
 
         <Card className="border-b md:border-b-0">
           <CardLabel>Favorite Colors</CardLabel>
           <div className="flex flex-col gap-3 mt-4">
-            {favoriteColors.map((c) => (
+            {profile.favoriteColors?.map((c) => (
               <div key={c.name} className="flex items-center gap-3">
                 <div
                   className="w-8 h-8 shrink-0 border border-border"
-                  style={{ backgroundColor: c.hex }}
+                  style={{ backgroundColor: c.hex || "#e5e5e5" }}
                 />
                 <span className="text-sm font-body text-foreground flex-1">
                   {c.name}
@@ -227,7 +232,7 @@ const StyleProfilePage = () => {
                 <div className="flex-1 h-1.5 bg-secondary max-w-[120px]">
                   <div
                     className="h-full bg-accent"
-                    style={{ width: `${c.pct}%`, opacity: 0.4 + c.pct / 100 }}
+                    style={{ width: `${c.pct}%`, opacity: 0.4 + (c.pct || 0) / 100 }}
                   />
                 </div>
                 <span className="text-xs text-muted-foreground font-body w-10 text-right">
@@ -244,25 +249,25 @@ const StyleProfilePage = () => {
             <ResponsiveContainer width={160} height={160}>
               <PieChart>
                 <Pie
-                  data={outfitTypes}
+                  data={profile.outfitTypeDistribution || []}
                   dataKey="value"
                   innerRadius={45}
                   outerRadius={72}
                   paddingAngle={2}
                   strokeWidth={0}
                 >
-                  {outfitTypes.map((e) => (
-                    <Cell key={e.name} fill={e.color} />
+                  {(profile.outfitTypeDistribution || []).map((e) => (
+                    <Cell key={e.name} fill={e.color || "hsl(0 0% 75%)"} />
                   ))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
             <div className="space-y-2 flex-1">
-              {outfitTypes.map((t) => (
+              {(profile.outfitTypeDistribution || []).map((t) => (
                 <div key={t.name} className="flex items-center gap-2">
                   <span
                     className="w-2.5 h-2.5 shrink-0"
-                    style={{ backgroundColor: t.color }}
+                    style={{ backgroundColor: t.color || "hsl(0 0% 75%)" }}
                   />
                   <span className="text-xs font-body text-foreground w-20">
                     {t.name}
@@ -282,17 +287,15 @@ const StyleProfilePage = () => {
             <div className="mt-2 mb-4">
               <Sparkles className="w-5 h-5 text-accent mb-3" />
               <p className="font-heading text-lg md:text-xl text-foreground italic leading-relaxed">
-                "Phong cách của bạn là modern minimal với ảnh hưởng streetwear
-                nhẹ nhàng."
+                "{profile.aiInsight?.summary || `Phong cách của bạn thiên hướng ${topStyle.style}`}"
               </p>
               <p className="text-xs text-muted-foreground font-body mt-3 leading-relaxed">
-                Bạn ưa chuộng outfit trung tính, linh hoạt cho cả casual lẫn
-                office.
+                {profile.aiInsight?.description}
               </p>
             </div>
           </div>
           <div className="border-t border-border pt-4 space-y-2">
-            {insights.slice(0, 3).map((text, i) => (
+            {(profile.insights || []).slice(0, 3).map((text, i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
                 <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
@@ -313,9 +316,9 @@ const StyleProfilePage = () => {
             <div className="relative w-28 h-28 mb-3">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
                 <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(0 0% 92%)" strokeWidth="8" />
-                <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(0 100% 70%)" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52}`} strokeDashoffset={`${2 * Math.PI * 52 * (1 - 72 / 100)}`} strokeLinecap="round" />
+                <circle cx="60" cy="60" r="52" fill="none" stroke="hsl(0 100% 70%)" strokeWidth="8" strokeDasharray={`${2 * Math.PI * 52}`} strokeDashoffset={`${2 * Math.PI * 52 * (1 - (profile.consistencyScore || 50) / 100)}`} strokeLinecap="round" />
               </svg>
-              <span className="absolute inset-0 flex items-center justify-center font-heading text-2xl text-foreground">72%</span>
+              <span className="absolute inset-0 flex items-center justify-center font-heading text-2xl text-foreground">{profile.consistencyScore || 50}%</span>
             </div>
             <p className="text-[11px] text-muted-foreground font-body text-center max-w-[200px]">
               Style consistency dựa trên sự đồng bộ về màu sắc, kiểu dáng và chất liệu trong tủ đồ.
@@ -326,7 +329,7 @@ const StyleProfilePage = () => {
         <Card>
           <CardLabel>Cải thiện tủ đồ</CardLabel>
           <div className="space-y-3 mt-2">
-            {missingEssentials.map((e) => (
+            {(profile.missingEssentials || []).map((e) => (
               <div key={e.item} className="flex items-start gap-3">
                 <AlertTriangle className={`w-4 h-4 shrink-0 mt-0.5 ${
                   e.priority === "high" ? "text-accent" : e.priority === "medium" ? "text-amber-400" : "text-muted-foreground"
@@ -350,37 +353,6 @@ const StyleProfilePage = () => {
     <Fade>
       <div className="border-b border-border">
         <div className="px-6 py-6 border-b border-border">
-          <p className="editorial-label">Wardrobe Favorites</p>
-        </div>
-        <div className="grid grid-cols-3 md:grid-cols-6">
-          {wardrobeFavorites.map((item, i) => (
-            <div
-              key={item.name}
-              className={`group p-4 text-center ${i < wardrobeFavorites.length - 1 ? "border-r border-border" : ""}`}
-            >
-              <div className="aspect-square overflow-hidden mb-2 mag-img-zoom">
-                <img
-                  src={item.img}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="text-[11px] font-body font-medium text-foreground truncate">
-                {item.name}
-              </p>
-              <p className="text-[10px] text-muted-foreground font-body mt-0.5">
-                <Shirt className="w-3 h-3 inline mr-0.5" />
-                {item.worn}×
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Fade>
-
-    <Fade>
-      <div className="border-b border-border">
-        <div className="px-6 py-6 border-b border-border">
           <p className="editorial-label mb-1">Style Evolution</p>
           <p className="text-xs text-muted-foreground font-body">
             Xem phong cách thời trang của bạn thay đổi theo thời gian dựa trên
@@ -390,19 +362,6 @@ const StyleProfilePage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px]">
           <div className="p-6 lg:border-r border-border">
-            <div className="mb-6 flex items-start gap-3">
-              <TrendingUp className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-              <div>
-                <p className="font-heading text-lg md:text-xl text-foreground italic">
-                  Phong cách của bạn đang trở nên{" "}
-                  <span className="text-accent">Minimal</span> hơn.
-                </p>
-                <p className="text-[11px] text-muted-foreground font-body mt-1">
-                  Minimal tăng từ 30% → 70% trong 6 tháng qua.
-                </p>
-              </div>
-            </div>
-
             <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={evolution}>
                 <defs>
@@ -452,53 +411,30 @@ const StyleProfilePage = () => {
                 />
                 <Area
                   type="monotone"
-                  dataKey="Minimal"
+                  dataKey={topStyle.style}
                   stroke="hsl(0 100% 70%)"
                   strokeWidth={2.5}
                   fill="url(#gradMinimal)"
                 />
-                <Area
-                  type="monotone"
-                  dataKey="Casual"
-                  stroke="hsl(0 0% 78%)"
-                  strokeWidth={1.5}
-                  fill="transparent"
-                  strokeDasharray="4 3"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="Office"
-                  stroke="hsl(0 0% 55%)"
-                  strokeWidth={1.5}
-                  fill="transparent"
-                  strokeDasharray="2 2"
-                />
+                {Object.keys(evolution[0] || {}).filter(k => k !== "month" && k !== topStyle.style).map((key, i) => (
+                  <Area
+                    key={key}
+                    type="monotone"
+                    dataKey={key}
+                    stroke={i === 0 ? "hsl(0 0% 78%)" : "hsl(0 0% 55%)"}
+                    strokeWidth={1.5}
+                    fill="transparent"
+                    strokeDasharray={i === 0 ? "4 3" : "2 2"}
+                  />
+                ))}
               </AreaChart>
             </ResponsiveContainer>
 
-            <div className="flex items-center gap-5 mt-4">
+            <div className="flex flex-wrap items-center gap-5 mt-4">
               <div className="flex items-center gap-1.5">
                 <span className="w-5 h-[2.5px] bg-accent" />
                 <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">
-                  Minimal
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span
-                  className="w-5 h-[1.5px] bg-muted-foreground/40"
-                  style={{ borderTop: "1.5px dashed hsl(0 0% 78%)" }}
-                />
-                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">
-                  Casual
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span
-                  className="w-5 h-[1.5px]"
-                  style={{ borderTop: "1.5px dotted hsl(0 0% 55%)" }}
-                />
-                <span className="text-[9px] font-body text-muted-foreground uppercase tracking-wider">
-                  Office
+                  {topStyle.style}
                 </span>
               </div>
             </div>
@@ -508,11 +444,7 @@ const StyleProfilePage = () => {
             <div>
               <p className="editorial-label mb-3">Trend Summary</p>
               <div className="space-y-3">
-                {[
-                  { label: "Minimal", change: "+40%", positive: true },
-                  { label: "Casual", change: "−40%", positive: false },
-                  { label: "Office", change: "Ổn định", positive: null },
-                ].map((s) => (
+                {(profile.trendSummary || []).map((s) => (
                   <div
                     key={s.label}
                     className="flex items-center justify-between"
@@ -539,30 +471,15 @@ const StyleProfilePage = () => {
             <div className="border-t border-border pt-4">
               <p className="editorial-label mb-2">Key Moments</p>
               <div className="space-y-2.5">
-                <div className="flex gap-2">
-                  <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
-                  <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
-                    <span className="text-foreground font-medium">Tháng 3</span>{" "}
-                    — Minimal bắt đầu tăng mạnh
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
-                  <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
-                    <span className="text-foreground font-medium">Tháng 6</span>{" "}
-                    — Minimal trở thành phong cách chủ đạo
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-border pt-4">
-              <div className="flex items-start gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
-                <p className="text-[11px] text-muted-foreground font-body italic leading-relaxed">
-                  "Hoạt động tủ đồ cho thấy sự chuyển dịch dần sang outfit tối
-                  giản."
-                </p>
+                {(profile.keyMoments || []).map((moment, i) => (
+                   <div key={i} className="flex gap-2">
+                   <span className="w-1 h-1 rounded-full bg-accent shrink-0 mt-1.5" />
+                   <p className="text-[11px] text-muted-foreground font-body leading-relaxed">
+                     <span className="text-foreground font-medium">{moment.month}</span>{" "}
+                     — {moment.event}
+                   </p>
+                 </div>
+                ))}
               </div>
             </div>
           </div>
@@ -576,14 +493,14 @@ const StyleProfilePage = () => {
           <p className="editorial-label">Suggested Styles</p>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4">
-          {suggestedStyles.map((s, i) => (
+          {(profile.suggestedStyles || []).map((s, i) => (
             <div
               key={s.name}
-              className={`group ${i < suggestedStyles.length - 1 ? "border-r border-border" : ""}`}
+              className={`group ${i < (profile.suggestedStyles?.length || 0) - 1 ? "border-r border-border" : ""}`}
             >
               <div className="aspect-[3/4] overflow-hidden mag-img-zoom">
                 <img
-                  src={s.img}
+                  src={styleImages[s.name] || styleMinimal}
                   alt={s.name}
                   className="w-full h-full object-cover"
                 />
@@ -611,7 +528,7 @@ const StyleProfilePage = () => {
           </p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4">
-          {styleRecommendations.map((r) => (
+          {recommendations.map((r) => (
             <button
               key={r.label}
               type="button"

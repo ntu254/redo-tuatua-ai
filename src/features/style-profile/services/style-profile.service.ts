@@ -70,8 +70,19 @@ function buildProfileFallback(dna: Record<string, number>, colors: string[], sty
 }
 
 export const styleProfileService = {
-  getProfile: async (userId: string): Promise<StyleProfile> => {
+  getProfile: async (userId: string, forceRefresh: boolean = false): Promise<StyleProfile> => {
     if (!apiConfig.useMockApi) {
+      try {
+        const { data, error } = await supabase.functions.invoke("analyze-style-profile", {
+          body: { forceRefresh },
+        });
+        if (error) throw error;
+        if (data) return data as StyleProfile;
+      } catch (err) {
+        console.error("Failed to analyze style profile from edge function:", err);
+      }
+      
+      // Fallback to local computation if edge function fails
       const { data: profile } = await supabase
         .from("profiles")
         .select("style_dna, favorite_colors, preferred_styles, quiz_completed")
@@ -84,16 +95,7 @@ export const styleProfileService = {
         const styles = (profile.preferred_styles ?? []) as string[];
         return buildProfileFallback(dna, colors, styles);
       }
-      const { data: fallbackProfile } = await supabase
-        .from("profiles")
-        .select("style_dna, favorite_colors, preferred_styles")
-        .eq("id", userId)
-        .single();
-
-      const fdna = (fallbackProfile?.style_dna ?? { Casual: 100 }) as Record<string, number>;
-      const fcolors = (fallbackProfile?.favorite_colors ?? ["Trắng", "Đen"]) as string[];
-      const fstyles = (fallbackProfile?.preferred_styles ?? ["Casual"]) as string[];
-      return buildProfileFallback(fdna, fcolors, fstyles);
+      return buildProfileFallback({ Casual: 100 }, ["Trắng", "Đen"], ["Casual"]);
     }
     return apiClient.get<StyleProfile>(`/api/style-profile/${userId}`);
   },
