@@ -43,7 +43,7 @@ serve(async (req) => {
       surveyVersion = "v1",
     } = body;
 
-    if (!feature || !["quiz", "recommender", "tryon"].includes(feature)) {
+    if (!feature || !["quiz", "recommender", "tryon", "survey"].includes(feature)) {
       return jsonResponse({ error: "Invalid feature" }, 400);
     }
 
