@@ -9,9 +9,9 @@ const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
 const MODEL = "gemini-3.1-flash-lite";
 
-export async function generateText(prompt: string, systemPrompt?: string): Promise<string> {
+export async function generateText(prompt: string, systemPrompt?: string, modelName: string = MODEL): Promise<string> {
   const model = genAI.getGenerativeModel({
-    model: MODEL,
+    model: modelName,
     systemInstruction: systemPrompt,
     generationConfig: {
       temperature: 0.7,
@@ -39,9 +39,9 @@ export async function generateText(prompt: string, systemPrompt?: string): Promi
   return result.response.text();
 }
 
-export async function generateJson<T>(prompt: string, systemPrompt: string): Promise<T> {
+export async function generateJson<T>(prompt: string, systemPrompt: string, modelName: string = MODEL): Promise<T> {
   const model = genAI.getGenerativeModel({
-    model: MODEL,
+    model: modelName,
     systemInstruction: systemPrompt + "\n\nRespond with valid JSON only, no markdown formatting.",
     generationConfig: {
       temperature: 0.4,
