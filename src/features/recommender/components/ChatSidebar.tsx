@@ -10,6 +10,9 @@ import { supabase } from "@/shared/lib";
 import { apiConfig } from "@/shared/api/config";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
+import { shouldShowSurvey } from "@/shared/survey/surveyConfig";
+import SurveyModal from "@/shared/components/SurveyModal";
 
 interface ChatSidebarProps {
   isOpen: boolean;
@@ -42,6 +45,8 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
       return [];
     }
   });
+
+  const survey = useSurveyTrigger();
 
   const userId = session?.user?.id ?? "";
 
@@ -76,6 +81,41 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
     }
   };
 
+  const handleCreditExhausted = () => {
+    // Show survey if not already dismissed/submitted
+    if (shouldShowSurvey("survey", true)) {
+      survey.openSurvey("survey", { creditBalance: 0 });
+    } else {
+      // Survey already done or dismissed, go straight to pricing
+      toast({
+        title: "Không đủ credit",
+        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
+        variant: "destructive",
+      });
+      navigate("/pricing");
+    }
+  };
+
+  const handleSurveyDismiss = () => {
+    survey.dismissSurvey();
+    toast({
+      title: "Không đủ credit",
+      description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
+      variant: "destructive",
+    });
+    navigate("/pricing");
+  };
+
+  const handleSurveySubmit = async () => {
+    await survey.submitSurvey();
+    toast({
+      title: "Không đủ credit",
+      description: "Cảm ơn bạn đã đánh giá! Vui lòng nâng cấp gói để tiếp tục sử dụng AI.",
+      variant: "destructive",
+    });
+    navigate("/pricing");
+  };
+
   const sendMsg = async (text?: string) => {
     const msg = (text || input).trim();
     if (!msg || isGenerating) return;
@@ -87,12 +127,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
     }
 
     if (creditBalance <= 0) {
-      toast({
-        title: "Không đủ credit",
-        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
-        variant: "destructive",
-      });
-      navigate("/pricing");
+      handleCreditExhausted();
       return;
     }
 
@@ -117,6 +152,24 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
     <>
       {showLoginPrompt && <LoginPromptOverlay />}
       
+      {/* Survey Modal for credits exhausted */}
+      {survey.isOpen && survey.featureConfig && (
+        <SurveyModal
+          isOpen={survey.isOpen}
+          featureConfig={survey.featureConfig}
+          responses={survey.responses}
+          currentStep={survey.currentStep}
+          isSubmitting={survey.isSubmitting}
+          submitError={survey.submitError}
+          onDismiss={handleSurveyDismiss}
+          onResponseChange={survey.handleResponseChange}
+          onNext={survey.nextStep}
+          onPrev={survey.prevStep}
+          onGoToStep={survey.goToStep}
+          onSubmit={handleSurveySubmit}
+        />
+      )}
+
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
@@ -276,3 +329,4 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
 };
 
 export default ChatSidebar;
+
