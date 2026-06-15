@@ -214,7 +214,7 @@ export function validateResponses(responses: Record<string, unknown>): {
 }
 
 export interface FeatureSurveyConfig {
-  feature: "quiz" | "recommender" | "tryon";
+  feature: "quiz" | "recommender" | "tryon" | "survey";
   title: string;
   description: string;
   triggerDescription: string;

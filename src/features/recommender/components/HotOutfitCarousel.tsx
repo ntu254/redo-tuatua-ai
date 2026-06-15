@@ -305,7 +305,10 @@ export default function HotOutfitCarousel({ outfits: realOutfits }: HotOutfitCar
                 >
                   {/* Glowing active backdrop (rendered outside overflow-hidden) */}
                   {isActive && (
-                    <div className="absolute -inset-4 bg-gradient-to-tr from-accent/25 via-coral/5 to-teal/15 rounded-[28px] blur-2xl opacity-75 z-[-1] animate-pulse duration-[3000ms] pointer-events-none" />
+                    <div 
+                      className="absolute -inset-4 bg-gradient-to-tr from-accent/25 via-coral/5 to-teal/15 rounded-[28px] blur-2xl opacity-75 z-[-1] animate-pulse pointer-events-none" 
+                      style={{ animationDuration: "3000ms" }}
+                    />
                   )}
 
                   <div
