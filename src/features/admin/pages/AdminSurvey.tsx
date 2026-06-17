@@ -23,6 +23,7 @@ interface SurveyResponse {
   survey_version: string;
   context: Record<string, unknown>;
   responses: Record<string, unknown>;
+  feedback: string | null;
   sheets_synced: boolean;
   sheets_row: number | null;
   sheets_error: string | null;
@@ -233,7 +234,7 @@ export default function AdminSurvey() {
                     <StatusBadge status={r.sheets_synced ? "resolved" : "pending"} />
                   </td>
                   <td className="p-3 text-xs font-body text-muted-foreground max-w-xs truncate">
-                    {JSON.stringify(r.responses).slice(0, 50)}...
+                    {getFeedbackText(r) || JSON.stringify(r.responses).slice(0, 50)}
                   </td>
                 </tr>
               ))}
@@ -243,6 +244,12 @@ export default function AdminSurvey() {
       </div>
     </div>
   );
+}
+
+function getFeedbackText(response: SurveyResponse): string {
+  if (response.feedback) return response.feedback;
+  const feedback = response.responses.feedback;
+  return typeof feedback === "string" ? feedback : "";
 }
 
 function StatCard({

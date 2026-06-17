@@ -39,6 +39,7 @@ serve(async (req) => {
       feature,
       context = {},
       responses = {},
+      feedback: bodyFeedback = null,
       sessionId,
       surveyVersion = "v1",
     } = body;
@@ -50,6 +51,12 @@ serve(async (req) => {
     if (!sessionId) {
       return jsonResponse({ error: "sessionId is required" }, 400);
     }
+
+    const rawFeedback = bodyFeedback ?? responses.feedback;
+    const feedback =
+      typeof rawFeedback === "string" && rawFeedback.trim().length > 0
+        ? rawFeedback.trim().slice(0, 1000)
+        : null;
 
     const authHeader = req.headers.get("Authorization");
     let userId: string | null = null;
@@ -73,6 +80,7 @@ serve(async (req) => {
         survey_version: surveyVersion,
         context,
         responses,
+        feedback,
         submitted_at: new Date().toISOString(),
       })
       .select("id")
@@ -101,6 +109,7 @@ serve(async (req) => {
       context,
       submittedAt: new Date().toISOString(),
       ...responses,
+      feedback,
     };
 
     const sheetsResponse = await fetch(GOOGLE_APPS_SCRIPT_URL, {

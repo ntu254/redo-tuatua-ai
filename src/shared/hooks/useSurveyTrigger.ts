@@ -135,6 +135,7 @@ export function useSurveyTrigger() {
         feature: state.feature,
         context: state.triggerContext,
         responses: state.responses,
+        feedback: typeof state.responses.feedback === "string" ? state.responses.feedback : null,
         sessionId,
         surveyVersion: SURVEY_VERSION,
       };

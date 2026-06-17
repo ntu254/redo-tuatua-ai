@@ -96,6 +96,15 @@ export default function SurveyModal({
             onChange={(val) => onResponseChange(question.id, val)}
           />
         );
+      case "textarea":
+        return (
+          <TextareaQuestion
+            key={question.id}
+            question={question}
+            value={responses[question.id] as string | undefined}
+            onChange={(val) => onResponseChange(question.id, val)}
+          />
+        );
       default:
         return null;
     }
@@ -401,6 +410,37 @@ function MultiSelectQuestion({
             {opt}
           </button>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function TextareaQuestion({
+  question,
+  value,
+  onChange,
+}: {
+  question: { id: string; label: string; placeholder?: string };
+  value: string | undefined;
+  onChange: (val: string) => void;
+}) {
+  return (
+    <div>
+      <label className="text-sm font-body font-medium text-foreground block mb-2.5">
+        {question.label}
+      </label>
+      <textarea
+        value={value ?? ""}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={question.placeholder}
+        rows={4}
+        maxLength={1000}
+        className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2.5 text-sm font-body text-foreground placeholder:text-muted-foreground/70 outline-none transition-colors focus:border-foreground"
+      />
+      <div className="mt-1.5 flex justify-end">
+        <span className="text-[10px] font-body text-muted-foreground">
+          {(value ?? "").length}/1000
+        </span>
       </div>
     </div>
   );

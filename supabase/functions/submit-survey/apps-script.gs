@@ -66,6 +66,7 @@ function doPost(e) {
         data.demo_role || "",
         Array.isArray(data.demo_style) ? data.demo_style.join(", ") : data.demo_style || "",
         data.demo_channel || "",
+        data.feedback || "",
         data.submittedAt || new Date().toISOString(),
       ];
 
