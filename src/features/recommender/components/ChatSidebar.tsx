@@ -5,13 +5,13 @@ import type { Outfit } from "@/features/recommender/types";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Clock, Send, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/shared/lib";
 import { apiConfig } from "@/shared/api/config";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useSurveyTrigger } from "@/shared/hooks/useSurveyTrigger";
-import { shouldShowSurvey } from "@/shared/survey/surveyConfig";
+import { type FeatureSurveyConfig } from "@/shared/survey/surveyConfig";
 import SurveyModal from "@/shared/components/SurveyModal";
 
 interface ChatSidebarProps {
@@ -33,6 +33,7 @@ const QUICK_SUGGESTIONS = [
 const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIsGenerating }: ChatSidebarProps) => {
   const { session } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [input, setInput] = useState("");
   const [recentHistory, setRecentHistory] = useState<string[]>(() => {
@@ -50,7 +51,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
 
   const userId = session?.user?.id ?? "";
 
-  const { data: creditBalance = 0 } = useQuery({
+  const { data: creditBalance = 0, refetch: refetchCredits } = useQuery({
     queryKey: ["user-credits-balance", userId],
     queryFn: async () => {
       if (apiConfig.useMockApi) {
@@ -70,6 +71,8 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
       }
     },
     enabled: !!userId,
+    refetchInterval: 15_000, // Re-check credits every 15s to stay in sync with server-side deductions
+    staleTime: 5_000,
   });
 
   const saveHistory = (items: string[]) => {
@@ -82,22 +85,13 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
   };
 
   const handleCreditExhausted = () => {
-    // Show survey if not already dismissed/submitted
-    if (shouldShowSurvey("survey", true)) {
-      survey.openSurvey("survey", { creditBalance: 0 });
-    } else {
-      // Survey already done or dismissed, go straight to pricing
-      toast({
-        title: "Không đủ credit",
-        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
-        variant: "destructive",
-      });
-      navigate("/pricing");
-    }
+    // Always show survey when credits run out, regardless of if they submitted it before
+    survey.openSurvey("survey", { creditBalance: 0 });
   };
 
   const handleSurveyDismiss = () => {
-    survey.dismissSurvey();
+    // Close without permanently marking as dismissed — survey can reappear next time
+    survey.closeSurveyQuietly();
     toast({
       title: "Không đủ credit",
       description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
@@ -141,8 +135,25 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
     try {
       const result = await recommenderService.converse(msg);
       onOutfitsGenerated(result.outfits, msg);
+
+      // Refetch credit balance after generation — the edge function deducts credits server-side
+      await refetchCredits();
+
+      // Check if credits are now exhausted after this generation
+      const freshCredits = queryClient.getQueryData<number>(["user-credits-balance", userId]) ?? 0;
+      if (freshCredits <= 0) {
+        handleCreditExhausted();
+      }
     } catch (e) {
+      // Handle credit exhaustion from the edge function
+      if (e instanceof Error && e.message === "CREDIT_EXHAUSTED") {
+        await refetchCredits();
+        handleCreditExhausted();
+        return;
+      }
       console.error("converse failed:", e);
+      // Also refetch on error in case credits were deducted despite the error
+      await refetchCredits();
     } finally {
       setIsGenerating(false);
     }

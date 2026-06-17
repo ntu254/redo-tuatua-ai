@@ -3,9 +3,10 @@ export const SURVEY_VERSION = "v1";
 export interface SurveyQuestion {
   id: string;
   label: string;
-  type: "rating" | "yesno" | "select" | "multiselect";
+  type: "rating" | "yesno" | "select" | "multiselect" | "textarea";
   required: boolean;
   options?: string[];
+  placeholder?: string;
   min?: number;
   max?: number;
   step?: number;
@@ -194,6 +195,13 @@ export const SURVEY_SECTIONS: SurveySection[] = [
           "Khác",
         ],
       },
+      {
+        id: "feedback",
+        label: "Bạn muốn góp ý thêm điều gì để Redo tốt hơn?",
+        type: "textarea",
+        required: false,
+        placeholder: "Ví dụ: tính năng bạn cần, điểm gây khó chịu, hoặc điều bạn thích nhất...",
+      },
     ],
   },
 ];
@@ -214,7 +222,7 @@ export function validateResponses(responses: Record<string, unknown>): {
 }
 
 export interface FeatureSurveyConfig {
-  feature: "quiz" | "recommender" | "tryon";
+  feature: "quiz" | "recommender" | "tryon" | "survey";
   title: string;
   description: string;
   triggerDescription: string;

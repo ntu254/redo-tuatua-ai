@@ -88,9 +88,20 @@ async function callEdgeConverse(message: string, history?: any[]): Promise<EdgeR
     const { data, error } = await supabase.functions.invoke("converse", {
       body: { message, history },
     });
-    if (error) throw error;
+    if (error) {
+      // Check if this is a credit error (edge function returns 402)
+      const errMsg = typeof error === "object" && error.message ? error.message : String(error);
+      if (errMsg.includes("credit") || errMsg.includes("Credit")) {
+        throw new Error("CREDIT_EXHAUSTED");
+      }
+      throw error;
+    }
     return data;
-  } catch {
+  } catch (err) {
+    // Re-throw credit errors so the UI can show the survey
+    if (err instanceof Error && err.message === "CREDIT_EXHAUSTED") {
+      throw err;
+    }
     return null;
   }
 }

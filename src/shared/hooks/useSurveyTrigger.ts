@@ -77,6 +77,12 @@ export function useSurveyTrigger() {
     setState(initialState);
   }, [state.feature]);
 
+  // Close without permanently marking as dismissed — used for credit-exhaustion flow
+  // so the survey can reappear next time the user runs out of credits
+  const closeSurveyQuietly = useCallback(() => {
+    setState(initialState);
+  }, []);
+
   const dismissSurvey = useCallback(() => {
     if (state.feature) {
       markDismissed(state.feature);
@@ -129,6 +135,7 @@ export function useSurveyTrigger() {
         feature: state.feature,
         context: state.triggerContext,
         responses: state.responses,
+        feedback: typeof state.responses.feedback === "string" ? state.responses.feedback : null,
         sessionId,
         surveyVersion: SURVEY_VERSION,
       };
@@ -172,6 +179,7 @@ export function useSurveyTrigger() {
     checkTriggers,
     openSurvey,
     closeSurvey,
+    closeSurveyQuietly,
     dismissSurvey,
     handleResponseChange,
     nextStep,
