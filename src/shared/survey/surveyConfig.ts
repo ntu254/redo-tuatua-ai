@@ -1,4 +1,4 @@
-export const SURVEY_VERSION = "v1";
+export const SURVEY_VERSION = "v2";
 
 export interface SurveyQuestion {
   id: string;
