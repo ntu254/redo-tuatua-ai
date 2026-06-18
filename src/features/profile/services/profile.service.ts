@@ -17,7 +17,10 @@ export interface Profile {
   preferred_occasions: string[];
   budget_min: number | null;
   budget_max: number | null;
-  fashion_preferences: Record<string, unknown>;
+  fashion_preferences: {
+    gender?: string | null;
+    [key: string]: unknown;
+  };
   two_factor_enabled: boolean;
   created_at: string;
   updated_at: string;
@@ -34,7 +37,10 @@ export interface ProfileUpdate {
   preferred_occasions?: string[];
   budget_min?: number | null;
   budget_max?: number | null;
-  fashion_preferences?: Record<string, unknown>;
+  fashion_preferences?: {
+    gender?: string | null;
+    [key: string]: unknown;
+  };
   two_factor_enabled?: boolean;
 }
 

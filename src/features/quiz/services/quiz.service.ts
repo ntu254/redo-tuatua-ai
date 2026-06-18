@@ -55,9 +55,24 @@ export const quizService = {
         json: {
           styleDna: computeStyleDna(answers.styles),
           avatarUrl,
+          fashionPreferences: {
+            gender: answers.gender || null,
+          },
         },
       });
     }
+
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("fashion_preferences")
+      .eq("id", userId)
+      .maybeSingle();
+    const currentFashionPreferences =
+      existingProfile?.fashion_preferences &&
+      typeof existingProfile.fashion_preferences === "object" &&
+      !Array.isArray(existingProfile.fashion_preferences)
+        ? existingProfile.fashion_preferences
+        : {};
 
     const { error } = await supabase
       .from("profiles")
@@ -70,6 +85,10 @@ export const quizService = {
         budget_max: budgetRange?.max ?? null,
         quiz_completed: true,
         avatar_url: avatarUrl,
+        fashion_preferences: {
+          ...currentFashionPreferences,
+          gender: answers.gender || null,
+        },
       })
       .eq("id", userId);
     if (error) throw error;

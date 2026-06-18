@@ -176,6 +176,9 @@ export const mockHandlers: Record<string, MockHandler> = {
       ...mockProfile,
       style_dna: body.styleDna,
       avatar_url: body.avatarUrl || mockProfile.avatar_url,
+      fashion_preferences: body.fashionPreferences
+        ? { ...(mockProfile.fashion_preferences as Record<string, unknown>), ...body.fashionPreferences }
+        : mockProfile.fashion_preferences,
       quiz_completed: true,
       updated_at: new Date().toISOString(),
     };
