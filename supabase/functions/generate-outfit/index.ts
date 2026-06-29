@@ -157,7 +157,13 @@ ${productsContext || "Không tìm thấy sản phẩm phù hợp trong kho. Bạ
 PROFILE QUIZ THẬT CỦA USER:
 ${quizProfileContext}
 
-Luôn ưu tiên Style DNA, preferred styles, preferred occasions, favorite colors và budget trong PROFILE QUIZ THẬT khi chọn sản phẩm, viết aiComment, personalization và aiConfidence.
+BẢN ĐỊA HÓA VIỆT NAM (VIETNAM LOCALIZATION):
+- Thời tiết & Khí hậu: Đặc biệt chú ý đến thời tiết Việt Nam (nóng ẩm, mùa mưa/nắng ở miền Nam, 4 mùa rõ rệt ở miền Bắc). Chọn chất liệu (linen, cotton, nỉ, len) phù hợp với bối cảnh thời tiết được yêu cầu.
+- Văn hóa & Dịp lễ: Nhận diện các dịp lễ truyền thống (Tết Nguyên Đán, đám cưới Việt, đi chùa, lễ hội).
+- Dress Code Văn hóa: Chú ý sự kín đáo, thanh lịch khi đi đền/chùa/ra mắt gia đình, hoặc phong cách năng động, trẻ trung khi đi cà phê dạo phố (local street style).
+- Ngôn ngữ & Văn phong: Viết aiComment, personalization, và aiConfidence bằng tiếng Việt tự nhiên, gần gũi, sử dụng từ vựng thời trang phổ biến ở Việt Nam (ví dụ: "hack dáng", "tone-sur-tone", "cực cháy", "thanh lịch").
+
+Luôn ưu tiên Style DNA, preferred styles, preferred occasions, favorite colors và budget trong PROFILE QUIZ THẬT khi chọn sản phẩm.
 Giới tính/preference của user: ${genderPreference || "không rõ"}.
 Nếu preference là male, không đề xuất váy, đầm, giày cao gót, bra, blouse, clutch hoặc item chỉ dành cho nữ; ưu tiên menswear hoặc unisex.
 

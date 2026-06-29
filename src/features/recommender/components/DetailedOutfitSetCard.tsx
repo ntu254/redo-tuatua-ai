@@ -1,6 +1,6 @@
 import type { Outfit, Product } from "@/features/recommender/types";
 import { motion } from "framer-motion";
-import { ExternalLink, Heart, Sparkles, Star, ZoomIn } from "lucide-react";
+import { BadgeCheck, ExternalLink, Heart, Info, Sparkles, Star, ZoomIn } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/shared/lib";
 
@@ -193,9 +193,42 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
               AI Note
             </span>
           </div>
-          <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed line-clamp-2">
+          <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed mb-3">
             {outfit.aiComment}
           </p>
+
+          {/* Personalization */}
+          {outfit.personalization && outfit.personalization.length > 0 && (
+            <div className="mt-3 space-y-2 border-t border-border/20 pt-3">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Vì sao phù hợp với bạn?</span>
+              <ul className="space-y-1.5">
+                {outfit.personalization.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-xs md:text-sm text-foreground/70">
+                    <BadgeCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* AI Confidence Tags */}
+          {outfit.aiConfidence && outfit.aiConfidence.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {outfit.aiConfidence.map((conf, idx) => (
+                <span
+                  key={idx}
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium border ${
+                    conf.positive 
+                      ? "bg-primary/5 text-primary border-primary/20"
+                      : "bg-destructive/5 text-destructive border-destructive/20"
+                  }`}
+                >
+                  {conf.label}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

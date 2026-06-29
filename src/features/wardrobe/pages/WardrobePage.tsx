@@ -139,7 +139,10 @@ const WardrobePage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div 
+        className="min-h-screen bg-background relative"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+      >
         <Navbar />
         <div className="container mx-auto max-w-7xl px-6 py-20">
           <div className="rounded-xl bg-card p-8 text-center text-sm text-muted-foreground">
@@ -152,7 +155,10 @@ const WardrobePage = () => {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-background">
+      <div 
+        className="min-h-screen bg-background relative"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+      >
         <Navbar />
         <div className="container mx-auto max-w-7xl px-6 py-20">
           <div className="rounded-xl bg-destructive/5 p-8 text-center text-sm text-destructive">
@@ -167,7 +173,10 @@ const WardrobePage = () => {
   const isFilteredEmpty = !isEmpty && filtered.length === 0;
 
   return (
-    <div className={`min-h-screen bg-background transition-all duration-300 ${detailOpen ? "lg:pr-[380px]" : ""}`}>
+    <div 
+      className={`min-h-screen bg-background transition-all duration-300 relative ${detailOpen ? "lg:pr-[380px]" : ""}`}
+      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+    >
       <Navbar />
 
       <div className="pt-24 pb-16">

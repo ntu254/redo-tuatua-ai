@@ -31,7 +31,10 @@ export default function OutfitBuilderPage() {
   const [activeTab, setActiveTab] = useState<"controls" | "canvas" | "report">("controls");
 
   const [humanImage, setHumanImage] = useState<string | null>(null);
+  const [tryOnMode, setTryOnMode] = useState<"one-piece" | "combo">("one-piece");
   const [clothImage, setClothImage] = useState<string | null>(null);
+  const [clothImageTop, setClothImageTop] = useState<string | null>(null);
+  const [clothImageBottom, setClothImageBottom] = useState<string | null>(null);
   const [selectedClothId, setSelectedClothId] = useState<string | null>(null);
   const [tryOnTaskId, setTryOnTaskId] = useState<string | null>(null);
   const [tryOnImage, setTryOnImage] = useState<string | null>(null);
@@ -95,8 +98,42 @@ export default function OutfitBuilderPage() {
 
 
 
+  const createCompositeImage = async (topImgBase64: string, bottomImgBase64: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const topImg = new Image();
+      const bottomImg = new Image();
+      
+      topImg.onload = () => {
+        bottomImg.onload = () => {
+          const canvas = document.createElement("canvas");
+          const width = Math.max(topImg.width, bottomImg.width);
+          const height = topImg.height + bottomImg.height;
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return resolve("");
+          
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, width, height);
+          
+          const topX = (width - topImg.width) / 2;
+          ctx.drawImage(topImg, topX, 0);
+          
+          const bottomX = (width - bottomImg.width) / 2;
+          ctx.drawImage(bottomImg, bottomX, topImg.height);
+          
+          resolve(canvas.toDataURL("image/jpeg", 0.9));
+        };
+        bottomImg.src = bottomImgBase64;
+      };
+      topImg.src = topImgBase64;
+    });
+  };
+
   const startTryOn = async () => {
-    if (!humanImage || !clothImage || tryOnStatus === "submitting" || tryOnStatus === "processing") return;
+    const isCombo = tryOnMode === "combo";
+    const hasEnoughImages = isCombo ? (humanImage && clothImageTop && clothImageBottom) : (humanImage && clothImage);
+    if (!hasEnoughImages || tryOnStatus === "submitting" || tryOnStatus === "processing") return;
     if (!session) {
       setShowLoginPrompt(true);
       return;
@@ -121,8 +158,13 @@ export default function OutfitBuilderPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token || "";
 
+      let finalClothImage = clothImage;
+      if (isCombo && clothImageTop && clothImageBottom) {
+        finalClothImage = await createCompositeImage(clothImageTop, clothImageBottom);
+      }
+
       const { data, error } = await supabase.functions.invoke("tryon", {
-        body: { action: "create", human_image: humanImage, cloth_image: clothImage },
+        body: { action: "create", human_image: humanImage, cloth_image: finalClothImage },
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -253,9 +295,15 @@ export default function OutfitBuilderPage() {
             setHumanImage={setHumanImage}
             clothImage={clothImage}
             setClothImage={setClothImage}
+            clothImageTop={clothImageTop}
+            setClothImageTop={setClothImageTop}
+            clothImageBottom={clothImageBottom}
+            setClothImageBottom={setClothImageBottom}
+            tryOnMode={tryOnMode}
+            setTryOnMode={setTryOnMode}
             isTryOnLoading={tryOnStatus === "submitting" || tryOnStatus === "processing"}
             onStartTryOn={startTryOn}
-            canTryOn={!!humanImage && !!clothImage}
+            canTryOn={tryOnMode === "combo" ? (!!humanImage && !!clothImageTop && !!clothImageBottom) : (!!humanImage && !!clothImage)}
           />
         </div>
 

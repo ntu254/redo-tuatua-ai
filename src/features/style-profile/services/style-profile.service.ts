@@ -71,13 +71,29 @@ function buildProfileFallback(dna: Record<string, number>, colors: string[], sty
 
 export const styleProfileService = {
   getProfile: async (userId: string, forceRefresh: boolean = false): Promise<StyleProfile> => {
+    const LOCAL_STORAGE_KEY = `redo_style_profile_${userId}`;
+    
+    if (!forceRefresh) {
+      const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (cached) {
+        try {
+          return JSON.parse(cached) as StyleProfile;
+        } catch (err) {
+          console.warn("Failed to parse cached style profile", err);
+        }
+      }
+    }
+
     if (!apiConfig.useMockApi) {
       try {
         const { data, error } = await supabase.functions.invoke("analyze-style-profile", {
           body: { forceRefresh },
         });
         if (error) throw error;
-        if (data) return data as StyleProfile;
+        if (data) {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+          return data as StyleProfile;
+        }
       } catch (err) {
         console.error("Failed to analyze style profile from edge function:", err);
       }
@@ -93,11 +109,23 @@ export const styleProfileService = {
         const dna = profile.style_dna as Record<string, number>;
         const colors = (profile.favorite_colors ?? []) as string[];
         const styles = (profile.preferred_styles ?? []) as string[];
-        return buildProfileFallback(dna, colors, styles);
+        const fallbackProfile = buildProfileFallback(dna, colors, styles);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fallbackProfile));
+        return fallbackProfile;
       }
-      return buildProfileFallback({ Casual: 100 }, ["Trắng", "Đen"], ["Casual"]);
+      
+      const defaultProfile = buildProfileFallback({ Casual: 100 }, ["Trắng", "Đen"], ["Casual"]);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(defaultProfile));
+      return defaultProfile;
     }
-    return apiClient.get<StyleProfile>(`/api/style-profile/${userId}`);
+    
+    try {
+      const mockProfile = await apiClient.get<StyleProfile>(`/api/style-profile/${userId}`);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mockProfile));
+      return mockProfile;
+    } catch (error) {
+      throw error;
+    }
   },
 
   getRecommendations: async (userId: string): Promise<StyleRecommendation[]> => {

@@ -6,11 +6,19 @@ interface ControlPanelProps {
   humanImage: string | null;
   setHumanImage: (v: string | null) => void;
 
+  // Mode
+  tryOnMode: "one-piece" | "combo";
+  setTryOnMode: (v: "one-piece" | "combo") => void;
+
   // Clothing photo props
   clothImage: string | null;
   setClothImage: (v: string | null) => void;
+  clothImageTop: string | null;
+  setClothImageTop: (v: string | null) => void;
+  clothImageBottom: string | null;
+  setClothImageBottom: (v: string | null) => void;
 
-  // Try-on trigger props
+  // Action props
   isTryOnLoading: boolean;
   onStartTryOn: () => void;
   canTryOn: boolean;
@@ -39,12 +47,20 @@ export default function ControlPanel({
   setHumanImage,
   clothImage,
   setClothImage,
+  clothImageTop,
+  setClothImageTop,
+  clothImageBottom,
+  setClothImageBottom,
+  tryOnMode,
+  setTryOnMode,
   isTryOnLoading,
   onStartTryOn,
   canTryOn,
 }: ControlPanelProps) {
   const modelInputRef = useRef<HTMLInputElement>(null);
   const clothInputRef = useRef<HTMLInputElement>(null);
+  const topInputRef = useRef<HTMLInputElement>(null);
+  const bottomInputRef = useRef<HTMLInputElement>(null);
 
   const handleModelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,7 +78,7 @@ export default function ControlPanel({
     reader.readAsDataURL(file);
   };
 
-  const handleClothUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClothUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "one-piece" | "top" | "bottom" = "one-piece") => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -73,7 +89,14 @@ export default function ControlPanel({
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setClothImage(reader.result as string);
+      const result = reader.result as string;
+      if (type === "one-piece") {
+        setClothImage(result);
+      } else if (type === "top") {
+        setClothImageTop(result);
+      } else if (type === "bottom") {
+        setClothImageBottom(result);
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -141,50 +164,150 @@ export default function ControlPanel({
 
         {/* Step 2: Outfit */}
         <section className="flex flex-col gap-3">
-          <h3 className="editorial-label text-muted-foreground flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-secondary-foreground">2</span>
-            Sản phẩm muốn thử
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="editorial-label text-muted-foreground flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-secondary-foreground">2</span>
+              Sản phẩm muốn thử
+            </h3>
+          </div>
+          
+          <div className="flex bg-secondary/50 rounded-[12px] p-1">
+            <button
+              onClick={() => setTryOnMode("one-piece")}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
+                tryOnMode === "one-piece" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Đồ liền thân / Áo quần rời
+            </button>
+            <button
+              onClick={() => setTryOnMode("combo")}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
+                tryOnMode === "combo" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Áo + Quần
+            </button>
+          </div>
+
           <input
             type="file"
             ref={clothInputRef}
-            onChange={handleClothUpload}
+            onChange={(e) => handleClothUpload(e, "one-piece")}
+            accept="image/*"
+            className="hidden"
+          />
+          <input
+            type="file"
+            ref={topInputRef}
+            onChange={(e) => handleClothUpload(e, "top")}
+            accept="image/*"
+            className="hidden"
+          />
+          <input
+            type="file"
+            ref={bottomInputRef}
+            onChange={(e) => handleClothUpload(e, "bottom")}
             accept="image/*"
             className="hidden"
           />
 
-          {clothImage ? (
-            <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
-              <img src={clothImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 backdrop-blur-sm">
+          {tryOnMode === "one-piece" ? (
+            clothImage ? (
+              <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+                <img src={clothImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 backdrop-blur-sm">
+                  <button
+                    onClick={() => clothInputRef.current?.click()}
+                    className="px-4 py-2 bg-background text-foreground hover:bg-secondary text-xs font-semibold rounded-full transition-all shadow-sm"
+                  >
+                    Đổi ảnh
+                  </button>
+                  <button
+                    onClick={() => setClothImage(null)}
+                    className="p-2.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full transition-all shadow-sm"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-secondary/30 rounded-[16px] border border-border/50 p-5 flex flex-col items-center justify-center gap-4 text-center">
+                <div className="w-12 h-12 rounded-full bg-background shadow-sm flex items-center justify-center text-muted-foreground">
+                  <Shirt className="w-5 h-5" />
+                </div>
+                <p className="text-xs font-medium text-muted-foreground max-w-[80%]">
+                  Chọn trang phục (Áo, quần hoặc váy liền)
+                </p>
                 <button
                   onClick={() => clothInputRef.current?.click()}
-                  className="px-4 py-2 bg-background text-foreground hover:bg-secondary text-xs font-semibold rounded-full transition-all shadow-sm"
+                  className="w-full py-2.5 rounded-full bg-background text-foreground text-xs font-semibold hover:bg-secondary/80 shadow-sm transition-all cursor-pointer"
                 >
-                  Đổi ảnh
-                </button>
-                <button
-                  onClick={() => setClothImage(null)}
-                  className="p-2.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full transition-all shadow-sm"
-                >
-                  <X className="w-4 h-4" />
+                  Tải ảnh trang phục
                 </button>
               </div>
-            </div>
+            )
           ) : (
-            <div className="bg-secondary/30 rounded-[16px] border border-border/50 p-5 flex flex-col items-center justify-center gap-4 text-center">
-              <div className="w-12 h-12 rounded-full bg-background shadow-sm flex items-center justify-center text-muted-foreground">
-                <Shirt className="w-5 h-5" />
+            <div className="flex gap-3">
+              {/* Top Image */}
+              <div className="flex-1">
+                {clothImageTop ? (
+                  <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+                    <img src={clothImageTop} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-300 backdrop-blur-sm">
+                      <button
+                        onClick={() => topInputRef.current?.click()}
+                        className="px-2 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-semibold rounded-full transition-all shadow-sm"
+                      >
+                        Đổi
+                      </button>
+                      <button
+                        onClick={() => setClothImageTop(null)}
+                        className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full transition-all shadow-sm"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => topInputRef.current?.click()}
+                    className="w-full h-32 rounded-[16px] border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                  >
+                    <span className="text-xs font-medium text-muted-foreground">Tải ảnh Áo</span>
+                  </button>
+                )}
               </div>
-              <p className="text-xs font-medium text-muted-foreground max-w-[80%]">
-                Chọn sản phẩm trong danh sách tủ đồ hoặc tải ảnh lên.
-              </p>
-              <button
-                onClick={() => clothInputRef.current?.click()}
-                className="w-full py-2.5 rounded-full bg-background text-foreground text-xs font-semibold hover:bg-secondary/80 shadow-sm transition-all cursor-pointer"
-              >
-                Tải ảnh trang phục
-              </button>
+              
+              {/* Bottom Image */}
+              <div className="flex-1">
+                {clothImageBottom ? (
+                  <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+                    <img src={clothImageBottom} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-300 backdrop-blur-sm">
+                      <button
+                        onClick={() => bottomInputRef.current?.click()}
+                        className="px-2 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-semibold rounded-full transition-all shadow-sm"
+                      >
+                        Đổi
+                      </button>
+                      <button
+                        onClick={() => setClothImageBottom(null)}
+                        className="p-1.5 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full transition-all shadow-sm"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => bottomInputRef.current?.click()}
+                    className="w-full h-32 rounded-[16px] border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                  >
+                    <span className="text-xs font-medium text-muted-foreground">Tải ảnh Quần</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </section>

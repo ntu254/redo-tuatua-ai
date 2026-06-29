@@ -83,7 +83,10 @@ const RecommenderPage = () => {
   const hasResults = activePrompt && outfits.length > 0;
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div 
+      className="h-screen bg-background flex flex-col overflow-hidden relative"
+      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+    >
       <Navbar />
 
       <div className="flex flex-1 overflow-hidden pt-16">
