@@ -146,9 +146,10 @@ const WardrobePage = () => {
         <div className="absolute inset-0 bg-background/30 backdrop-blur-sm pointer-events-none z-0" />
         <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
-        <div className="container mx-auto max-w-7xl px-6 py-20">
-          <div className="rounded-xl bg-card p-8 text-center text-sm text-muted-foreground">
-            Đang tải dữ liệu tủ đồ...
+          <div className="container mx-auto max-w-7xl px-6 py-20">
+            <div className="rounded-xl bg-card p-8 text-center text-sm text-muted-foreground">
+              Đang tải dữ liệu tủ đồ...
+            </div>
           </div>
         </div>
       </div>
