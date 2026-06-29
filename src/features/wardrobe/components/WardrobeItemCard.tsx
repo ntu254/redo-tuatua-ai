@@ -39,7 +39,7 @@ const WardrobeItemCard = forwardRef<HTMLDivElement, WardrobeItemCardProps>(
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.035, duration: 0.35 }}
         layout
-        className={`group relative rounded-xl overflow-hidden bg-card transition-all duration-300 cursor-pointer ${
+        className={`group relative rounded-xl overflow-hidden bg-card/60 backdrop-blur-md border border-border/40 transition-all duration-300 cursor-pointer ${
           selected
             ? "ring-2 ring-foreground/20"
             : "hover:shadow-sm hover:-translate-y-0.5"
@@ -48,7 +48,7 @@ const WardrobeItemCard = forwardRef<HTMLDivElement, WardrobeItemCardProps>(
         onMouseLeave={() => setHovered(false)}
         onClick={() => onToggleSelect?.(item.id)}
       >
-        <div className="aspect-[4/5] bg-secondary relative flex items-center justify-center overflow-hidden">
+        <div className="aspect-[4/5] bg-secondary/40 relative flex items-center justify-center overflow-hidden">
           {item.image ? (
             <img
               src={item.image}

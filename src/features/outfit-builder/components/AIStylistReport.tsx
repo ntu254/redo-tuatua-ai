@@ -47,7 +47,7 @@ export default function AIStylistReport({
   const report = getStylistReportData();
 
   return (
-    <aside className="w-full lg:w-[360px] bg-card/60 backdrop-blur-md lg:border-l border-border/40 flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full overflow-hidden">
+    <aside className="w-full lg:w-[360px] flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full overflow-hidden">
       {/* Header */}
       <div className="flex items-start justify-between mb-2 shrink-0">
         <div>

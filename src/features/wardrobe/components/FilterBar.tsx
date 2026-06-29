@@ -72,7 +72,7 @@ export function FilterBar({
             placeholder="Tìm kiếm trong tủ đồ..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full bg-[#FAF7F2] border border-border/60 pl-9 pr-9 py-2.5 text-sm font-body rounded-xl focus:outline-none focus:ring-1 focus:ring-accent/30 focus:border-accent/30 transition-all placeholder:text-muted-foreground/50 shadow-sm"
+            className="w-full bg-background/50 backdrop-blur-md border border-border/60 pl-9 pr-9 py-2.5 text-sm font-body rounded-xl focus:outline-none focus:ring-1 focus:ring-accent/30 focus:border-accent/30 transition-all placeholder:text-muted-foreground/50 shadow-sm"
           />
           {search && (
             <button
@@ -89,10 +89,10 @@ export function FilterBar({
             variant="outline"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
-            className={`gap-1.5 shrink-0 h-10 px-4 rounded-xl font-medium border-border/60 transition-all ${
+            className={`gap-1.5 shrink-0 h-10 px-4 rounded-xl font-medium border-border/60 transition-all backdrop-blur-md ${
               showFilters || hasActiveFilters
-                ? "bg-[#F5EBE0] border-[#E0D0C0] text-[#995941] hover:bg-[#F5EBE0]"
-                : "bg-[#FAF7F2] hover:bg-black/5"
+                ? "bg-accent/20 border-accent/30 text-accent hover:bg-accent/30"
+                : "bg-background/50 hover:bg-secondary/30 text-foreground"
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -110,7 +110,7 @@ export function FilterBar({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-2 w-72 bg-[#FAF7F2] border border-border/60 rounded-2xl shadow-xl p-5 z-50 space-y-5"
+                className="absolute right-0 mt-2 w-72 bg-background/60 backdrop-blur-md border border-border/60 rounded-2xl shadow-xl p-5 z-50 space-y-5"
               >
                 <div>
                   <p className="font-heading text-xs font-semibold text-foreground uppercase tracking-wider mb-2.5">

@@ -59,7 +59,7 @@ export function ItemDetail({
           exit={isMobile ? { opacity: 0, y: 300, x: 0 } : { opacity: 0, x: 400, y: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           style={{ height: isMobile ? "calc(100vh / 0.85)" : "calc((100vh - 64px) / 0.85)", zoom: "85%" }}
-          className="fixed bottom-0 left-0 right-0 top-auto md:top-16 md:right-0 md:left-auto z-40 w-full md:w-[360px] lg:w-[400px] bg-background rounded-t-3xl md:rounded-none shadow-2xl flex flex-col border-l border-border/50 overflow-hidden"
+          className="fixed bottom-0 left-0 right-0 top-auto md:top-16 md:right-0 md:left-auto z-40 w-full md:w-[360px] lg:w-[400px] bg-background/60 backdrop-blur-md rounded-t-3xl md:rounded-none shadow-2xl flex flex-col border-l border-border/50 overflow-hidden"
         >
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/40 shrink-0">
             <h2 className="font-heading text-lg font-medium text-foreground truncate flex-1">

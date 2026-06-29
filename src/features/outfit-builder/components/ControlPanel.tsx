@@ -102,7 +102,7 @@ export default function ControlPanel({
   };
 
   return (
-    <aside className="w-full lg:w-[360px] bg-card/60 backdrop-blur-md lg:border-r border-border/40 flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full">
+    <aside className="w-full lg:w-[360px] flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full">
       {/* Header */}
       <div className="flex items-center gap-4 mb-2 shrink-0">
         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
@@ -314,7 +314,7 @@ export default function ControlPanel({
       </div>
 
       {/* Footer Button */}
-      <div className="p-6 bg-card border-t border-border/40 shrink-0 mt-auto z-20 shadow-[0_-4px_16px_rgba(0,0,0,0.02)]">
+      <div className="p-6 shrink-0 mt-auto z-20">
         <button
           onClick={onStartTryOn}
           disabled={!canTryOn || isTryOnLoading}
