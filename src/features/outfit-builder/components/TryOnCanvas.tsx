@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, BadgeCheck, Flame, Loader2, ShoppingBag, Shirt } from "lucide-react";
+import { ArrowRight, BadgeCheck, Flame, Loader2, ShoppingBag, Shirt, Sparkles, X } from "lucide-react";
 
 interface OutfitItem {
   id: string;
