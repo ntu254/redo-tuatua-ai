@@ -84,12 +84,17 @@ const RecommenderPage = () => {
 
   return (
     <div 
-      className="h-screen bg-background flex flex-col overflow-hidden relative"
-      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+      className="h-screen flex flex-col overflow-hidden relative"
+      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
     >
-      <Navbar />
+      {/* Glass overlay */}
+      <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+      
+      {/* Content */}
+      <div className="relative z-10 flex flex-col h-full overflow-hidden">
+        <Navbar />
 
-      <div className="flex flex-1 overflow-hidden pt-16">
+        <div className="flex flex-1 overflow-hidden pt-16">
         <ChatSidebar
           isOpen={chatOpen}
           onToggle={() => setChatOpen(!chatOpen)}
@@ -230,6 +235,7 @@ const RecommenderPage = () => {
             )}
           </div>
         </main>
+      </div>
       </div>
     </div>
   );

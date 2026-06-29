@@ -140,10 +140,12 @@ const WardrobePage = () => {
   if (isLoading) {
     return (
       <div 
-        className="min-h-screen bg-background relative"
-        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+        className="min-h-screen relative"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
       >
-        <Navbar />
+        <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+        <div className="relative z-10 flex flex-col min-h-screen">
+          <Navbar />
         <div className="container mx-auto max-w-7xl px-6 py-20">
           <div className="rounded-xl bg-card p-8 text-center text-sm text-muted-foreground">
             Đang tải dữ liệu tủ đồ...
@@ -156,13 +158,16 @@ const WardrobePage = () => {
   if (loadError) {
     return (
       <div 
-        className="min-h-screen bg-background relative"
-        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+        className="min-h-screen relative"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
       >
-        <Navbar />
-        <div className="container mx-auto max-w-7xl px-6 py-20">
-          <div className="rounded-xl bg-destructive/5 p-8 text-center text-sm text-destructive">
-            {loadError}
+        <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+        <div className="relative z-10 flex flex-col min-h-screen">
+          <Navbar />
+          <div className="container mx-auto max-w-7xl px-6 py-20">
+            <div className="rounded-xl bg-destructive/5 p-8 text-center text-sm text-destructive">
+              {loadError}
+            </div>
           </div>
         </div>
       </div>
@@ -174,12 +179,15 @@ const WardrobePage = () => {
 
   return (
     <div 
-      className={`min-h-screen bg-background transition-all duration-300 relative ${detailOpen ? "lg:pr-[380px]" : ""}`}
-      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" }}
+      className={`min-h-screen transition-all duration-300 relative ${detailOpen ? "lg:pr-[380px]" : ""}`}
+      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
     >
-      <Navbar />
+      <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+      
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navbar />
 
-      <div className="pt-24 pb-16">
+        <div className="pt-24 pb-16">
         <div className="px-6 lg:px-8 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -262,6 +270,7 @@ const WardrobePage = () => {
             )}
           </motion.div>
         </div>
+      </div>
       </div>
 
       {/* Modals & Slide-overs */}
