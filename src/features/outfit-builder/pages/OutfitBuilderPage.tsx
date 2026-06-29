@@ -19,35 +19,14 @@ import SurveyModal from "@/shared/components/SurveyModal";
 const MAX_POLL_RETRIES = 60;
 const POLL_INTERVAL_MS = 3000;
 
-interface OutfitItem {
-  id: string;
-  name: string;
-  image_url: string;
-  price: number;
-  affiliate_url: string;
-  brand: string;
-  slot: string;
-  click_count: number;
-}
 
-interface Outfit {
-  style: string;
-  description: string;
-  items: OutfitItem[];
-  total_price: number;
-  trending: boolean;
-}
 
 export default function OutfitBuilderPage() {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [searchParams] = useSearchParams();
-  const [input, setInput] = useState("");
-  const [occasion, setOccasion] = useState("");
-  const [style, setStyle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [outfit, setOutfit] = useState<Outfit | null>(null);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"controls" | "canvas" | "report">("controls");
 
@@ -58,7 +37,6 @@ export default function OutfitBuilderPage() {
   const [tryOnImage, setTryOnImage] = useState<string | null>(null);
   const [tryOnStatus, setTryOnStatus] = useState<string>("idle");
   const [tryOnError, setTryOnError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"before" | "after">("before");
 
   const trafficRef = searchParams.get("ref") || "direct";
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -89,6 +67,8 @@ export default function OutfitBuilderPage() {
     enabled: !!userId,
   });
 
+
+
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
@@ -100,77 +80,20 @@ export default function OutfitBuilderPage() {
       survey.checkTriggers &&
       tryOnStatus === "succeed" &&
       tryOnImage &&
-      viewMode === "after" &&
       allFeaturesCompleted()
     ) {
       survey.checkTriggers([
         {
           feature: "tryon",
           check: () => true,
-          getContext: () => ({ taskId: tryOnTaskId, hasOutfit: !!outfit }),
+          getContext: () => ({ taskId: tryOnTaskId, hasOutfit: true }),
         },
       ]);
       markFeatureCompleted("outfitbuilder");
     }
-  }, [tryOnStatus, tryOnImage, viewMode, tryOnTaskId, outfit, survey.checkTriggers]);
+  }, [tryOnStatus, tryOnImage, tryOnTaskId, survey.checkTriggers]);
 
-  const buildOutfit = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-    if (!session) {
-      setShowLoginPrompt(true);
-      return;
-    }
 
-    if (creditBalance <= 0) {
-      toast({
-        title: "Không đủ credit",
-        description: "Bạn đã hết lượt tạo AI. Vui lòng nâng cấp gói để tiếp tục.",
-        variant: "destructive",
-      });
-      navigate("/pricing");
-      return;
-    }
-
-    if (pollRef.current) clearInterval(pollRef.current);
-    setIsLoading(true);
-    setError("");
-    setOutfit(null);
-    setClothImage(null);
-    setSelectedClothId(null);
-    setTryOnImage(null);
-    setTryOnStatus("idle");
-    setTryOnError(null);
-    setActiveTab("canvas");
-
-    try {
-      const prompt = [
-        text,
-        occasion && `occasion: ${occasion}`,
-        style && `style: ${style}`,
-      ].filter(Boolean).join(", ");
-
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      const { data, error: fnError } = await supabase.functions.invoke("create-outfit", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: { text: prompt, ref: trafficRef },
-      });
-      if (fnError) throw fnError;
-      if (data?.error) throw new Error(data.error);
-      setOutfit(data.outfit);
-    } catch (err) {
-      setError((err as Error).message || "Không thể tạo outfit. Vui lòng thử lại.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGenerate = () => {
-    if (input.trim()) {
-      buildOutfit(input);
-    }
-  };
 
   const startTryOn = async () => {
     if (!humanImage || !clothImage || tryOnStatus === "submitting" || tryOnStatus === "processing") return;
@@ -192,7 +115,6 @@ export default function OutfitBuilderPage() {
     setTryOnStatus("submitting");
     setTryOnError(null);
     setTryOnImage(null);
-    setViewMode("after");
     setActiveTab("canvas");
 
     try {
@@ -325,16 +247,8 @@ export default function OutfitBuilderPage() {
         </div>
 
         {/* Panels with responsive wrappers */}
-        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[320px] h-full`}>
+        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[320px] relative`}>
           <ControlPanel
-            input={input}
-            setInput={setInput}
-            occasion={occasion}
-            setOccasion={setOccasion}
-            style={style}
-            setStyle={setStyle}
-            isLoading={isLoading}
-            onGenerate={handleGenerate}
             humanImage={humanImage}
             setHumanImage={setHumanImage}
             clothImage={clothImage}
@@ -345,29 +259,22 @@ export default function OutfitBuilderPage() {
           />
         </div>
 
-        <div className={`${activeTab === "canvas" ? "flex flex-1" : "hidden"} lg:flex lg:flex-1 lg:min-w-0 h-full`}>
+        <div className={`${activeTab === "canvas" ? "flex flex-1" : "hidden"} lg:flex lg:flex-1 lg:min-w-0 relative`}>
           <TryOnCanvas
             isLoading={isLoading}
-            outfit={outfit}
             error={error || tryOnError || ""}
-            onRetry={handleGenerate}
-            trackClick={trackClick}
             humanImage={humanImage}
             selectedClothId={selectedClothId}
             setSelectedClothId={setSelectedClothId}
             setSelectedClothImage={setClothImage}
             tryOnImage={tryOnImage}
             tryOnStatus={tryOnStatus}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
           />
         </div>
 
-        <div className={`${activeTab === "report" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[360px] h-full`}>
+        <div className={`${activeTab === "report" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[360px] relative`}>
           <AIStylistReport
-            occasion={occasion}
-            style={style}
-            hasOutfit={!!outfit}
+            hasOutfit={!!clothImage}
             hasPhoto={!!humanImage}
             tryOnImage={tryOnImage}
             tryOnStatus={tryOnStatus}

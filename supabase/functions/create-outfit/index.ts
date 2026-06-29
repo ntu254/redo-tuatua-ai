@@ -62,13 +62,15 @@ serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
-    const { text, ref } = await req.json();
+    const { text, ref, fashion_preferences } = await req.json();
     if (!text?.trim()) throw new Error("Missing text");
 
     const apiKey = Deno.env.get("GEMINI_API_KEY");
     if (!apiKey) throw new Error("GEMINI_API_KEY not set");
 
     const trafficSource = ref || "direct";
+
+    const userContext = fashion_preferences ? `\nUser Preferences (from quiz): ${JSON.stringify(fashion_preferences)}\n` : "";
 
     // Step 1: AI intent parsing
     const intentResp = await callGemini(
@@ -80,7 +82,8 @@ serve(async (req) => {
   "slots": ["top", "bottom", "shoes", "accessory"]
 }
 
-Request: "${text}"`,
+Request: "${text}"${userContext}
+Ensure search_keywords include constraints based on the User Preferences (e.g., if gender is male, append 'men' or 'nam' to keywords).`,
       apiKey,
     );
 
@@ -124,7 +127,8 @@ Return ONLY valid JSON array (no markdown):
 
 Slots: ${JSON.stringify(slots)}
 Style: ${style}
-Description: ${description}
+Description: ${description}${userContext}
+Ensure selected products strongly match the User Preferences, especially gender (e.g. do not select women's skirts for a male user).
 
 Products:
 ${productList}`,

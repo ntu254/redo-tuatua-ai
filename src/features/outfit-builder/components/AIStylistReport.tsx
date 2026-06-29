@@ -2,8 +2,6 @@ import { BadgeCheck, Calendar, Palette, Shirt, Camera, Clock, BarChart3, Star, L
 import { motion } from "framer-motion";
 
 interface AIStylistReportProps {
-  occasion: string;
-  style: string;
   hasOutfit: boolean;
   hasPhoto: boolean;
   tryOnImage: string | null;
@@ -17,27 +15,20 @@ interface ChecklistItem {
 }
 
 export default function AIStylistReport({
-  occasion,
-  style,
   hasOutfit,
   hasPhoto,
   tryOnImage,
   tryOnStatus,
 }: AIStylistReportProps) {
   const checklist: ChecklistItem[] = [
-    { icon: <Calendar className="w-4 h-4" />, label: "Dịp mặc", status: occasion ? "done" : "pending" },
-    { icon: <Palette className="w-4 h-4" />, label: "Phong cách", status: style ? "done" : "pending" },
     { icon: <Shirt className="w-4 h-4" />, label: "Sản phẩm", status: hasOutfit ? "done" : "pending" },
     { icon: <Camera className="w-4 h-4" />, label: "Ảnh người mẫu", status: hasPhoto ? "done" : "pending" },
   ];
 
   const isSucceeded = tryOnStatus === "succeed" && !!tryOnImage;
 
-  // Mock styled suggestions depending on occasion and style chosen
+  // Mock styled suggestions
   const getStylistReportData = () => {
-    const formattedOccasion = occasion ? occasion.charAt(0).toUpperCase() + occasion.slice(1) : "Casual";
-    const formattedStyle = style ? style.charAt(0).toUpperCase() + style.slice(1) : "Minimalist";
-    
     return {
       grade: "A+",
       fitScore: 94,
@@ -48,8 +39,8 @@ export default function AIStylistReport({
         { hex: "#3A506B", name: "Slate Blue" },
       ],
       fitAnalysis: `Phom dáng trang phục phối hợp hoàn chỉnh với chiều cao của người mẫu. Các chi tiết vai và eo cân đối tốt, tạo tỷ lệ silhouette quyến rũ.`,
-      colorAnalysis: `Màu chủ đạo ${formattedStyle} kết hợp hài hòa với màu da. Sự tương phản dịu mắt giữa màu trung tính và tông màu nhấn tạo ấn tượng thanh lịch cho dịp ${formattedOccasion}.`,
-      recommendation: `Đề xuất thêm thắt lưng da tối bản nhỏ và giày tối giản để tạo điểm nhấn vùng eo. Hoàn thiện với một chiếc đồng hồ dây kim loại mảnh.`,
+      colorAnalysis: `Màu sắc trang phục kết hợp hài hòa với màu da. Sự tương phản dịu mắt giữa màu trung tính và tông màu nhấn tạo ấn tượng thanh lịch.`,
+      recommendation: `Đề xuất thêm thắt lưng da bản nhỏ và giày tối giản để tạo điểm nhấn vùng eo. Hoàn thiện với một chiếc đồng hồ dây kim loại mảnh.`,
     };
   };
 
