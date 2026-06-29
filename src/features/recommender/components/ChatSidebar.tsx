@@ -279,7 +279,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
                   key={s.label}
                   onClick={() => void sendMsg(s.prompt)}
                   disabled={isGenerating}
-                  className="text-xs font-body px-3 py-1.5 rounded-full border border-border/60 bg-background/50 hover:border-foreground/20 hover:text-foreground hover:bg-secondary/30 transition-all disabled:opacity-40"
+                  className="text-xs font-body px-3 py-1.5 rounded-full border border-foreground/20 bg-background/50 hover:border-foreground/40 hover:text-foreground hover:bg-secondary/30 transition-all disabled:opacity-40"
                 >
                   {s.label}
                 </button>
