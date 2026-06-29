@@ -119,7 +119,7 @@ export default function ControlPanel({
         
         {/* Step 1: Model */}
         <section className="flex flex-col gap-3">
-          <h3 className="editorial-label text-muted-foreground flex items-center gap-2">
+          <h3 className="editorial-label text-foreground/80 flex items-center gap-2">
             <span className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-secondary-foreground">1</span>
             Hình ảnh của bạn
           </h3>
@@ -165,7 +165,7 @@ export default function ControlPanel({
         {/* Step 2: Outfit */}
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h3 className="editorial-label text-muted-foreground flex items-center gap-2">
+            <h3 className="editorial-label text-foreground/80 flex items-center gap-2">
               <span className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-secondary-foreground">2</span>
               Sản phẩm muốn thử
             </h3>
@@ -175,7 +175,7 @@ export default function ControlPanel({
             <button
               onClick={() => setTryOnMode("one-piece")}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
-                tryOnMode === "one-piece" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md text-foreground" : "text-muted-foreground hover:text-foreground"
+                tryOnMode === "one-piece" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md text-foreground" : "text-foreground/80 hover:text-foreground"
               }`}
             >
               Đồ liền thân
@@ -183,7 +183,7 @@ export default function ControlPanel({
             <button
               onClick={() => setTryOnMode("combo")}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
-                tryOnMode === "combo" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md text-foreground" : "text-muted-foreground hover:text-foreground"
+                tryOnMode === "combo" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md text-foreground" : "text-foreground/80 hover:text-foreground"
               }`}
             >
               Áo + Quần

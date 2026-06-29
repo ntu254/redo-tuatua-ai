@@ -51,13 +51,13 @@ export default function AIStylistReport({
       {/* Header */}
       <div className="flex items-start justify-between mb-2 shrink-0">
         <div>
-          <h2 className="font-heading text-2xl font-semibold text-teal flex items-center gap-2">
+          <h2 className="font-heading text-2xl font-semibold text-foreground flex items-center gap-2">
             AI Report
-            <BadgeCheck className="w-5 h-5 text-teal" />
+            <BadgeCheck className="w-5 h-5 text-foreground" />
           </h2>
-          <p className="editorial-label mt-1">Báo cáo & Đánh giá</p>
+          <p className="editorial-label mt-1 text-foreground/80">Báo cáo & Đánh giá</p>
         </div>
-        <span className="px-3 py-1.5 bg-teal/10 text-teal border border-teal/20 rounded-full text-[10px] font-bold uppercase tracking-wider animate-pulse shadow-sm">
+        <span className="px-3 py-1.5 bg-foreground/10 text-foreground border border-foreground/20 rounded-full text-[10px] font-bold uppercase tracking-wider animate-pulse shadow-sm">
           Premium
         </span>
       </div>
@@ -67,24 +67,24 @@ export default function AIStylistReport({
         
         {/* Preparation Analysis */}
         <section className="shrink-0">
-          <h3 className="editorial-label text-muted-foreground flex items-center gap-2 mb-3">
+          <h3 className="editorial-label text-foreground/80 flex items-center gap-2 mb-3">
             <ShieldCheck className="w-4 h-4 text-foreground/40" /> Checklist Chuẩn Bị
           </h3>
           <div className="bg-card/60 backdrop-blur-md rounded-[16px] border border-border/40 p-2 flex flex-col gap-1 shadow-sm">
             {checklist.map((item) => (
               <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl transition-colors hover:bg-secondary/40">
-                <span className={`transition-colors ${item.status === "done" ? "text-teal" : "text-muted-foreground/50"}`}>
+                <span className={`transition-colors ${item.status === "done" ? "text-foreground" : "text-foreground/60"}`}>
                   {item.icon}
                 </span>
-                <span className={`text-xs font-medium flex-1 ${item.status === "done" ? "text-foreground" : "text-muted-foreground/70"}`}>
+                <span className={`text-xs font-medium flex-1 ${item.status === "done" ? "text-foreground" : "text-foreground/80"}`}>
                   {item.label}
                 </span>
                 {item.status === "done" ? (
-                  <span className="w-5 h-5 rounded-full bg-teal/10 flex items-center justify-center shadow-sm border border-teal/20">
-                    <BadgeCheck className="w-3.5 h-3.5 text-teal" />
+                  <span className="w-5 h-5 rounded-full bg-foreground/10 flex items-center justify-center shadow-sm border border-foreground/20">
+                    <BadgeCheck className="w-3.5 h-3.5 text-foreground" />
                   </span>
                 ) : (
-                  <Clock className="w-4 h-4 text-muted-foreground/40" />
+                  <Clock className="w-4 h-4 text-foreground/50" />
                 )}
               </div>
             ))}
@@ -93,8 +93,8 @@ export default function AIStylistReport({
 
         {/* Detailed Analysis Area */}
         <section className="flex flex-col gap-4 flex-1 min-h-[300px]">
-          <h3 className="editorial-label text-muted-foreground flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-teal" /> Phân Tích Chi Tiết
+          <h3 className="editorial-label text-foreground/80 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-foreground" /> Phân Tích Chi Tiết
           </h3>
 
           {!isSucceeded ? (
@@ -104,7 +104,7 @@ export default function AIStylistReport({
                 <BarChart3 className="w-6 h-6" />
               </div>
               <p className="text-sm font-bold text-foreground mb-2">Báo cáo đang bị khóa</p>
-              <p className="text-xs text-muted-foreground mb-6 max-w-[200px] leading-relaxed">
+              <p className="text-xs text-foreground/80 mb-6 max-w-[200px] leading-relaxed">
                 Hoàn thành bước thử đồ ảo để mở khóa báo cáo đánh giá chuyên sâu.
               </p>
               
@@ -112,7 +112,7 @@ export default function AIStylistReport({
               <div className="w-full flex flex-col gap-3 opacity-40 select-none pointer-events-none blur-[1px]">
                 <div className="h-16 bg-card/60 backdrop-blur-md rounded-[12px] border border-border/40 shadow-sm flex items-center px-4 gap-4">
                   <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                    <Star className="w-4 h-4 text-muted-foreground" />
+                    <Star className="w-4 h-4 text-foreground/80" />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="h-3 w-20 bg-secondary rounded mb-2" />
@@ -121,7 +121,7 @@ export default function AIStylistReport({
                 </div>
                 <div className="h-16 bg-background rounded-[12px] border border-border/40 flex items-center px-4 gap-4">
                   <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                    <Lightbulb className="w-4 h-4 text-muted-foreground" />
+                    <Lightbulb className="w-4 h-4 text-foreground/80" />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="h-3 w-24 bg-secondary rounded mb-2" />
@@ -146,7 +146,7 @@ export default function AIStylistReport({
                     Style Match Grade
                   </span>
                   <span className="text-4xl font-heading font-black text-foreground drop-shadow-sm">{report.grade}</span>
-                  <span className="text-xs text-muted-foreground">Tuyệt hảo & Sang trọng</span>
+                  <span className="text-xs text-foreground/80">Tuyệt hảo & Sang trọng</span>
                 </div>
                 
                 <div className="flex gap-4 border-l border-border/50 pl-4 h-16 items-center">

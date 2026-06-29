@@ -142,7 +142,7 @@ const WardrobePage = () => {
       <div className="min-h-screen relative overflow-hidden bg-background">
         <div 
           className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
-          style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(1px)" }}
+          style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(3px)" }}
         />
         <Navbar />
           <div className="container mx-auto max-w-7xl px-6 py-20 relative z-10">
@@ -159,7 +159,7 @@ const WardrobePage = () => {
       <div className="min-h-screen relative overflow-hidden bg-background">
         <div 
           className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
-          style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(1px)" }}
+          style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(3px)" }}
         />
         <Navbar />
           <div className="container mx-auto max-w-7xl px-6 py-20 relative z-10">
@@ -178,7 +178,7 @@ const WardrobePage = () => {
     <div className={`min-h-screen relative overflow-hidden bg-background transition-all duration-300 ${detailOpen ? "lg:pr-[380px]" : ""}`}>
       <div 
         className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
-        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(1px)" }}
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(3px)" }}
       />
       <Navbar />
 

@@ -250,7 +250,7 @@ export default function OutfitBuilderPage() {
     <div className="h-screen bg-background flex flex-col overflow-hidden relative">
       <div 
         className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
-        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(1px)" }}
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(3px)" }}
       />
       {showLoginPrompt && <LoginPromptOverlay />}
       <Navbar />

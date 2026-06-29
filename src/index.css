@@ -77,36 +77,36 @@
     --destructive: 0 62% 42%;
     --destructive-foreground: 204 100% 96%;
     --border: 216 22% 22%;
-    --input: 216 22% 22%;
-    --ring: 24 92% 64%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
+      --input: 216 22% 22%;
+      --ring: 24 92% 64%;
+    }
   }
 
-  body {
-    @apply bg-background text-foreground font-body antialiased;
-    background-image:
-      radial-gradient(circle at top left, hsl(var(--coral-light)) 0%, transparent 34%),
-      radial-gradient(circle at top right, hsl(var(--mint-light)) 0%, transparent 30%),
-      radial-gradient(circle at 50% 18%, hsl(var(--secondary) / 0.8) 0%, transparent 36%),
-      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--off-white)) 100%);
+  @layer base {
+    * {
+      @apply border-border;
+    }
+
+    body {
+      @apply bg-background text-foreground font-body antialiased;
+      background-image:
+        radial-gradient(circle at top left, hsl(var(--coral-light)) 0%, transparent 34%),
+        radial-gradient(circle at top right, hsl(var(--mint-light)) 0%, transparent 30%),
+        radial-gradient(circle at 50% 18%, hsl(var(--secondary) / 0.8) 0%, transparent 36%),
+        linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--off-white)) 100%);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      @apply font-heading font-medium;
+    }
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-heading font-medium;
-  }
-}
-
-.editorial-label {
+  .editorial-label {
   @apply text-[10px] font-body font-semibold uppercase tracking-[0.25em] text-muted-foreground;
 }
 

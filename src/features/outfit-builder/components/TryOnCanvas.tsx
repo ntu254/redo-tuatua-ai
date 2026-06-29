@@ -94,7 +94,7 @@ export default function TryOnCanvas({
                         <Loader2 className="w-8 h-8 animate-spin" />
                       </div>
                       <h3 className="font-heading text-2xl font-bold text-foreground">Đang xử lý thử đồ ảo...</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-sm text-foreground/80 leading-relaxed">
                         Redo đang tiến hành tạo hình ảnh ghép. Quá trình này thông thường sẽ mất từ 10 đến 30 giây. Vui lòng đợi trong giây lát!
                       </p>
                     </div>
@@ -111,11 +111,11 @@ export default function TryOnCanvas({
                     </div>
                   ) : (
                     <div className="text-center max-w-md space-y-4">
-                      <div className="w-20 h-20 flex items-center justify-center text-muted-foreground mx-auto">
+                      <div className="w-20 h-20 flex items-center justify-center text-foreground/80 mx-auto">
                         <Shirt className="w-12 h-12 opacity-50" />
                       </div>
                       <h3 className="font-heading text-2xl font-bold text-foreground">Chưa có kết quả thử đồ ảo</h3>
-                      <p className="text-sm text-muted-foreground max-w-sm leading-relaxed mx-auto">
+                      <p className="text-sm text-foreground/80 max-w-sm leading-relaxed mx-auto">
                         Hãy đảm bảo bạn đã tải ảnh model tại Bước 1, chọn trang phục mong muốn tại Bước 2, sau đó nhấp nút **"Tạo ảnh mặc thử"** ở góc dưới cùng bên trái.
                       </p>
                     </div>
@@ -129,7 +129,7 @@ export default function TryOnCanvas({
       <footer className="h-14 flex items-center px-8 shrink-0 z-10">
         <div className="flex items-center gap-3">
           <div className={`w-2.5 h-2.5 rounded-full ${isLoading || tryOnStatus === "processing" ? "bg-accent animate-pulse shadow-[0_0_8px_hsl(var(--accent)/0.6)]" : "bg-muted-foreground/40"}`} />
-          <span className="editorial-label text-muted-foreground">
+          <span className="editorial-label text-foreground/80">
             {isLoading
               ? "Đang phân tích dữ liệu..."
               : tryOnStatus === "submitting" || tryOnStatus === "processing"
