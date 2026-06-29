@@ -146,7 +146,6 @@ const WardrobePage = () => {
               Đang tải dữ liệu tủ đồ...
             </div>
           </div>
-        </div>
       </div>
     );
   }
@@ -160,7 +159,6 @@ const WardrobePage = () => {
               {loadError}
             </div>
           </div>
-        </div>
       </div>
     );
   }
