@@ -223,7 +223,7 @@ const RecommenderPage = () => {
                 playsInline
                 className="w-full max-w-3xl rounded-[24px] object-cover"
               >
-                <source src="/animo-ticker-loop-720p.webm" type="video/webm" />
+                <source src="/animo-film-strip-720p.webm" type="video/webm" />
               </video>
             </div>
           )}
