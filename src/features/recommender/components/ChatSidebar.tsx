@@ -216,13 +216,13 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
         initial={false}
         animate={{ x: isOpen ? 0 : -350, width: isOpen ? 320 : 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 220 }}
-        className={`fixed top-16 md:sticky z-40 h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background/80 backdrop-blur-md border-r border-border/40 overflow-hidden ${
+        className={`fixed top-16 md:sticky z-40 h-[calc(100vh-4rem)] flex flex-col shrink-0 overflow-hidden ${
           !isOpen ? "pointer-events-none opacity-0 md:w-0" : "w-[320px] opacity-100"
         }`}
       >
-        <div className="w-[320px] h-full flex flex-col p-5 space-y-6 overflow-y-auto scrollbar-hide">
+        <div className="w-[320px] h-full flex flex-col p-4 py-6 space-y-4 overflow-y-auto scrollbar-hide">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-border/40 pb-3">
+          <div className="flex items-center justify-between bg-background/60 backdrop-blur-md border border-border/40 p-4 rounded-2xl shadow-sm">
             <div>
               <h2 className="font-heading text-base font-bold text-foreground flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-foreground/70" /> AI Stylist
@@ -233,14 +233,14 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
             </div>
             <button
               onClick={onToggle}
-              className="hidden md:flex items-center gap-1 text-[10px] font-body text-muted-foreground hover:text-foreground border border-border/60 px-2 py-1 rounded-md transition-colors"
+              className="hidden md:flex items-center gap-1 text-[10px] font-body text-muted-foreground hover:text-foreground border border-border/60 px-2 py-1 rounded-lg transition-colors bg-background/40"
             >
               <ChevronLeft className="w-3 h-3" /> Thu gọn
             </button>
           </div>
 
           {/* Prompt Input Box */}
-          <div className="space-y-2">
+          <div className="space-y-2 bg-background/60 backdrop-blur-md border border-border/40 p-4 rounded-2xl shadow-sm">
             <label className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
               Yêu cầu của bạn
             </label>
@@ -269,7 +269,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
           </div>
 
           {/* Quick suggestions */}
-          <div className="space-y-2.5">
+          <div className="space-y-2.5 bg-background/60 backdrop-blur-md border border-border/40 p-4 rounded-2xl shadow-sm">
             <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
               Gợi ý nhanh
             </span>
@@ -289,7 +289,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
 
           {/* Recent History — only shown for logged-in users */}
           {session && (
-            <div className="flex-1 space-y-2.5 overflow-hidden flex flex-col">
+            <div className="flex-1 space-y-2.5 overflow-hidden flex flex-col bg-background/60 backdrop-blur-md border border-border/40 p-4 rounded-2xl shadow-sm">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground/80 block">
                   Lịch sử gần đây
