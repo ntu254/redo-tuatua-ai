@@ -83,16 +83,8 @@ const RecommenderPage = () => {
   const hasResults = activePrompt && outfits.length > 0;
 
   return (
-    <div 
-      className="h-screen flex flex-col overflow-hidden relative"
-      style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
-    >
-      {/* Glass overlay */}
-      <div className="absolute inset-0 bg-background/30 backdrop-blur-sm pointer-events-none z-0" />
-      
-      {/* Content */}
-      <div className="relative z-10 flex flex-col h-full overflow-hidden">
-        <Navbar />
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
+      <Navbar />
 
         <div className="flex flex-1 overflow-hidden pt-16">
         <ChatSidebar
@@ -235,7 +227,6 @@ const RecommenderPage = () => {
             )}
           </div>
         </main>
-      </div>
       </div>
     </div>
   );
