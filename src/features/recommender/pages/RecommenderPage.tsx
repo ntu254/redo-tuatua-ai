@@ -86,7 +86,7 @@ const RecommenderPage = () => {
     <div className="h-screen flex flex-col overflow-hidden relative bg-background">
       <div 
         className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
-        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(4px)" }}
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(2px)" }}
       />
       <Navbar />
 
