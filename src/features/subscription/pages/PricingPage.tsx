@@ -78,7 +78,7 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] px-4 flex flex-col justify-center relative overflow-hidden bg-background">
+    <div className="min-h-screen px-4 flex flex-col justify-center relative overflow-hidden bg-background">
       <div 
         className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
         style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(1px)" }}
