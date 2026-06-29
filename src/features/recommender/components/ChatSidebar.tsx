@@ -216,7 +216,7 @@ const ChatSidebar = ({ isOpen, onToggle, onOutfitsGenerated, isGenerating, setIs
         initial={false}
         animate={{ x: isOpen ? 0 : -350, width: isOpen ? 320 : 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 220 }}
-        className={`fixed top-16 md:sticky z-40 h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background/60 backdrop-blur-md border-r border-border/40 overflow-hidden ${
+        className={`fixed top-16 md:sticky z-40 h-[calc(100vh-4rem)] flex flex-col shrink-0 bg-background/40 backdrop-blur-xl border-r border-border/40 overflow-hidden ${
           !isOpen ? "pointer-events-none opacity-0 md:w-0" : "w-[320px] opacity-100"
         }`}
       >

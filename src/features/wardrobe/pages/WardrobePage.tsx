@@ -143,7 +143,7 @@ const WardrobePage = () => {
         className="min-h-screen relative"
         style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
       >
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-background/30 backdrop-blur-sm pointer-events-none z-0" />
         <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
         <div className="container mx-auto max-w-7xl px-6 py-20">
@@ -161,7 +161,7 @@ const WardrobePage = () => {
         className="min-h-screen relative"
         style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
       >
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-background/30 backdrop-blur-sm pointer-events-none z-0" />
         <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
           <div className="container mx-auto max-w-7xl px-6 py-20">
@@ -182,7 +182,7 @@ const WardrobePage = () => {
       className={`min-h-screen transition-all duration-300 relative ${detailOpen ? "lg:pr-[380px]" : ""}`}
       style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
     >
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-background/30 backdrop-blur-sm pointer-events-none z-0" />
       
       <div className="relative z-10 flex flex-col min-h-screen">
         <Navbar />

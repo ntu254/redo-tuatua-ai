@@ -88,7 +88,7 @@ const RecommenderPage = () => {
       style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundAttachment: "fixed", backgroundRepeat: "no-repeat" }}
     >
       {/* Glass overlay */}
-      <div className="absolute inset-0 bg-background/60 backdrop-blur-md pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-background/30 backdrop-blur-sm pointer-events-none z-0" />
       
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full overflow-hidden">
