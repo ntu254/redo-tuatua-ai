@@ -97,136 +97,134 @@ const RecommenderPage = () => {
 
         <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] h-full">
           <div className={`p-6 md:p-8 lg:p-10 mx-auto space-y-6 transition-all duration-500 ease-in-out ${chatOpen ? "max-w-4xl" : "max-w-6xl"}`}>
-          {/* Loading State */}
-          {isLoadingAny && !hasResults ? (
-            <div className="py-20 flex flex-col items-center justify-center text-center">
-              <div className="flex items-center gap-1.5 mb-5">
-                <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-pulse" />
-                <span
-                  className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-pulse"
-                  style={{ animationDelay: "150ms" }}
-                />
-                <span
-                  className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-pulse"
-                  style={{ animationDelay: "300ms" }}
-                />
+            {/* Loading State */}
+            {isLoadingAny && !hasResults ? (
+              <div className="py-20 flex flex-col items-center justify-center text-center">
+                <div className="flex items-center gap-1.5 mb-5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-pulse" />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-pulse"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full bg-foreground/40 animate-pulse"
+                    style={{ animationDelay: "300ms" }}
+                  />
+                </div>
+                <motion.p
+                  key={loadingStep}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-xs font-body text-muted-foreground uppercase tracking-wider font-semibold animate-pulse"
+                >
+                  {LOADING_STEPS[loadingStep]}
+                </motion.p>
               </div>
-              <motion.p
-                key={loadingStep}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="text-xs font-body text-muted-foreground uppercase tracking-wider font-semibold animate-pulse"
-              >
-                {LOADING_STEPS[loadingStep]}
-              </motion.p>
-            </div>
-          ) : loadError ? (
-            <div className="border-l-2 border-destructive pl-4 py-3 text-sm text-destructive">
-              {loadError}
-            </div>
-          ) : hasResults ? (
-            /* AI Generated Results */
-            <div className="space-y-6">
-              {/* Header */}
-              <div>
-                <span className="text-[10px] uppercase tracking-[0.18em] font-body text-muted-foreground/70 block mb-1">
-                  Gợi ý outfit
-                </span>
-                <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground">
-                  {filtered.length} set dành cho: "{activePrompt}"
-                </h1>
+            ) : loadError ? (
+              <div className="border-l-2 border-destructive pl-4 py-3 text-sm text-destructive">
+                {loadError}
               </div>
+            ) : hasResults ? (
+              /* AI Generated Results */
+              <div className="space-y-6">
+                {/* Header */}
+                <div>
+                  <span className="text-[10px] uppercase tracking-[0.18em] font-body text-muted-foreground/70 block mb-1">
+                    Gợi ý outfit
+                  </span>
+                  <h1 className="font-heading text-xl md:text-2xl font-bold text-foreground">
+                    {filtered.length} set dành cho: "{activePrompt}"
+                  </h1>
+                </div>
 
-              {/* Filter Chips */}
-              <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto scrollbar-hide pb-2">
-                {FILTER_CHIPS.map((chip) => {
-                  const isSelected = activeChips.includes(chip);
-                  return (
-                    <button
-                      key={chip}
-                      onClick={() => {
-                        if (isSelected) {
-                          setActiveChips(activeChips.filter((c) => c !== chip));
-                        } else {
-                          setActiveChips([...activeChips, chip]);
-                        }
-                      }}
-                      className={`text-xs font-body px-3.5 py-1.5 rounded-full border whitespace-nowrap transition-all shrink-0 ${
-                        isSelected
-                          ? "bg-foreground text-background border-foreground font-medium"
-                          : "border-border/60 text-muted-foreground hover:border-foreground/30 hover:text-foreground bg-background/30"
-                      }`}
-                    >
-                      {chip}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Set Tabs */}
-              <div className="flex gap-1 border-b border-border/40 pb-0 overflow-x-auto scrollbar-hide">
-                {filtered.map((outfit, i) => {
-                  const isActive = activeOutfitIndex === i;
-                  return (
-                    <button
-                      key={outfit.id}
-                      onClick={() => setActiveOutfitIndex(i)}
-                      className={`px-4 py-2.5 text-xs font-body font-semibold border-b-2 whitespace-nowrap transition-all ${
-                        isActive
-                          ? "border-foreground text-foreground"
-                          : "border-transparent text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      Set {i + 1}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Active Detailed Set Card */}
-              {filtered[activeOutfitIndex] && (
-                <DetailedOutfitSetCard
-                  outfit={filtered[activeOutfitIndex]}
-                  index={activeOutfitIndex}
-                />
-              )}
-
-              {/* Mini Cards for Other Sets */}
-              {filtered.length > 1 && (
-                <div className="space-y-2 pt-2">
-                  <h3 className="text-xs font-body font-bold text-muted-foreground/60 uppercase tracking-wider">
-                    Các set khác
-                  </h3>
-                  {filtered.map((outfit, i) => {
-                    if (i === activeOutfitIndex) return null;
+                {/* Filter Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                  {FILTER_CHIPS.map((chip) => {
+                    const isSelected = activeChips.includes(chip);
                     return (
-                      <MiniSetCard
-                        key={outfit.id}
-                        outfit={outfit}
-                        index={i}
-                        isActive={false}
-                        onClick={() => setActiveOutfitIndex(i)}
-                      />
+                      <button
+                        key={chip}
+                        onClick={() => {
+                          if (isSelected) {
+                            setActiveChips(activeChips.filter((c) => c !== chip));
+                          } else {
+                            setActiveChips([...activeChips, chip]);
+                          }
+                        }}
+                        className={`text-xs font-body px-3.5 py-1.5 rounded-full border whitespace-nowrap transition-all shrink-0 ${isSelected
+                            ? "bg-foreground text-background border-foreground font-medium"
+                            : "border-border/60 text-muted-foreground hover:border-foreground/30 hover:text-foreground bg-background/30"
+                          }`}
+                      >
+                        {chip}
+                      </button>
                     );
                   })}
                 </div>
-              )}
-            </div>
-          ) : (
-            /* Empty State: Video Loop */
-            <div className="w-full h-full flex flex-col items-center justify-center pt-8 md:pt-12">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full max-w-3xl rounded-[24px] object-cover"
-              >
-                <source src="/animo-film-strip-720p.webm" type="video/webm" />
-              </video>
-            </div>
-          )}
+
+                {/* Set Tabs */}
+                <div className="flex gap-1 border-b border-border/40 pb-0 overflow-x-auto scrollbar-hide">
+                  {filtered.map((outfit, i) => {
+                    const isActive = activeOutfitIndex === i;
+                    return (
+                      <button
+                        key={outfit.id}
+                        onClick={() => setActiveOutfitIndex(i)}
+                        className={`px-4 py-2.5 text-xs font-body font-semibold border-b-2 whitespace-nowrap transition-all ${isActive
+                            ? "border-foreground text-foreground"
+                            : "border-transparent text-muted-foreground hover:text-foreground"
+                          }`}
+                      >
+                        Set {i + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Active Detailed Set Card */}
+                {filtered[activeOutfitIndex] && (
+                  <DetailedOutfitSetCard
+                    outfit={filtered[activeOutfitIndex]}
+                    index={activeOutfitIndex}
+                  />
+                )}
+
+                {/* Mini Cards for Other Sets */}
+                {filtered.length > 1 && (
+                  <div className="space-y-2 pt-2">
+                    <h3 className="text-xs font-body font-bold text-muted-foreground/60 uppercase tracking-wider">
+                      Các set khác
+                    </h3>
+                    {filtered.map((outfit, i) => {
+                      if (i === activeOutfitIndex) return null;
+                      return (
+                        <MiniSetCard
+                          key={outfit.id}
+                          outfit={outfit}
+                          index={i}
+                          isActive={false}
+                          onClick={() => setActiveOutfitIndex(i)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Empty State: Video Loop */
+              <div className="w-full h-full flex flex-col items-center justify-center pt-8 md:pt-12">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full max-w-3xl rounded-[24px] object-cover"
+                >
+                  <source src="/animo-column-drift-720p.webm" type="video/webm" />
+                </video>
+              </div>
+            )}
           </div>
         </main>
       </div>
