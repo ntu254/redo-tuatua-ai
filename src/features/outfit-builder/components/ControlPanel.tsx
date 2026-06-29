@@ -152,12 +152,12 @@ export default function ControlPanel({
           ) : (
             <button
               onClick={() => modelInputRef.current?.click()}
-              className="w-full h-32 rounded-[16px] border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 flex flex-col items-center justify-center gap-2 transition-all duration-300 group cursor-pointer"
+              className="w-full h-32 rounded-[16px] border border-border/40 hover:border-foreground/30 bg-card/60 backdrop-blur-md shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 group cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
+              <div className="w-10 h-10 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md flex items-center justify-center text-foreground/80 group-hover:text-primary transition-colors">
                 <Upload className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Tải ảnh người mẫu lên</span>
+              <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">Tải ảnh người mẫu lên</span>
             </button>
           )}
         </section>
@@ -171,7 +171,7 @@ export default function ControlPanel({
             </h3>
           </div>
           
-          <div className="flex bg-secondary/50 rounded-[12px] p-1">
+          <div className="flex bg-card/60 backdrop-blur-md border border-border/40 shadow-sm rounded-[12px] p-1">
             <button
               onClick={() => setTryOnMode("one-piece")}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
@@ -232,11 +232,11 @@ export default function ControlPanel({
                 </div>
               </div>
             ) : (
-              <div className="bg-secondary/30 rounded-[16px] border border-border/50 p-5 flex flex-col items-center justify-center gap-4 text-center">
-                <div className="w-12 h-12 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md flex items-center justify-center text-muted-foreground">
+              <div className="bg-card/60 backdrop-blur-md rounded-[16px] border border-border/40 shadow-sm p-5 flex flex-col items-center justify-center gap-4 text-center">
+                <div className="w-12 h-12 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md flex items-center justify-center text-foreground/80">
                   <Shirt className="w-5 h-5" />
                 </div>
-                <p className="text-xs font-medium text-muted-foreground max-w-[80%]">
+                <p className="text-xs font-medium text-foreground/80 max-w-[80%]">
                   Chọn trang phục (Áo, quần hoặc váy liền)
                 </p>
                 <button
@@ -272,9 +272,9 @@ export default function ControlPanel({
                 ) : (
                   <button
                     onClick={() => topInputRef.current?.click()}
-                    className="w-full h-32 rounded-[16px] border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                    className="w-full h-32 rounded-[16px] border border-border/40 hover:border-foreground/30 bg-card/60 backdrop-blur-md shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
                   >
-                    <span className="text-xs font-medium text-muted-foreground">Tải ảnh Áo</span>
+                    <span className="text-xs font-medium text-foreground/80">Tải ảnh Áo</span>
                   </button>
                 )}
               </div>
@@ -302,9 +302,9 @@ export default function ControlPanel({
                 ) : (
                   <button
                     onClick={() => bottomInputRef.current?.click()}
-                    className="w-full h-32 rounded-[16px] border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                    className="w-full h-32 rounded-[16px] border border-border/40 hover:border-foreground/30 bg-card/60 backdrop-blur-md shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
                   >
-                    <span className="text-xs font-medium text-muted-foreground">Tải ảnh Quần</span>
+                    <span className="text-xs font-medium text-foreground/80">Tải ảnh Quần</span>
                   </button>
                 )}
               </div>

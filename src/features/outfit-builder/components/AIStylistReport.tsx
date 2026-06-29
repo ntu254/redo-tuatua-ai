@@ -70,7 +70,7 @@ export default function AIStylistReport({
           <h3 className="editorial-label text-muted-foreground flex items-center gap-2 mb-3">
             <ShieldCheck className="w-4 h-4 text-foreground/40" /> Checklist Chuẩn Bị
           </h3>
-          <div className="bg-background/60 rounded-[16px] border border-border/50 p-2 flex flex-col gap-1 shadow-sm">
+          <div className="bg-card/60 backdrop-blur-md rounded-[16px] border border-border/40 p-2 flex flex-col gap-1 shadow-sm">
             {checklist.map((item) => (
               <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl transition-colors hover:bg-secondary/40">
                 <span className={`transition-colors ${item.status === "done" ? "text-teal" : "text-muted-foreground/50"}`}>
@@ -99,8 +99,8 @@ export default function AIStylistReport({
 
           {!isSucceeded ? (
             // --- EMPTY / INCOMPLETE STATE ---
-            <div className="flex-1 bg-secondary/30 rounded-[20px] border border-dashed border-border/60 flex flex-col items-center justify-center p-6 text-center shadow-inner">
-              <div className="w-14 h-14 rounded-full bg-background flex items-center justify-center text-muted-foreground mb-4 shadow-sm border border-border/30">
+            <div className="flex-1 bg-card/60 backdrop-blur-md rounded-[20px] border border-border/40 flex flex-col items-center justify-center p-6 text-center shadow-sm">
+              <div className="w-14 h-14 rounded-full bg-background/50 backdrop-blur-md flex items-center justify-center text-foreground/80 mb-4 shadow-sm border border-foreground/20">
                 <BarChart3 className="w-6 h-6" />
               </div>
               <p className="text-sm font-bold text-foreground mb-2">Báo cáo đang bị khóa</p>
@@ -110,7 +110,7 @@ export default function AIStylistReport({
               
               {/* Animated Placeholder Cards */}
               <div className="w-full flex flex-col gap-3 opacity-40 select-none pointer-events-none blur-[1px]">
-                <div className="h-16 bg-background rounded-[12px] border border-border/40 flex items-center px-4 gap-4">
+                <div className="h-16 bg-card/60 backdrop-blur-md rounded-[12px] border border-border/40 shadow-sm flex items-center px-4 gap-4">
                   <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
                     <Star className="w-4 h-4 text-muted-foreground" />
                   </div>
