@@ -83,10 +83,14 @@ const RecommenderPage = () => {
   const hasResults = activePrompt && outfits.length > 0;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-background">
+    <div className="h-screen flex flex-col overflow-hidden relative bg-background">
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(4px)" }}
+      />
       <Navbar />
 
-        <div className="flex flex-1 overflow-hidden pt-16">
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
         <ChatSidebar
           isOpen={chatOpen}
           onToggle={() => setChatOpen(!chatOpen)}

@@ -139,9 +139,13 @@ const WardrobePage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen relative overflow-hidden bg-background">
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
+          style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(4px)" }}
+        />
         <Navbar />
-          <div className="container mx-auto max-w-7xl px-6 py-20">
+          <div className="container mx-auto max-w-7xl px-6 py-20 relative z-10">
             <div className="rounded-xl bg-card p-8 text-center text-sm text-muted-foreground">
               Đang tải dữ liệu tủ đồ...
             </div>
@@ -152,9 +156,13 @@ const WardrobePage = () => {
 
   if (loadError) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen relative overflow-hidden bg-background">
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
+          style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(4px)" }}
+        />
         <Navbar />
-          <div className="container mx-auto max-w-7xl px-6 py-20">
+          <div className="container mx-auto max-w-7xl px-6 py-20 relative z-10">
             <div className="rounded-xl bg-destructive/5 p-8 text-center text-sm text-destructive">
               {loadError}
             </div>
@@ -167,10 +175,14 @@ const WardrobePage = () => {
   const isFilteredEmpty = !isEmpty && filtered.length === 0;
 
   return (
-    <div className={`min-h-screen bg-background transition-all duration-300 ${detailOpen ? "lg:pr-[380px]" : ""}`}>
+    <div className={`min-h-screen relative overflow-hidden bg-background transition-all duration-300 ${detailOpen ? "lg:pr-[380px]" : ""}`}>
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(4px)" }}
+      />
       <Navbar />
 
-        <div className="pt-24 pb-16">
+      <div className="pt-24 pb-16 relative z-10">
         <div className="px-6 lg:px-8 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

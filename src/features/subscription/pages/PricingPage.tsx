@@ -78,8 +78,12 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] px-4 flex flex-col justify-center bg-background">
-      <div className="max-w-6xl mx-auto w-full py-10">
+    <div className="min-h-[calc(100vh-4rem)] px-4 flex flex-col justify-center relative overflow-hidden bg-background">
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(4px)" }}
+      />
+      <div className="max-w-6xl mx-auto w-full py-10 relative z-10">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground mb-4">
           <ArrowLeft className="w-4 h-4" /> Quay lại
         </button>
