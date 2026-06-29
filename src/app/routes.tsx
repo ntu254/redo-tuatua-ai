@@ -7,36 +7,61 @@ import { AdminAuthGuard, AdminLayout } from "@/features/admin/components";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
-const Login = lazy(() => import("@/features/auth/pages/LoginPage"));
-const AuthCallback = lazy(() => import("@/features/auth/pages/AuthCallbackPage"));
-const ForgotPassword = lazy(() => import("@/features/auth/pages/ForgotPasswordPage"));
-const ResetPassword = lazy(() => import("@/features/auth/pages/ResetPasswordPage"));
-const SignUp = lazy(() => import("@/features/auth/pages/SignUpPage"));
-const Index = lazy(() => import("@/features/landing/pages"));
-const Profile = lazy(() => import("@/features/profile/pages/ProfilePage"));
-const Quiz = lazy(() => import("@/features/quiz/pages"));
-const OutfitBuilder = lazy(() => import("@/features/outfit-builder/pages"));
-const Recommender = lazy(() => import("@/features/recommender/pages"));
-const StyleProfile = lazy(() => import("@/features/style-profile/pages"));
-const Trends = lazy(() => import("@/features/trends/pages/TrendsPage"));
-const Wardrobe = lazy(() => import("@/features/wardrobe/pages"));
-const SavedAiOutfits = lazy(() => import("@/features/wardrobe/pages").then((m) => ({ default: m.SavedAiOutfitsPage })));
-const PricingPage = lazy(() => import("@/features/subscription/pages/PricingPage"));
-const PaymentResultPage = lazy(() => import("@/features/subscription/pages/PaymentResultPage"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
+// Custom lazy loader that force-refreshes the page once if a chunk fails to load
+// This prevents the app from crashing when a new version is deployed and users are on an old cached version
+function lazyWithRetry(componentImport: () => Promise<any>) {
+  return lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.sessionStorage.getItem("page-has-been-force-refreshed") || "false"
+    );
 
-const AdminLoginPage = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminLoginPage })));
-const AdminDashboard = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminDashboard })));
-const AdminUsers = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminUsers })));
-const AdminAiEngine = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminAiEngine })));
-const AdminProducts = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminProducts })));
-const AdminTrends = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminTrends })));
-const AdminPlansBilling = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminPlansBilling })));
-const AdminAnalytics = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminAnalytics })));
-const AdminNotifications = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminNotifications })));
-const AdminFeedback = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminFeedback })));
-const AdminSettings = lazy(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminSettings })));
-const AdminSurvey = lazy(() => import("@/features/admin/pages/AdminSurvey"));
+    try {
+      const component = await componentImport();
+      window.sessionStorage.setItem("page-has-been-force-refreshed", "false");
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        // Assume that the error is because of a new deployment (chunk not found)
+        window.sessionStorage.setItem("page-has-been-force-refreshed", "true");
+        window.location.reload();
+        // Return a never-resolving promise so React doesn't crash before the reload happens
+        return new Promise<any>(() => {});
+      }
+      throw error;
+    }
+  });
+}
+
+const Login = lazyWithRetry(() => import("@/features/auth/pages/LoginPage"));
+const AuthCallback = lazyWithRetry(() => import("@/features/auth/pages/AuthCallbackPage"));
+const ForgotPassword = lazyWithRetry(() => import("@/features/auth/pages/ForgotPasswordPage"));
+const ResetPassword = lazyWithRetry(() => import("@/features/auth/pages/ResetPasswordPage"));
+const SignUp = lazyWithRetry(() => import("@/features/auth/pages/SignUpPage"));
+const Index = lazyWithRetry(() => import("@/features/landing/pages"));
+const Profile = lazyWithRetry(() => import("@/features/profile/pages/ProfilePage"));
+const Quiz = lazyWithRetry(() => import("@/features/quiz/pages"));
+const OutfitBuilder = lazyWithRetry(() => import("@/features/outfit-builder/pages"));
+const Recommender = lazyWithRetry(() => import("@/features/recommender/pages"));
+const StyleProfile = lazyWithRetry(() => import("@/features/style-profile/pages"));
+const Trends = lazyWithRetry(() => import("@/features/trends/pages/TrendsPage"));
+const Wardrobe = lazyWithRetry(() => import("@/features/wardrobe/pages"));
+const SavedAiOutfits = lazyWithRetry(() => import("@/features/wardrobe/pages").then((m) => ({ default: m.SavedAiOutfitsPage })));
+const PricingPage = lazyWithRetry(() => import("@/features/subscription/pages/PricingPage"));
+const PaymentResultPage = lazyWithRetry(() => import("@/features/subscription/pages/PaymentResultPage"));
+const NotFound = lazyWithRetry(() => import("@/pages/NotFound"));
+
+const AdminLoginPage = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminLoginPage })));
+const AdminDashboard = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminDashboard })));
+const AdminUsers = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminUsers })));
+const AdminAiEngine = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminAiEngine })));
+const AdminProducts = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminProducts })));
+const AdminTrends = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminTrends })));
+const AdminPlansBilling = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminPlansBilling })));
+const AdminAnalytics = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminAnalytics })));
+const AdminNotifications = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminNotifications })));
+const AdminFeedback = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminFeedback })));
+const AdminSettings = lazyWithRetry(() => import("@/features/admin/pages").then((module) => ({ default: module.AdminSettings })));
+const AdminSurvey = lazyWithRetry(() => import("@/features/admin/pages/AdminSurvey"));
 
 function RouteLoadingFallback() {
   return (
