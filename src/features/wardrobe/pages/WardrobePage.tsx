@@ -170,7 +170,7 @@ const WardrobePage = () => {
     <div className={`min-h-screen bg-background transition-all duration-300 ${detailOpen ? "lg:pr-[380px]" : ""}`}>
       <Navbar />
 
-      <div className="pt-8 pb-16">
+      <div className="pt-24 pb-16">
         <div className="px-6 lg:px-8 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
