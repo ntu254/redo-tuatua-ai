@@ -126,7 +126,7 @@ export default function TryOnCanvas({
       </div>
 
       {/* Footer Status */}
-      <footer className="h-14 flex items-center px-8 shrink-0 z-10">
+      <footer className="h-14 bg-background/40 backdrop-blur-md border-t border-border/40 flex items-center px-8 shrink-0 z-10">
         <div className="flex items-center gap-3">
           <div className={`w-2.5 h-2.5 rounded-full ${isLoading || tryOnStatus === "processing" ? "bg-accent animate-pulse shadow-[0_0_8px_hsl(var(--accent)/0.6)]" : "bg-muted-foreground/40"}`} />
           <span className="editorial-label text-muted-foreground">
