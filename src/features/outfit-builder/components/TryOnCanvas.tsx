@@ -37,7 +37,7 @@ export default function TryOnCanvas({
 }: TryOnCanvasProps) {
 
   return (
-    <section className="flex-1 flex flex-col bg-background relative min-w-0 h-full">
+    <section className="flex-1 flex flex-col bg-transparent relative min-w-0 h-full z-10">
       {/* Header */}
       <header className="min-h-[5rem] py-3 border-b border-border/40 flex flex-wrap items-center justify-between gap-4 px-6 md:px-8 shrink-0">
         <div>
@@ -47,7 +47,7 @@ export default function TryOnCanvas({
       </header>
 
       {/* Main Canvas */}
-      <div className="flex-1 p-6 md:p-8 overflow-hidden flex flex-col min-h-0 bg-background/50">
+      <div className="flex-1 p-6 md:p-8 overflow-hidden flex flex-col min-h-0 bg-transparent">
         <AnimatePresence mode="wait">
           {isLoading && (
             <motion.div

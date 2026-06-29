@@ -247,12 +247,16 @@ export default function OutfitBuilderPage() {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div className="h-screen bg-background flex flex-col overflow-hidden relative">
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.35] pointer-events-none"
+        style={{ backgroundImage: "url('/fashion_background_theme.svg')", backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", filter: "blur(1px)" }}
+      />
       {showLoginPrompt && <LoginPromptOverlay />}
       <Navbar />
-      <main className="flex flex-1 flex-col lg:flex-row overflow-hidden pt-16 w-full">
+      <main className="flex flex-1 flex-col lg:flex-row overflow-hidden pt-16 w-full relative z-10">
         {/* Mobile Tab Switcher */}
-        <div className="flex lg:hidden bg-background border-b border-border/40 h-12 shrink-0 px-2">
+        <div className="flex lg:hidden bg-background/60 backdrop-blur-md border-b border-border/40 h-12 shrink-0 px-2 relative z-20">
           <button
             onClick={() => setActiveTab("controls")}
             className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-body font-medium transition-colors ${

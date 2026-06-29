@@ -102,7 +102,7 @@ export default function ControlPanel({
   };
 
   return (
-    <aside className="w-full lg:w-[360px] bg-card lg:border-r border-border/40 flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full">
+    <aside className="w-full lg:w-[360px] bg-card/60 backdrop-blur-md lg:border-r border-border/40 flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full">
       {/* Header */}
       <div className="flex items-center gap-4 mb-2 shrink-0">
         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
@@ -137,7 +137,7 @@ export default function ControlPanel({
               <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 backdrop-blur-sm">
                 <button
                   onClick={() => modelInputRef.current?.click()}
-                  className="px-4 py-2 bg-background text-foreground hover:bg-secondary text-xs font-semibold rounded-full transition-all shadow-sm"
+                  className="px-4 py-2 bg-background/50 border border-border/60 hover:bg-secondary/30 hover:border-foreground/20 text-foreground text-xs font-semibold rounded-full transition-all shadow-sm"
                 >
                   Đổi ảnh
                 </button>
@@ -154,7 +154,7 @@ export default function ControlPanel({
               onClick={() => modelInputRef.current?.click()}
               className="w-full h-32 rounded-[16px] border-2 border-dashed border-border hover:border-primary/50 bg-secondary/30 flex flex-col items-center justify-center gap-2 transition-all duration-300 group cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full bg-background shadow-sm flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
+              <div className="w-10 h-10 rounded-full bg-background/50 border border-border/60 shadow-sm backdrop-blur-md flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
                 <Upload className="w-4 h-4" />
               </div>
               <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">Tải ảnh người mẫu lên</span>
@@ -175,15 +175,15 @@ export default function ControlPanel({
             <button
               onClick={() => setTryOnMode("one-piece")}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
-                tryOnMode === "one-piece" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                tryOnMode === "one-piece" ? "bg-background/50 border border-border/60 shadow-sm backdrop-blur-md text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              Đồ liền thân / Áo quần rời
+              Đồ liền thân
             </button>
             <button
               onClick={() => setTryOnMode("combo")}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
-                tryOnMode === "combo" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"
+                tryOnMode === "combo" ? "bg-background/50 border border-border/60 shadow-sm backdrop-blur-md text-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Áo + Quần
@@ -219,7 +219,7 @@ export default function ControlPanel({
                 <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 backdrop-blur-sm">
                   <button
                     onClick={() => clothInputRef.current?.click()}
-                    className="px-4 py-2 bg-background text-foreground hover:bg-secondary text-xs font-semibold rounded-full transition-all shadow-sm"
+                    className="px-4 py-2 bg-background/50 border border-border/60 hover:bg-secondary/30 hover:border-foreground/20 text-foreground text-xs font-semibold rounded-full transition-all shadow-sm"
                   >
                     Đổi ảnh
                   </button>
@@ -233,7 +233,7 @@ export default function ControlPanel({
               </div>
             ) : (
               <div className="bg-secondary/30 rounded-[16px] border border-border/50 p-5 flex flex-col items-center justify-center gap-4 text-center">
-                <div className="w-12 h-12 rounded-full bg-background shadow-sm flex items-center justify-center text-muted-foreground">
+                <div className="w-12 h-12 rounded-full bg-background/50 border border-border/60 shadow-sm backdrop-blur-md flex items-center justify-center text-muted-foreground">
                   <Shirt className="w-5 h-5" />
                 </div>
                 <p className="text-xs font-medium text-muted-foreground max-w-[80%]">
@@ -241,7 +241,7 @@ export default function ControlPanel({
                 </p>
                 <button
                   onClick={() => clothInputRef.current?.click()}
-                  className="w-full py-2.5 rounded-full bg-background text-foreground text-xs font-semibold hover:bg-secondary/80 shadow-sm transition-all cursor-pointer"
+                  className="w-full py-2.5 rounded-full bg-background/50 border border-border/60 hover:bg-secondary/30 hover:border-foreground/20 text-foreground text-xs font-semibold shadow-sm transition-all cursor-pointer"
                 >
                   Tải ảnh trang phục
                 </button>
@@ -257,7 +257,7 @@ export default function ControlPanel({
                     <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-300 backdrop-blur-sm">
                       <button
                         onClick={() => topInputRef.current?.click()}
-                        className="px-2 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-semibold rounded-full transition-all shadow-sm"
+                        className="px-2 py-1.5 bg-background/50 border border-border/60 hover:bg-secondary/30 hover:border-foreground/20 text-foreground text-[10px] font-semibold rounded-full transition-all shadow-sm"
                       >
                         Đổi
                       </button>
@@ -287,7 +287,7 @@ export default function ControlPanel({
                     <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-300 backdrop-blur-sm">
                       <button
                         onClick={() => bottomInputRef.current?.click()}
-                        className="px-2 py-1.5 bg-background text-foreground hover:bg-secondary text-[10px] font-semibold rounded-full transition-all shadow-sm"
+                        className="px-2 py-1.5 bg-background/50 border border-border/60 hover:bg-secondary/30 hover:border-foreground/20 text-foreground text-[10px] font-semibold rounded-full transition-all shadow-sm"
                       >
                         Đổi
                       </button>
