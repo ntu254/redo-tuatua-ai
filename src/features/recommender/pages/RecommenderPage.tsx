@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/shared/layout";
 import { ChatSidebar } from "../components";
-import HotOutfitCarousel from "../components/HotOutfitCarousel";
 import DetailedOutfitSetCard from "../components/DetailedOutfitSetCard";
 import MiniSetCard from "../components/MiniSetCard";
 import { recommenderService } from "../services/recommender.service";
@@ -24,7 +23,6 @@ const RecommenderPage = () => {
   const [chatOpen, setChatOpen] = useState(true);
   const [activeChips, setActiveChips] = useState<string[]>([]);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
-  const [trendingOutfits, setTrendingOutfits] = useState<Outfit[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -35,9 +33,6 @@ const RecommenderPage = () => {
   const cancelledRef = useRef(false);
   const survey = useSurveyTrigger();
 
-  useEffect(() => {
-    recommenderService.fetchTrendingOutfits().then(setTrendingOutfits);
-  }, []);
 
   useEffect(() => {
     if (!isLoading && !isGenerating) return;
@@ -219,8 +214,18 @@ const RecommenderPage = () => {
               )}
             </div>
           ) : (
-            /* Empty State: Hot Outfit Carousel */
-            <HotOutfitCarousel outfits={trendingOutfits} />
+            /* Empty State: Video Loop */
+            <div className="w-full h-full flex flex-col items-center justify-center pt-8 md:pt-12">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full max-w-3xl rounded-[24px] object-cover"
+              >
+                <source src="/animo-ticker-loop-720p.webm" type="video/webm" />
+              </video>
+            </div>
           )}
           </div>
         </main>

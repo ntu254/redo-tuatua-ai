@@ -2,15 +2,6 @@ import { Loader2, Sparkles, SlidersHorizontal, Upload, Shirt, X } from "lucide-r
 import { useRef } from "react";
 
 interface ControlPanelProps {
-  input: string;
-  setInput: (v: string) => void;
-  occasion: string;
-  setOccasion: (v: string) => void;
-  style: string;
-  setStyle: (v: string) => void;
-  isLoading: boolean;
-  onGenerate: () => void;
-
   // Model photo props
   humanImage: string | null;
   setHumanImage: (v: string | null) => void;
@@ -44,14 +35,6 @@ const STYLES = [
 ];
 
 export default function ControlPanel({
-  input,
-  setInput,
-  occasion,
-  setOccasion,
-  style,
-  setStyle,
-  isLoading,
-  onGenerate,
   humanImage,
   setHumanImage,
   clothImage,
@@ -62,8 +45,6 @@ export default function ControlPanel({
 }: ControlPanelProps) {
   const modelInputRef = useRef<HTMLInputElement>(null);
   const clothInputRef = useRef<HTMLInputElement>(null);
-
-  const canCoordinate = input.trim().length > 0 && !isLoading;
 
   const handleModelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -207,65 +188,10 @@ export default function ControlPanel({
             </div>
           )}
         </section>
-
-        {/* Step 3: Prompt & Style */}
-        <section className="flex flex-col gap-4 bg-muted/20 p-5 rounded-[24px] border border-border/40">
-          <h3 className="editorial-label text-muted-foreground flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full bg-secondary flex items-center justify-center text-[9px] font-bold text-secondary-foreground">3</span>
-            Gợi ý phối đồ
-          </h3>
-          
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Mô tả phong cách bạn muốn..."
-            className="w-full bg-background border border-border/60 rounded-[16px] p-4 text-sm text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none h-24 placeholder:text-muted-foreground/60 transition-all shadow-sm"
-          />
-          
-          <div className="grid grid-cols-2 gap-3">
-            <select
-              value={occasion}
-              onChange={(e) => setOccasion(e.target.value)}
-              className="w-full bg-background border border-border/60 rounded-full px-4 py-2.5 text-xs font-medium text-foreground focus:border-primary outline-none appearance-none cursor-pointer shadow-sm"
-            >
-              <option value="">Dịp mặc</option>
-              {OCCASIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-            <select
-              value={style}
-              onChange={(e) => setStyle(e.target.value)}
-              className="w-full bg-background border border-border/60 rounded-full px-4 py-2.5 text-xs font-medium text-foreground focus:border-primary outline-none appearance-none cursor-pointer shadow-sm"
-            >
-              <option value="">Phong cách</option>
-              {STYLES.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={onGenerate}
-            disabled={!canCoordinate}
-            className={`mt-2 w-full h-11 flex items-center justify-center gap-2 text-xs font-semibold rounded-full transition-all ${
-              canCoordinate 
-                ? "bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer shadow-sm" 
-                : "bg-muted text-muted-foreground/50 cursor-not-allowed"
-            }`}
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4" />
-            )}
-            Phối đồ bằng AI
-          </button>
-        </section>
       </div>
 
-      {/* Footer CTA */}
-      <div className="pt-5 border-t border-border/40 shrink-0">
+      {/* Footer Button */}
+      <div className="p-6 bg-card border-t border-border/40 shrink-0 mt-auto z-20 shadow-[0_-4px_16px_rgba(0,0,0,0.02)]">
         <button
           onClick={onStartTryOn}
           disabled={!canTryOn || isTryOnLoading}
