@@ -55,7 +55,7 @@ export default function TryOnCanvas({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full soft-panel rounded-[24px] flex flex-col items-center justify-center p-8 text-center"
+              className="h-full flex flex-col items-center justify-center p-8 text-center"
             >
               <div className="w-16 h-16 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-6 shadow-sm border border-accent/20">
                 <Sparkles className="w-8 h-8 animate-pulse" />
@@ -71,7 +71,7 @@ export default function TryOnCanvas({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="h-full soft-panel rounded-[24px] flex flex-col items-center justify-center p-8 text-center"
+              className="h-full flex flex-col items-center justify-center p-8 text-center"
             >
               <div className="w-16 h-16 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mb-6 shadow-sm border border-destructive/20">
                 <X className="w-8 h-8" />
@@ -86,7 +86,7 @@ export default function TryOnCanvas({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full soft-panel rounded-[24px] flex flex-col justify-center items-center overflow-hidden p-6 md:p-8"
+              className="h-full flex flex-col justify-center items-center overflow-hidden p-6 md:p-8"
             >
               {tryOnStatus === "submitting" || tryOnStatus === "processing" ? (
                     <div className="flex flex-col items-center justify-center text-center space-y-5 max-w-sm">
@@ -111,8 +111,8 @@ export default function TryOnCanvas({
                     </div>
                   ) : (
                     <div className="text-center max-w-md space-y-4">
-                      <div className="w-20 h-20 rounded-full bg-secondary/80 flex items-center justify-center text-muted-foreground mx-auto shadow-sm">
-                        <Shirt className="w-8 h-8" />
+                      <div className="w-20 h-20 flex items-center justify-center text-muted-foreground mx-auto">
+                        <Shirt className="w-12 h-12 opacity-50" />
                       </div>
                       <h3 className="font-heading text-2xl font-bold text-foreground">Chưa có kết quả thử đồ ảo</h3>
                       <p className="text-sm text-muted-foreground max-w-sm leading-relaxed mx-auto">
