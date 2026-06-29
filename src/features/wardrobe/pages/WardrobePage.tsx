@@ -1,13 +1,11 @@
 import {
-  AIOutfitGenerator,
-  WardrobeAnalysis,
-  WardrobeDeleteConfirm,
   WardrobeEditModal,
   WardrobeEmptyState,
-  WardrobeFilterSidebar,
-  WardrobeHeader,
-  WardrobeItemCard,
   WardrobeUploadModal,
+  FilterBar,
+  UnderusedSection,
+  WardrobeGrid,
+  ItemDetail,
 } from "@/features/wardrobe/components";
 import {
   defaultWardrobeFilters,
@@ -15,21 +13,16 @@ import {
 } from "@/features/wardrobe/hooks/useWardrobeFilters";
 import type { WardrobeOverview } from "@/features/wardrobe/services/wardrobe.service";
 import { wardrobeService } from "@/features/wardrobe/services/wardrobe.service";
-import type {
-  ActiveFilters,
-  WardrobeAnalysis as WardrobeAnalysisType,
-  WardrobeItem,
-} from "@/features/wardrobe/types";
+import type { ActiveFilters, WardrobeItem } from "@/features/wardrobe/types";
 import { Navbar } from "@/shared/layout";
 import { Button } from "@/shared/ui";
-import { AnimatePresence, motion } from "framer-motion";
-import { BarChart3, Plus, Search, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { Plus } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const WardrobePage = () => {
   const [filters, setFilters] = useState<ActiveFilters>(defaultWardrobeFilters);
   const [search, setSearch] = useState("");
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [summary, setSummary] = useState<WardrobeOverview>({
@@ -39,13 +32,13 @@ const WardrobePage = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [showAnalysis, setShowAnalysis] = useState(false);
-  const [analysis, setAnalysis] = useState<WardrobeAnalysisType | null>(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
 
-  // Edit/delete state
+  // Edit state
   const [editItem, setEditItem] = useState<WardrobeItem | null>(null);
-  const [deleteItem, setDeleteItem] = useState<WardrobeItem | null>(null);
+
+  // Detail panel state
+  const [selectedItem, setSelectedItem] = useState<WardrobeItem | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   const cancelledRef = useRef(false);
 
@@ -80,10 +73,14 @@ const WardrobePage = () => {
 
   const filtered = useWardrobeFilters({ items, filters, search });
 
-  const toggleSelect = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+  const handleSelectItem = (item: WardrobeItem) => {
+    setSelectedItem(item);
+    setDetailOpen(true);
+  };
+
+  const handleCloseDetail = () => {
+    setDetailOpen(false);
+    setTimeout(() => setSelectedItem(null), 300);
   };
 
   const handleEdit = useCallback((item: WardrobeItem) => {
@@ -100,51 +97,45 @@ const WardrobePage = () => {
         season: updated.season,
       });
       setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+      
+      // Update selected item in detail view
+      if (selectedItem?.id === updated.id) {
+        setSelectedItem(updated);
+      }
     } catch {
       // fallback: update locally anyway
       setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+      if (selectedItem?.id === updated.id) {
+        setSelectedItem(updated);
+      }
     }
-  }, []);
+  }, [selectedItem]);
 
-  const handleDelete = useCallback((item: WardrobeItem) => {
-    setDeleteItem(item);
-  }, []);
-
-  const handleDeleteConfirm = useCallback(async (id: number) => {
+  const handleDelete = useCallback(async (item: WardrobeItem) => {
     try {
-      await wardrobeService.deleteItem(id);
-      setItems((prev) => prev.filter((i) => i.id !== id));
+      await wardrobeService.deleteItem(item.id);
+      setItems((prev) => prev.filter((i) => i.id !== item.id));
       setSummary((prev) => ({ ...prev, itemCount: prev.itemCount - 1 }));
-      setSelectedIds((prev) => prev.filter((x) => x !== id));
+      if (selectedItem?.id === item.id) {
+        handleCloseDetail();
+      }
     } catch {
       // fallback
-      setItems((prev) => prev.filter((i) => i.id !== id));
+      setItems((prev) => prev.filter((i) => i.id !== item.id));
       setSummary((prev) => ({ ...prev, itemCount: prev.itemCount - 1 }));
+      if (selectedItem?.id === item.id) {
+        handleCloseDetail();
+      }
     }
-  }, []);
+  }, [selectedItem]);
 
-  const handleSuggestOutfit = useCallback((item: WardrobeItem) => {
-    setSelectedIds([item.id]);
-    setSearch("");
+  const handleResetFilters = () => {
     setFilters(defaultWardrobeFilters);
-  }, []);
+    setSearch("");
+  };
 
-  const handleToggleAnalysis = useCallback(async () => {
-    if (showAnalysis) {
-      setShowAnalysis(false);
-      return;
-    }
-    setAnalysisLoading(true);
-    try {
-      const data = await wardrobeService.getAnalysis();
-      setAnalysis(data);
-      setShowAnalysis(true);
-    } catch {
-      // fallback
-    } finally {
-      setAnalysisLoading(false);
-    }
-  }, [showAnalysis]);
+  // Mock underused items (e.g. taking some items without "ai-scan" or oldest)
+  const underusedItems = items.slice(0, Math.min(items.length, 5));
 
   if (isLoading) {
     return (
@@ -173,183 +164,98 @@ const WardrobePage = () => {
   }
 
   const isEmpty = items.length === 0;
+  const isFilteredEmpty = !isEmpty && filtered.length === 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background transition-all duration-300 ${detailOpen ? "lg:pr-[380px]" : ""}`}>
       <Navbar />
 
-      <WardrobeHeader
-        itemCount={summary.itemCount}
-        savedOutfits={summary.savedOutfits}
-        aiSuggestions={summary.aiSuggestions}
-        onAddClick={() => setUploadOpen(true)}
-        onViewSavedAiOutfits={() => window.location.assign("/wardrobe/ai-collection")}
-      />
-
-      <div className="container mx-auto max-w-7xl px-6 pb-20">
-        {isEmpty ? (
-          <WardrobeEmptyState />
-        ) : (
-          <div className="flex gap-6">
-            <div className="hidden sm:flex sm:flex-col sm:w-[190px] md:w-[220px] lg:w-[250px] shrink-0 gap-4">
-              <AIOutfitGenerator items={items} selectedIds={selectedIds} />
-              <WardrobeFilterSidebar filters={filters} onChange={setFilters} />
-            </div>
-
-            <div className="flex-1 min-w-0 space-y-4">
-              {/* Search + actions */}
-              <div className="flex items-center gap-3">
-                <div className="relative flex-1">
-                  <Search
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/40"
-                    strokeWidth={1.5}
-                  />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Tìm kiếm quần áo..."
-                    className="w-full h-10 pl-10 pr-9 rounded-md bg-card text-sm font-body text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-foreground/10 transition-all"
-                  />
-                  {search && (
-                    <button
-                      onClick={() => setSearch("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 rounded-md h-10 px-3 shrink-0"
-                  onClick={handleToggleAnalysis}
-                >
-                  <BarChart3 className="w-4 h-4" />
-                  {showAnalysis ? "Ẩn phân tích" : "Phân tích"}
-                </Button>
-                <Button
-                  size="sm"
-                  className="gap-1.5 rounded-md h-10 px-4 shrink-0 bg-foreground text-background hover:bg-foreground/92"
-                  onClick={() => setUploadOpen(true)}
-                >
-                  <Plus className="w-4 h-4" /> Thêm món đồ
-                </Button>
-              </div>
-
-              {/* Mobile: AI Gen + Filters */}
-              <div className="space-y-4 sm:hidden">
-                <AIOutfitGenerator items={items} selectedIds={selectedIds} />
-                <WardrobeFilterSidebar
-                  filters={filters}
-                  onChange={setFilters}
-                />
-              </div>
-
-              {/* Analysis Section */}
-              <AnimatePresence>
-                {showAnalysis && analysis && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                  >
-                    <WardrobeAnalysis analysis={analysis} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {analysisLoading && (
-                <div className="rounded-xl bg-card p-6 text-center text-xs text-muted-foreground">
-                  Đang phân tích tủ đồ...
-                </div>
-              )}
-
-              {/* Selection info */}
-              <AnimatePresence>
-                {selectedIds.length > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="flex items-center gap-3 px-4 py-2 rounded-xl bg-secondary/60"
-                  >
-                    <span className="text-xs font-body text-foreground/70 font-medium">
-                      {selectedIds.length} món đồ đã chọn
-                    </span>
-                    <button
-                      onClick={() => setSelectedIds([])}
-                      className="text-[10px] font-body text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
-                    >
-                      Bỏ chọn
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-body text-muted-foreground">
-                  {filtered.length} món đồ
-                  {(filters.category.length > 0 ||
-                    filters.style.length > 0 ||
-                    search) &&
-                    " được tìm thấy"}
+      <div className="pt-8 pb-16">
+        <div className="px-6 lg:px-8 max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
+                <h1 className="font-heading text-2xl md:text-3xl font-medium text-foreground mb-1.5">
+                  Tủ đồ của bạn
+                </h1>
+                <p className="text-sm text-muted-foreground font-body mb-3">
+                  Số hóa, sắp xếp và phối lại những món bạn đang có.
                 </p>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-secondary/80 rounded-full text-xs font-body font-medium text-foreground border border-border/60 shadow-sm">
+                  <span>{summary.itemCount} món đồ</span>
+                  <span className="text-muted-foreground/35">·</span>
+                  <span>{underusedItems.length} món lâu chưa mặc</span>
+                  <span className="text-muted-foreground/35">·</span>
+                  <span>{summary.aiSuggestions} gợi ý AI</span>
+                </div>
               </div>
 
-              {/* Wardrobe grid */}
-              <motion.div
-                layout
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
-              >
-                <AnimatePresence mode="popLayout">
-                  {filtered.map((item, i) => (
-                    <WardrobeItemCard
-                      key={item.id}
-                      item={item}
-                      index={i}
-                      selected={selectedIds.includes(item.id)}
-                      onToggleSelect={toggleSelect}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onSuggestOutfit={handleSuggestOutfit}
-                    />
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-
-              {filtered.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-16"
+              {!isEmpty && (
+                <Button
+                  variant="accent"
+                  onClick={() => setUploadOpen(true)}
+                  className="gap-1.5 bg-accent hover:bg-accent/90 text-white rounded-full px-5 py-2 h-10 shrink-0 font-medium transition-all shadow-[0_18px_34px_-18px_hsl(var(--accent)/0.62)] hover:-translate-y-0.5"
                 >
-                  <p className="text-sm text-muted-foreground font-body">
-                    Không tìm thấy món đồ nào phù hợp.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setFilters({
-                        category: [],
-                        style: [],
-                        color: [],
-                        season: [],
-                      });
-                      setSearch("");
-                    }}
-                    className="text-xs text-accent font-body mt-2 underline underline-offset-2 hover:text-accent/80 transition-colors"
-                  >
-                    Xóa tất cả bộ lọc
-                  </button>
-                </motion.div>
+                  <Plus className="w-4 h-4" />
+                  <span>Thêm món đồ</span>
+                </Button>
               )}
             </div>
-          </div>
-        )}
+
+            {isEmpty ? (
+              <WardrobeEmptyState />
+            ) : (
+              <>
+                <FilterBar
+                  filters={filters}
+                  search={search}
+                  onFilterChange={setFilters}
+                  onSearchChange={setSearch}
+                  onReset={handleResetFilters}
+                  totalItems={items.length}
+                  filteredCount={filtered.length}
+                />
+
+                <UnderusedSection
+                  items={underusedItems}
+                  onSelectItem={handleSelectItem}
+                />
+
+                {isFilteredEmpty ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center py-16"
+                  >
+                    <p className="text-sm text-muted-foreground font-body">
+                      Không tìm thấy món đồ nào phù hợp
+                    </p>
+                    <button
+                      onClick={handleResetFilters}
+                      className="text-sm text-accent font-body font-medium mt-2 hover:underline"
+                    >
+                      Xóa bộ lọc
+                    </button>
+                  </motion.div>
+                ) : (
+                  <div className="mt-6">
+                    <WardrobeGrid
+                      items={filtered}
+                      onSelectItem={handleSelectItem}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        </div>
       </div>
 
-      {/* Modals */}
+      {/* Modals & Slide-overs */}
       <WardrobeUploadModal
         open={uploadOpen}
         onClose={() => {
@@ -357,17 +263,20 @@ const WardrobePage = () => {
           void loadWardrobe();
         }}
       />
+
       <WardrobeEditModal
         item={editItem}
         open={!!editItem}
         onClose={() => setEditItem(null)}
         onSave={handleEditSave}
       />
-      <WardrobeDeleteConfirm
-        item={deleteItem}
-        open={!!deleteItem}
-        onClose={() => setDeleteItem(null)}
-        onConfirm={handleDeleteConfirm}
+
+      <ItemDetail
+        item={selectedItem}
+        isOpen={detailOpen}
+        onClose={handleCloseDetail}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );
