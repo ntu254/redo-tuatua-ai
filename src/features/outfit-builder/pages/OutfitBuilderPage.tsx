@@ -208,7 +208,7 @@ export default function OutfitBuilderPage() {
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {showLoginPrompt && <LoginPromptOverlay />}
       <Navbar />
-      <main className="flex flex-1 flex-col lg:flex-row overflow-hidden pt-16 mx-auto w-full max-w-[1600px]">
+      <main className="flex flex-1 flex-col lg:flex-row overflow-hidden pt-16 w-full">
         {/* Mobile Tab Switcher */}
         <div className="flex lg:hidden bg-background border-b border-border/40 h-12 shrink-0 px-2">
           <button
@@ -247,7 +247,7 @@ export default function OutfitBuilderPage() {
         </div>
 
         {/* Panels with responsive wrappers */}
-        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[320px] relative`}>
+        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[360px] relative`}>
           <ControlPanel
             humanImage={humanImage}
             setHumanImage={setHumanImage}
