@@ -8,3 +8,7 @@ export { default as WardrobeHeader } from "./WardrobeHeader";
 export { default as WardrobeItemCard } from "./WardrobeItemCard";
 export { default as WardrobeUploadArea } from "./WardrobeUploadArea";
 export { default as WardrobeUploadModal } from "./WardrobeUploadModal";
+export { FilterBar } from "./FilterBar";
+export { UnderusedSection } from "./UnderusedSection";
+export { WardrobeGrid } from "./WardrobeGrid";
+export { ItemDetail } from "./ItemDetail";

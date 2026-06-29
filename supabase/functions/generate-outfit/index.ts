@@ -10,6 +10,90 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info, x-supabase-auth-referer",
 };
 
+const FEMALE_ONLY_PRODUCT_SIGNALS = [
+  "áo bra",
+  "bra",
+  "blouse",
+  "clutch",
+  "cao gót",
+  "đầm",
+  "dress",
+  "giày cao gót",
+  "heels",
+  "midi ôm",
+  "sandals cao gót",
+  "sequin",
+  "skirt",
+  "váy",
+  "vascara",
+  "elise",
+];
+
+function normalizeGender(value: unknown): "male" | "female" | "lgbtq" | "skip" | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (["male", "female", "lgbtq", "skip"].includes(normalized)) return normalized as "male" | "female" | "lgbtq" | "skip";
+  if (["nam", "men", "man"].includes(normalized)) return "male";
+  if (["nữ", "nu", "women", "woman"].includes(normalized)) return "female";
+  return null;
+}
+
+function isClearlyFemaleOnlyProduct(product: any): boolean {
+  const text = `${product.name || ""} ${product.description || ""} ${product.metadata?.brand || ""}`.toLowerCase();
+  return FEMALE_ONLY_PRODUCT_SIGNALS.some((signal) => text.includes(signal));
+}
+
+function mapProfileContext(profile: any) {
+  const fashionPreferences =
+    profile?.fashion_preferences &&
+    typeof profile.fashion_preferences === "object" &&
+    !Array.isArray(profile.fashion_preferences)
+      ? profile.fashion_preferences
+      : {};
+
+  return {
+    gender: normalizeGender(fashionPreferences.gender),
+    styleDna: profile?.style_dna ?? null,
+    favoriteColors: Array.isArray(profile?.favorite_colors) ? profile.favorite_colors : [],
+    preferredStyles: Array.isArray(profile?.preferred_styles) ? profile.preferred_styles : [],
+    preferredOccasions: Array.isArray(profile?.preferred_occasions) ? profile.preferred_occasions : [],
+    budgetMin: typeof profile?.budget_min === "number" ? profile.budget_min : null,
+    budgetMax: typeof profile?.budget_max === "number" ? profile.budget_max : null,
+    quizCompleted: Boolean(profile?.quiz_completed),
+  };
+}
+
+function mergeProfileContext(serverContext: any, clientContext: any) {
+  if (!serverContext && !clientContext) return null;
+
+  return {
+    gender: normalizeGender(serverContext?.gender ?? clientContext?.gender),
+    styleDna: serverContext?.styleDna ?? clientContext?.styleDna ?? null,
+    favoriteColors: serverContext?.favoriteColors?.length ? serverContext.favoriteColors : clientContext?.favoriteColors ?? [],
+    preferredStyles: serverContext?.preferredStyles?.length ? serverContext.preferredStyles : clientContext?.preferredStyles ?? [],
+    preferredOccasions: serverContext?.preferredOccasions?.length ? serverContext.preferredOccasions : clientContext?.preferredOccasions ?? [],
+    budgetMin: serverContext?.budgetMin ?? clientContext?.budgetMin ?? null,
+    budgetMax: serverContext?.budgetMax ?? clientContext?.budgetMax ?? null,
+    quizCompleted: Boolean(serverContext?.quizCompleted ?? clientContext?.quizCompleted),
+  };
+}
+
+function formatQuizProfileContext(context: any): string {
+  if (!context || !context.quizCompleted) {
+    return "User chưa có quiz profile hoàn chỉnh. Không tự bịa preference cá nhân hóa.";
+  }
+
+  return [
+    `Quiz completed: ${context.quizCompleted ? "yes" : "no"}`,
+    `Gender/preference: ${context.gender || "không rõ"}`,
+    `Style DNA: ${context.styleDna ? JSON.stringify(context.styleDna) : "không có"}`,
+    `Preferred styles: ${context.preferredStyles.length ? context.preferredStyles.join(", ") : "không có"}`,
+    `Preferred occasions: ${context.preferredOccasions.length ? context.preferredOccasions.join(", ") : "không có"}`,
+    `Favorite colors: ${context.favoriteColors.length ? context.favoriteColors.join(", ") : "không có"}`,
+    `Budget: ${context.budgetMin ?? "không rõ"}-${context.budgetMax ?? "không rõ"} VND`,
+  ].join("\n");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -24,7 +108,16 @@ serve(async (req) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
-    const { prompt, style, season, occasion } = await req.json();
+    const { prompt, style, season, occasion, gender, profileContext } = await req.json();
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("style_dna, favorite_colors, preferred_styles, preferred_occasions, budget_min, budget_max, quiz_completed, fashion_preferences")
+      .eq("id", user.id)
+      .maybeSingle();
+    const effectiveProfileContext = mergeProfileContext(mapProfileContext(profile), profileContext);
+    const genderPreference = normalizeGender(gender) ?? effectiveProfileContext?.gender ?? null;
+    const quizProfileContext = formatQuizProfileContext(effectiveProfileContext);
 
     // 1. RAG: Retrieve similar products from database using vector search
     let retrievedProducts: any[] = [];
@@ -35,7 +128,9 @@ serve(async (req) => {
         match_count: 12,
       });
       if (matched) {
-        retrievedProducts = matched;
+        retrievedProducts = genderPreference === "male"
+          ? matched.filter((product: any) => !isClearlyFemaleOnlyProduct(product))
+          : matched;
       }
     } catch (err) {
       console.error("RAG Product retrieval failed:", err);
@@ -58,6 +153,13 @@ serve(async (req) => {
 
 KHO SẢN PHẨM THẬT (CHỈ chọn sản phẩm từ danh sách này):
 ${productsContext || "Không tìm thấy sản phẩm phù hợp trong kho. Bạn hãy tự tạo các sản phẩm thời trang giả lập phù hợp và gắn link affiliate mặc định."}
+
+PROFILE QUIZ THẬT CỦA USER:
+${quizProfileContext}
+
+Luôn ưu tiên Style DNA, preferred styles, preferred occasions, favorite colors và budget trong PROFILE QUIZ THẬT khi chọn sản phẩm, viết aiComment, personalization và aiConfidence.
+Giới tính/preference của user: ${genderPreference || "không rõ"}.
+Nếu preference là male, không đề xuất váy, đầm, giày cao gót, bra, blouse, clutch hoặc item chỉ dành cho nữ; ưu tiên menswear hoặc unisex.
 
 Trả JSON array:
 [{
@@ -89,7 +191,9 @@ Trả JSON array:
 
 Lưu ý: Nếu có KHO SẢN PHẨM THẬT, bạn MUST sử dụng các sản phẩm trong đó để xây dựng outfit. Cung cấp đúng ID, Image, và AffiliateUrl của sản phẩm đó để hiển thị chính xác lên giao diện.`;
 
-    const userPrompt = `Prompt: "${prompt}"${style ? `\nStyle: ${style}` : ""}${season ? `\nSeason: ${season}` : ""}${occasion ? `\nOccasion: ${occasion}` : ""}`;
+    const userPrompt = `Prompt: "${prompt}"${style ? `\nStyle từ UI: ${style}` : ""}${season ? `\nSeason từ UI: ${season}` : ""}${occasion ? `\nOccasion từ UI: ${occasion}` : ""}
+Profile quiz context:
+${quizProfileContext}`;
 
     const outfits = await withCreditCheck(supabase, user.id, "generation", "gemini-3.1-flash-lite", async () => {
       return await generateJson<any[]>(userPrompt, systemPrompt);

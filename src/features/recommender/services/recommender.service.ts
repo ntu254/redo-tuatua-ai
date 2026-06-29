@@ -2,12 +2,15 @@ import { supabase } from "@/shared/lib";
 import { apiClient } from "@/shared/api";
 import { apiConfig } from "@/shared/api/config";
 import type { Outfit, AIAction, Product } from "../types";
+import { mapProfileContext, normalizeGender, type QuizProfileContext } from "./profile-context";
 
 export interface GenerateRequest {
   prompt: string;
   style?: string;
   season?: string;
   occasion?: string;
+  gender?: string | null;
+  profileContext?: QuizProfileContext | null;
 }
 
 const FASHION_FALLBACKS = [
@@ -19,6 +22,25 @@ const FASHION_FALLBACKS = [
   "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80",
   "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80",
   "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=600&q=80",
+];
+
+const FEMALE_ONLY_PRODUCT_SIGNALS = [
+  "áo bra",
+  "bra",
+  "blouse",
+  "clutch",
+  "cao gót",
+  "đầm",
+  "dress",
+  "giày cao gót",
+  "heels",
+  "midi ôm",
+  "sandals cao gót",
+  "sequin",
+  "skirt",
+  "váy",
+  "vascara",
+  "elise",
 ];
 
 function uuidToId(uuid: string): number {
@@ -49,7 +71,37 @@ function addRuntimeFields(outfits: Outfit[]): Outfit[] {
   }));
 }
 
-async function fetchProducts(limit = 12): Promise<Product[]> {
+function isClearlyFemaleOnlyProduct(product: Product): boolean {
+  const text = [
+    product.name,
+    product.brand,
+  ].join(" ").toLowerCase();
+  return FEMALE_ONLY_PRODUCT_SIGNALS.some((signal) => text.includes(signal));
+}
+
+function filterProductsForGender(products: Product[], gender?: string | null): Product[] {
+  if (normalizeGender(gender) !== "male") return products;
+  const filtered = products.filter((product) => !isClearlyFemaleOnlyProduct(product));
+  return filtered.length > 0 ? filtered : products;
+}
+
+async function getUserProfileContext(userId: string): Promise<QuizProfileContext | null> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("style_dna, favorite_colors, preferred_styles, preferred_occasions, budget_min, budget_max, quiz_completed, fashion_preferences")
+    .eq("id", userId)
+    .maybeSingle();
+
+  return data ? mapProfileContext(data) : null;
+}
+
+async function getCurrentUserProfileContext(): Promise<QuizProfileContext | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.id) return null;
+  return getUserProfileContext(user.id);
+}
+
+async function fetchProducts(limit = 12, gender?: string | null): Promise<Product[]> {
   try {
     const { data, error } = await supabase
       .from("products")
@@ -64,7 +116,7 @@ async function fetchProducts(limit = 12): Promise<Product[]> {
     const { data: srcs } = await supabase.from("product_sources").select("id, platform");
     const srcMap = Object.fromEntries((srcs ?? []).map((s: any) => [s.id, s.platform]));
 
-    return data.map((p: any) => ({
+    const products = data.map((p: any) => ({
       id: p.id,
       name: p.name,
       price: `${Number(p.price).toLocaleString("vi-VN")}đ`,
@@ -77,16 +129,22 @@ async function fetchProducts(limit = 12): Promise<Product[]> {
       image: p.image_url || "",
       affiliateUrl: p.affiliate_url || "",
     }));
+    return filterProductsForGender(products, gender);
   } catch (error) {
     console.error("fetchProducts failed:", error);
     return [];
   }
 }
 
-async function callEdgeConverse(message: string, history?: any[]): Promise<EdgeResponse | null> {
+async function callEdgeConverse(
+  message: string,
+  history?: any[],
+  gender?: string | null,
+  profileContext?: QuizProfileContext | null,
+): Promise<EdgeResponse | null> {
   try {
     const { data, error } = await supabase.functions.invoke("converse", {
-      body: { message, history },
+      body: { message, history, gender, profileContext },
     });
     if (error) {
       // Check if this is a credit error (edge function returns 402)
@@ -109,7 +167,14 @@ async function callEdgeConverse(message: string, history?: any[]): Promise<EdgeR
 async function callEdgeGenerate(req: GenerateRequest): Promise<Outfit[] | null> {
   try {
     const { data, error } = await supabase.functions.invoke("generate-outfit", {
-      body: { prompt: req.prompt, style: req.style, season: req.season, occasion: req.occasion },
+      body: {
+        prompt: req.prompt,
+        style: req.style,
+        season: req.season,
+        occasion: req.occasion,
+        gender: req.gender,
+        profileContext: req.profileContext,
+      },
     });
     if (error) throw error;
     return addRuntimeFields(data);
@@ -118,8 +183,8 @@ async function callEdgeGenerate(req: GenerateRequest): Promise<Outfit[] | null> 
   }
 }
 
-async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
-  const products = await fetchProducts(12);
+async function fallbackConverse(prompt: string, gender?: string | null): Promise<EdgeResponse> {
+  const products = await fetchProducts(12, gender);
   const lower = prompt.toLowerCase();
 
   const matched = products.filter((p) => {
@@ -159,7 +224,7 @@ async function fallbackConverse(prompt: string): Promise<EdgeResponse> {
 }
 
 async function fallbackGenerate(req: GenerateRequest): Promise<Outfit[]> {
-  const products = await fetchProducts(12);
+  const products = await fetchProducts(12, req.gender);
 
   const shuffled = [...products].sort(() => Math.random() - 0.5);
   const groups: Outfit[] = [];
@@ -261,7 +326,8 @@ export const recommenderService = {
   },
 
   listOutfits: async (): Promise<Outfit[]> => {
-    const products = await fetchProducts(12);
+    const profileContext = await getCurrentUserProfileContext();
+    const products = await fetchProducts(12, profileContext?.gender);
     if (products.length === 0) return [];
 
     const shuffled = [...products].sort(() => Math.random() - 0.5);
@@ -294,21 +360,26 @@ export const recommenderService = {
 
   generate: async (req: GenerateRequest): Promise<Outfit[]> => {
     const { data: { user } } = await supabase.auth.getUser();
+    const profileContext = req.profileContext ?? (user ? await getUserProfileContext(user.id) : null);
+    const gender = req.gender ?? profileContext?.gender ?? null;
+    const request = { ...req, gender, profileContext };
     if (user) {
       await (supabase as any)
         .from("outfits")
         .insert({ user_id: user.id, name: req.prompt.slice(0, 100), source: "ai" } as any);
     }
-    const edgeResult = await callEdgeGenerate(req);
+    const edgeResult = await callEdgeGenerate(request);
     if (edgeResult) return edgeResult;
-    return fallbackGenerate(req);
+    return fallbackGenerate(request);
   },
 
   converse: async (prompt: string): Promise<EdgeResponse> => {
     const { data: { user } } = await supabase.auth.getUser();
-    const edgeResult = await callEdgeConverse(prompt);
+    const profileContext = user ? await getUserProfileContext(user.id) : null;
+    const gender = profileContext?.gender ?? null;
+    const edgeResult = await callEdgeConverse(prompt, undefined, gender, profileContext);
     if (edgeResult) return edgeResult;
-    if (user) return fallbackConverse(prompt);
+    if (user) return fallbackConverse(prompt, gender);
     return {
       reply: "Bạn hãy đăng nhập để nhận gợi ý cá nhân hóa nhé!",
       outfits: [],
@@ -317,9 +388,11 @@ export const recommenderService = {
   },
 
   applyAction: async (outfitId: number, action: AIAction): Promise<Outfit[]> => {
-    const edgeResult = await callEdgeGenerate({ prompt: `Apply ${action} to outfit ${outfitId}` });
+    const profileContext = await getCurrentUserProfileContext();
+    const gender = profileContext?.gender ?? null;
+    const edgeResult = await callEdgeGenerate({ prompt: `Apply ${action} to outfit ${outfitId}`, gender, profileContext });
     if (edgeResult) return edgeResult;
-    return fallbackGenerate({ prompt: action });
+    return fallbackGenerate({ prompt: action, gender });
   },
 
   toggleSave: async (id: number, saved: boolean): Promise<boolean> => {

@@ -286,15 +286,15 @@ export default function OutfitBuilderPage() {
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {showLoginPrompt && <LoginPromptOverlay />}
       <Navbar />
-      <main className="flex flex-1 flex-col lg:flex-row overflow-hidden pt-16">
+      <main className="flex flex-1 flex-col lg:flex-row overflow-hidden pt-16 mx-auto w-full max-w-[1600px]">
         {/* Mobile Tab Switcher */}
-        <div className="flex lg:hidden bg-card border-b border-border/30 h-12 shrink-0">
+        <div className="flex lg:hidden bg-background border-b border-border/40 h-12 shrink-0 px-2">
           <button
             onClick={() => setActiveTab("controls")}
             className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-body font-medium transition-colors ${
               activeTab === "controls"
-                ? "text-foreground border-b-2 border-foreground font-semibold"
-                : "text-muted-foreground/60 hover:text-foreground"
+                ? "text-primary border-b-[2px] border-primary font-bold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -304,8 +304,8 @@ export default function OutfitBuilderPage() {
             onClick={() => setActiveTab("canvas")}
             className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-body font-medium transition-colors ${
               activeTab === "canvas"
-                ? "text-foreground border-b-2 border-foreground font-semibold"
-                : "text-muted-foreground/60 hover:text-foreground"
+                ? "text-primary border-b-[2px] border-primary font-bold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Shirt className="w-3.5 h-3.5" />
@@ -315,8 +315,8 @@ export default function OutfitBuilderPage() {
             onClick={() => setActiveTab("report")}
             className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-body font-medium transition-colors ${
               activeTab === "report"
-                ? "text-foreground border-b-2 border-foreground font-semibold"
-                : "text-muted-foreground/60 hover:text-foreground"
+                ? "text-primary border-b-[2px] border-primary font-bold"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
