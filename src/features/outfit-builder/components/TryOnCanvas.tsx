@@ -99,13 +99,20 @@ export default function TryOnCanvas({
                       </p>
                     </div>
                   ) : tryOnStatus === "succeed" && tryOnImage ? (
-                    <div className="relative max-h-full max-w-md w-full aspect-[3/4] rounded-[24px] overflow-hidden border border-border/40 shadow-lg">
+                    <div className="relative h-[68vh] max-h-full aspect-[3/4] md:aspect-[9/16] rounded-[24px] overflow-hidden border border-border/40 shadow-lg bg-card/10 flex items-center justify-center">
+                      {/* Blurred background clone to avoid empty margins */}
+                      <img
+                        src={tryOnImage}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-30 scale-110 pointer-events-none"
+                      />
+                      {/* Main result image */}
                       <img
                         src={tryOnImage}
                         alt="Try-on result"
-                        className="w-full h-full object-cover"
+                        className="relative z-10 w-full h-full object-contain"
                       />
-                      <div className="absolute bottom-4 left-4 bg-teal text-teal-foreground px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm z-10 flex items-center gap-2">
+                      <div className="absolute bottom-4 left-4 bg-teal text-teal-foreground px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm z-20 flex items-center gap-2">
                         <BadgeCheck className="w-4 h-4" /> Redo AI
                       </div>
                     </div>
