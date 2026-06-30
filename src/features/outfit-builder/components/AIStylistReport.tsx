@@ -47,7 +47,7 @@ export default function AIStylistReport({
   const report = getStylistReportData();
 
   return (
-    <aside className="w-full lg:w-[400px] flex flex-col py-8 px-7 gap-7 shrink-0 z-10 h-full overflow-hidden bg-background/80 backdrop-blur-xl border-l border-border/30 shadow-2xl">
+    <aside className="w-full h-full flex flex-col py-8 px-7 gap-7 shrink-0 z-10 overflow-hidden bg-background/30 backdrop-blur-md border border-border/30 rounded-2xl shadow-2xl">
       {/* Header */}
       <div className="flex items-start justify-between mb-2 shrink-0">
         <div>
@@ -70,7 +70,7 @@ export default function AIStylistReport({
           <h3 className="editorial-label text-foreground/80 flex items-center gap-2 mb-3">
             <ShieldCheck className="w-4 h-4 text-foreground/40" /> Checklist Chuẩn Bị
           </h3>
-          <div className="bg-card/40 backdrop-blur-sm rounded-[16px] border border-border/30 p-3 flex flex-col gap-1 shadow-sm">
+          <div className="bg-card/40 backdrop-blur-sm rounded-2xl border border-border/30 p-3 flex flex-col gap-1 shadow-sm">
             {checklist.map((item) => (
               <div key={item.label} className="flex items-center gap-3 p-2.5 rounded-xl transition-colors hover:bg-secondary/40">
                 <span className={`transition-colors ${item.status === "done" ? "text-foreground" : "text-foreground/60"}`}>
@@ -99,7 +99,7 @@ export default function AIStylistReport({
 
           {!isSucceeded ? (
             // --- EMPTY / INCOMPLETE STATE ---
-            <div className="flex-1 bg-card/30 backdrop-blur-sm rounded-[24px] border border-border/30 flex flex-col items-center justify-center p-6 text-center shadow-sm">
+            <div className="flex-1 bg-card/30 backdrop-blur-sm rounded-2xl border border-border/30 flex flex-col items-center justify-center p-6 text-center shadow-sm">
               <div className="w-14 h-14 rounded-full bg-background/50 backdrop-blur-md flex items-center justify-center text-foreground/80 mb-4 shadow-sm border border-foreground/20">
                 <BarChart3 className="w-6 h-6" />
               </div>
@@ -139,7 +139,7 @@ export default function AIStylistReport({
               className="flex-grow flex flex-col gap-5"
             >
               {/* Score Dashboard Card */}
-              <div className="bg-gradient-to-br from-teal/15 via-teal/5 to-transparent rounded-[24px] border border-teal/25 p-6 flex items-center justify-between shadow-sm relative overflow-hidden">
+              <div className="bg-gradient-to-br from-teal/15 via-teal/5 to-transparent rounded-2xl border border-teal/25 p-6 flex items-center justify-between shadow-sm relative overflow-hidden">
                 <div className="absolute right-0 top-0 w-24 h-24 bg-teal/10 rounded-full blur-2xl pointer-events-none" />
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[10px] font-bold text-teal uppercase tracking-widest">
@@ -162,7 +162,7 @@ export default function AIStylistReport({
               </div>
 
               {/* Color Palette Analysis */}
-              <div className="bg-background/40 backdrop-blur-sm rounded-[24px] border border-border/30 p-5 flex flex-col gap-4 shadow-sm">
+              <div className="bg-background/40 backdrop-blur-sm rounded-2xl border border-border/30 p-5 flex flex-col gap-4 shadow-sm">
                 <h4 className="editorial-label text-muted-foreground flex items-center gap-2">
                   <Palette className="w-3.5 h-3.5 text-foreground/40" /> Bảng Màu Tương Thích
                 </h4>
@@ -186,7 +186,7 @@ export default function AIStylistReport({
               </div>
 
               {/* Silhouette Fit & Fit Analysis */}
-              <div className="bg-background/40 backdrop-blur-sm rounded-[24px] border border-border/30 p-5 flex flex-col gap-5 shadow-sm">
+              <div className="bg-background/40 backdrop-blur-sm rounded-2xl border border-border/30 p-5 flex flex-col gap-5 shadow-sm">
                 <div>
                   <h4 className="editorial-label text-muted-foreground flex items-center gap-2 mb-3">
                     <Star className="w-3.5 h-3.5 text-foreground/40" /> Đánh Giá Dáng Người
@@ -214,7 +214,7 @@ export default function AIStylistReport({
               </div>
 
               {/* Suggestions */}
-              <div className="bg-gradient-to-br from-accent/15 via-accent/5 to-transparent rounded-[24px] border border-accent/25 p-5 flex gap-4 shadow-sm">
+              <div className="bg-gradient-to-br from-accent/15 via-accent/5 to-transparent rounded-2xl border border-accent/25 p-5 flex gap-4 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0 border border-accent/20 shadow-sm">
                   <Lightbulb className="w-5 h-5 text-accent" />
                 </div>
