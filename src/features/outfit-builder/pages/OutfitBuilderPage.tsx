@@ -293,7 +293,7 @@ export default function OutfitBuilderPage() {
         </div>
 
         {/* Panels with responsive wrappers */}
-        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[360px] relative`}>
+        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[400px] relative`}>
           <ControlPanel
             humanImage={humanImage}
             setHumanImage={setHumanImage}

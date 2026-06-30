@@ -102,7 +102,7 @@ export default function ControlPanel({
   };
 
   return (
-    <aside className="w-full lg:w-[360px] flex flex-col py-8 px-6 gap-6 shrink-0 z-10 h-full">
+    <aside className="w-full lg:w-[400px] flex flex-col py-8 px-7 gap-7 shrink-0 z-10 h-full overflow-hidden bg-background/80 backdrop-blur-xl border-r border-border/30 shadow-2xl">
       {/* Header */}
       <div className="flex items-center gap-4 mb-2 shrink-0">
         <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
@@ -115,7 +115,7 @@ export default function ControlPanel({
       </div>
 
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto flex flex-col gap-8 pr-2 scrollbar-hide pb-10">
+      <div className="flex-1 overflow-y-auto flex flex-col gap-8 pr-1 scrollbar-hide pb-10">
         
         {/* Step 1: Model */}
         <section className="flex flex-col gap-3">
@@ -132,7 +132,7 @@ export default function ControlPanel({
           />
 
           {humanImage ? (
-            <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+            <div className="relative w-full h-32 rounded-[20px] overflow-hidden group shadow-sm">
               <img src={humanImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 backdrop-blur-sm">
                 <button
@@ -152,9 +152,9 @@ export default function ControlPanel({
           ) : (
             <button
               onClick={() => modelInputRef.current?.click()}
-              className="w-full h-32 rounded-[16px] border border-border/40 hover:border-foreground/30 bg-card/60 backdrop-blur-md shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 group cursor-pointer"
+              className="w-full h-32 rounded-[20px] border border-border/30 hover:border-foreground/30 bg-card/45 backdrop-blur-sm shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 group cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md flex items-center justify-center text-foreground/80 group-hover:text-primary transition-colors">
+              <div className="w-10 h-10 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-sm flex items-center justify-center text-foreground/80 group-hover:text-primary transition-colors">
                 <Upload className="w-4 h-4" />
               </div>
               <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground transition-colors">Tải ảnh người mẫu lên</span>
@@ -171,19 +171,19 @@ export default function ControlPanel({
             </h3>
           </div>
           
-          <div className="flex bg-card/60 backdrop-blur-md border border-border/40 shadow-sm rounded-[12px] p-1">
+          <div className="flex bg-card/40 backdrop-blur-sm border border-border/30 shadow-sm rounded-[16px] p-1">
             <button
               onClick={() => setTryOnMode("one-piece")}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
-                tryOnMode === "one-piece" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md text-foreground" : "text-foreground/80 hover:text-foreground"
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-[12px] transition-all ${
+                tryOnMode === "one-piece" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-sm text-foreground" : "text-foreground/80 hover:text-foreground"
               }`}
             >
               Đồ liền thân
             </button>
             <button
               onClick={() => setTryOnMode("combo")}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-[8px] transition-all ${
-                tryOnMode === "combo" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md text-foreground" : "text-foreground/80 hover:text-foreground"
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-[12px] transition-all ${
+                tryOnMode === "combo" ? "bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-sm text-foreground" : "text-foreground/80 hover:text-foreground"
               }`}
             >
               Áo + Quần
@@ -214,7 +214,7 @@ export default function ControlPanel({
 
           {tryOnMode === "one-piece" ? (
             clothImage ? (
-              <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+              <div className="relative w-full h-32 rounded-[20px] overflow-hidden group shadow-sm">
                 <img src={clothImage} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-3 transition-opacity duration-300 backdrop-blur-sm">
                   <button
@@ -232,8 +232,8 @@ export default function ControlPanel({
                 </div>
               </div>
             ) : (
-              <div className="bg-card/60 backdrop-blur-md rounded-[16px] border border-border/40 shadow-sm p-5 flex flex-col items-center justify-center gap-4 text-center">
-                <div className="w-12 h-12 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-md flex items-center justify-center text-foreground/80">
+              <div className="bg-card/45 backdrop-blur-sm rounded-[20px] border border-border/30 shadow-sm p-5 flex flex-col items-center justify-center gap-4 text-center">
+                <div className="w-12 h-12 rounded-full bg-background/50 border border-foreground/20 shadow-sm backdrop-blur-sm flex items-center justify-center text-foreground/80">
                   <Shirt className="w-5 h-5" />
                 </div>
                 <p className="text-xs font-medium text-foreground/80 max-w-[80%]">
@@ -252,7 +252,7 @@ export default function ControlPanel({
               {/* Top Image */}
               <div className="flex-1">
                 {clothImageTop ? (
-                  <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+                  <div className="relative w-full h-32 rounded-[20px] overflow-hidden group shadow-sm">
                     <img src={clothImageTop} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-300 backdrop-blur-sm">
                       <button
@@ -272,7 +272,7 @@ export default function ControlPanel({
                 ) : (
                   <button
                     onClick={() => topInputRef.current?.click()}
-                    className="w-full h-32 rounded-[16px] border border-border/40 hover:border-foreground/30 bg-card/60 backdrop-blur-md shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                    className="w-full h-32 rounded-[20px] border border-border/30 hover:border-foreground/30 bg-card/45 backdrop-blur-sm shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
                   >
                     <span className="text-xs font-medium text-foreground/80">Tải ảnh Áo</span>
                   </button>
@@ -282,7 +282,7 @@ export default function ControlPanel({
               {/* Bottom Image */}
               <div className="flex-1">
                 {clothImageBottom ? (
-                  <div className="relative w-full h-32 rounded-[16px] overflow-hidden group shadow-sm">
+                  <div className="relative w-full h-32 rounded-[20px] overflow-hidden group shadow-sm">
                     <img src={clothImageBottom} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-300 backdrop-blur-sm">
                       <button
@@ -302,7 +302,7 @@ export default function ControlPanel({
                 ) : (
                   <button
                     onClick={() => bottomInputRef.current?.click()}
-                    className="w-full h-32 rounded-[16px] border border-border/40 hover:border-foreground/30 bg-card/60 backdrop-blur-md shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
+                    className="w-full h-32 rounded-[20px] border border-border/30 hover:border-foreground/30 bg-card/45 backdrop-blur-sm shadow-sm flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer"
                   >
                     <span className="text-xs font-medium text-foreground/80">Tải ảnh Quần</span>
                   </button>
