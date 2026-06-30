@@ -293,7 +293,7 @@ export default function OutfitBuilderPage() {
         </div>
 
         {/* Panels with responsive wrappers */}
-        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[400px] relative`}>
+        <div className={`${activeTab === "controls" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[380px] lg:p-4 lg:pr-2 relative`}>
           <ControlPanel
             humanImage={humanImage}
             setHumanImage={setHumanImage}
@@ -311,7 +311,7 @@ export default function OutfitBuilderPage() {
           />
         </div>
 
-        <div className={`${activeTab === "canvas" ? "flex flex-1" : "hidden"} lg:flex lg:flex-1 lg:min-w-0 relative`}>
+        <div className={`${activeTab === "canvas" ? "flex flex-1" : "hidden"} lg:flex lg:flex-1 lg:min-w-0 lg:py-4 lg:px-2 relative`}>
           <TryOnCanvas
             isLoading={isLoading}
             error={error || tryOnError || ""}
@@ -324,7 +324,7 @@ export default function OutfitBuilderPage() {
           />
         </div>
 
-        <div className={`${activeTab === "report" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[400px] relative`}>
+        <div className={`${activeTab === "report" ? "flex flex-1" : "hidden"} lg:flex lg:flex-none lg:w-[380px] lg:p-4 lg:pl-2 relative`}>
           <AIStylistReport
             hasOutfit={!!clothImage}
             hasPhoto={!!humanImage}
