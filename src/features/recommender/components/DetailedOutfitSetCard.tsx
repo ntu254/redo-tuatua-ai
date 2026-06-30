@@ -229,6 +229,28 @@ const DetailedOutfitSetCard = ({ outfit, index }: DetailedOutfitSetCardProps) =>
               ))}
             </div>
           )}
+
+          {/* Resolved Rules */}
+          {outfit.resolvedRules && outfit.resolvedRules.length > 0 && (
+            <div className="mt-3.5 space-y-2 border-t border-border/20 pt-3">
+              <div className="flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  Quy tắc phối đồ áp dụng (Nguồn)
+                </span>
+              </div>
+              <ul className="space-y-1.5">
+                {outfit.resolvedRules.map((rule, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <span className="inline-block px-1.5 py-0.5 rounded text-[8px] bg-secondary border border-border/40 text-foreground shrink-0 uppercase tracking-wider font-semibold">
+                      {rule.concept_id}
+                    </span>
+                    <span className="leading-relaxed">{rule.rule_text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

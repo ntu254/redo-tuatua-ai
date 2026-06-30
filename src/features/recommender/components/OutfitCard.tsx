@@ -1,6 +1,6 @@
 import type { Outfit } from "@/features/recommender/types";
 import { motion } from "framer-motion";
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink, Info, Star } from "lucide-react";
 import { supabase } from "@/shared/lib";
 
 interface OutfitCardProps {
@@ -76,13 +76,37 @@ const OutfitCard = ({ outfit, index }: OutfitCardProps) => {
       </div>
 
       {/* AI Comment */}
-      <div className="bg-secondary/20 border border-border/30 rounded-xl p-4">
-        <p className="text-[10px] font-body font-bold text-muted-foreground/60 uppercase tracking-wider mb-1">
-          AI Note
-        </p>
-        <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed">
-          {outfit.aiComment}
-        </p>
+      <div className="bg-secondary/20 border border-border/30 rounded-xl p-4 space-y-3">
+        <div>
+          <p className="text-[10px] font-body font-bold text-muted-foreground/60 uppercase tracking-wider mb-1">
+            AI Note
+          </p>
+          <p className="text-xs md:text-sm font-body text-foreground/80 leading-relaxed">
+            {outfit.aiComment}
+          </p>
+        </div>
+
+        {/* Resolved Rules */}
+        {outfit.resolvedRules && outfit.resolvedRules.length > 0 && (
+          <div className="border-t border-border/20 pt-2.5">
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Info className="w-3 h-3 text-muted-foreground" />
+              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+                Quy tắc phối đồ áp dụng (Nguồn)
+              </span>
+            </div>
+            <ul className="space-y-1">
+              {outfit.resolvedRules.map((rule, idx) => (
+                <li key={idx} className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="inline-block px-1 py-0.5 rounded text-[8px] bg-secondary border border-border/40 text-foreground shrink-0 uppercase tracking-wider font-semibold">
+                    {rule.concept_id}
+                  </span>
+                  <span className="leading-relaxed">{rule.rule_text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Product List */}

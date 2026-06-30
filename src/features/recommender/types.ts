@@ -45,6 +45,7 @@ export interface Outfit {
   missingItems?: MissingItem[];
   personalization?: string[];
   aiConfidence?: { label: string; positive: boolean }[];
+  resolvedRules?: { concept_id: string; rule_type: string; priority: number; rule_text: string }[];
 }
 
 export type AIAction =

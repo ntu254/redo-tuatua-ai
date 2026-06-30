@@ -120,6 +120,91 @@ serve(async (req) => {
     const genderPreference = normalizeGender(gender) ?? effectiveProfileContext?.gender ?? null;
     const quizProfileContext = formatQuizProfileContext(effectiveProfileContext);
 
+    // Retrieve fashion rules from database related to user's prompt (RAG Knowledge Graph Rules)
+    let retrievedRules: any[] = [];
+    try {
+      const mentionedConcepts = new Set<string>();
+      
+      // Load all aliases to search for mentions
+      const { data: matchedAliases } = await supabase
+        .from("fashion_concept_aliases")
+        .select("concept_id, alias");
+      
+      if (matchedAliases) {
+        for (const ma of matchedAliases) {
+          const aliasLower = ma.alias.toLowerCase();
+          if (prompt.toLowerCase().includes(aliasLower)) {
+            mentionedConcepts.add(ma.concept_id);
+          }
+        }
+      }
+      
+      // Also check standard concept IDs or names in the message
+      const { data: allConcepts } = await supabase
+        .from("fashion_concepts")
+        .select("id, name");
+      if (allConcepts) {
+        for (const c of allConcepts) {
+          if (prompt.toLowerCase().includes(c.name.toLowerCase()) || prompt.toLowerCase().includes(c.id.toLowerCase())) {
+            mentionedConcepts.add(c.id);
+          }
+        }
+      }
+
+      if (mentionedConcepts.size > 0) {
+        // Query rules matching these concepts
+        const { data: rules } = await supabase
+          .from("fashion_styling_rules")
+          .select("id, concept_id, type, priority, payload")
+          .in("concept_id", Array.from(mentionedConcepts));
+        
+        if (rules) {
+          retrievedRules = rules;
+        }
+        
+        // Also look up related neighbors/concepts (relationships)
+        const { data: edges } = await supabase
+          .from("fashion_concept_edges")
+          .select("source_id, target_id, relation, weight")
+          .or(`source_id.in.(${Array.from(mentionedConcepts).map(c => `"${c}"`).join(',')}),target_id.in.(${Array.from(mentionedConcepts).map(c => `"${c}"`).join(',')})`);
+        
+        // Add neighbor concepts rules too
+        const neighborConcepts = new Set<string>();
+        if (edges) {
+          for (const edge of edges) {
+            neighborConcepts.add(edge.source_id);
+            neighborConcepts.add(edge.target_id);
+          }
+        }
+        
+        // Remove original concepts to avoid duplicates
+        for (const c of mentionedConcepts) {
+          neighborConcepts.delete(c);
+        }
+        
+        if (neighborConcepts.size > 0) {
+          const { data: neighborRules } = await supabase
+            .from("fashion_styling_rules")
+            .select("id, concept_id, type, priority, payload")
+            .in("concept_id", Array.from(neighborConcepts));
+          if (neighborRules) {
+            retrievedRules = [...retrievedRules, ...neighborRules];
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Knowledge rule retrieval failed:", err);
+    }
+
+    const rulesContext = retrievedRules.map((r) => {
+      let logic = "";
+      if (r.payload && typeof r.payload === "object") {
+        logic = r.payload.rule || JSON.stringify(r.payload);
+      }
+      return `- Concept: ${r.concept_id} (Rule Type: ${r.type}, Priority: ${r.priority})
+  Logic: ${logic}`;
+    }).join("\n\n");
+
     // 1. RAG: Retrieve similar products from database using vector search
     let retrievedProducts: any[] = [];
     try {
@@ -150,7 +235,10 @@ serve(async (req) => {
   AffiliateUrl: ${p.affiliate_url || ""}`;
     }).join("\n\n");
 
-    const systemPrompt = `Tạo các outfits thời trang phù hợp từ kho sản phẩm thật được cung cấp dưới đây.
+    const systemPrompt = `Tạo các outfits thời trang phù hợp từ kho sản phẩm thật được cung cấp dưới đây và tuân thủ chặt chẽ các quy tắc thời trang được áp dụng.
+
+QUY TẮC THỜI TRANG ĐƯỢC ÁP DỤNG (BẮT BUỘC tuân thủ):
+${rulesContext || "Không có quy tắc đặc thù nào khác. Hãy sử dụng các nguyên tắc thời trang cơ bản."}
 
 KHO SẢN PHẨM THẬT (CHỈ chọn sản phẩm từ danh sách này):
 ${productsContext || "Không tìm thấy sản phẩm phù hợp trong kho. Bạn hãy tự tạo các sản phẩm thời trang giả lập phù hợp và gắn link affiliate mặc định."}
@@ -206,7 +294,19 @@ ${quizProfileContext}`;
       return await generateJson<any[]>(userPrompt, systemPrompt);
     });
 
-    return new Response(JSON.stringify(outfits.slice(0, 4)), {
+    const ruleDetails = retrievedRules.map(r => ({
+      concept_id: r.concept_id,
+      rule_type: r.type,
+      priority: Number(r.priority),
+      rule_text: r.payload?.rule || JSON.stringify(r.payload)
+    }));
+
+    const finalOutfits = outfits.slice(0, 4).map(o => ({
+      ...o,
+      resolvedRules: ruleDetails
+    }));
+
+    return new Response(JSON.stringify(finalOutfits), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
