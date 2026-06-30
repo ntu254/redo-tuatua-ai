@@ -284,7 +284,7 @@ Trả JSON array:
   "aiConfidence": [{"label": "yếu tố phù hợp", "positive": true}]
 }]
 
-Lưu ý: Nếu có KHO SẢN PHẨM THẬT, bạn MUST sử dụng các sản phẩm trong đó để xây dựng outfit. Cung cấp đúng ID, Image, và AffiliateUrl của sản phẩm đó để hiển thị chính xác lên giao diện.`;
+Lưu ý: Nếu có KHO SẢN PHẨM THẬT, bạn MUST sử dụng các sản phẩm trong đó để xây dựng outfit. Cung cấp đúng ID, Image, và AffiliateUrl của sản phẩm đó để hiển thị chính xác lên giao diện. Trả về từ 3 đến 5 outfits.`;
 
     const userPrompt = `Prompt: "${prompt}"${style ? `\nStyle từ UI: ${style}` : ""}${season ? `\nSeason từ UI: ${season}` : ""}${occasion ? `\nOccasion từ UI: ${occasion}` : ""}
 Profile quiz context:
@@ -301,7 +301,7 @@ ${quizProfileContext}`;
       rule_text: r.payload?.rule || JSON.stringify(r.payload)
     }));
 
-    const finalOutfits = outfits.slice(0, 4).map(o => ({
+    const finalOutfits = outfits.slice(0, 5).map(o => ({
       ...o,
       resolvedRules: ruleDetails
     }));

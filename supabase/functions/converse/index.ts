@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { generateJson } from "../_shared/gemini.ts";
@@ -287,7 +288,7 @@ Trả về JSON theo định dạng sau:
 
 Lưu ý quan trọng:
 1. Nếu có KHO SẢN PHẨM THẬT, bạn MUST sử dụng các sản phẩm trong đó để xây dựng outfit. Cung cấp đúng ID, Image, và AffiliateUrl của sản phẩm đó để hiển thị chính xác lên giao diện.
-2. Trả về từ 2 đến 4 outfits.
+2. Trả về từ 3 đến 5 outfits.
 3. Câu trả lời và mô tả viết hoàn toàn bằng tiếng Việt tự nhiên, thân thiện.`;
 
     const userPrompt = `Tin nhắn user: "${message}"

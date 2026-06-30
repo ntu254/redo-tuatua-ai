@@ -192,29 +192,35 @@ async function fallbackConverse(prompt: string, gender?: string | null): Promise
     return lower.split(" ").some((w) => w.length > 2 && text.includes(w));
   });
 
-  const used = matched.length >= 2 ? matched.slice(0, 3) : products.slice(0, 3);
-  const total = used.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+  const pool = matched.length >= 3 ? matched : products;
+  const groups: Outfit[] = [];
 
-  const outfit: Outfit = {
-    id: Date.now(),
-    title: prompt.slice(0, 40) || "Gợi ý từ AI",
-    emoji: "✨",
-    image: used[0]?.image || pickFallbackImage(String(Date.now())),
-    style: "Casual",
-    styleTags: ["Casual", "AI"],
-    aiMatch: true,
-    aiComment: `Phối đồ phù hợp với yêu cầu "${prompt}". Tổng cộng ${total.toLocaleString("vi-VN")}đ.`,
-    totalPrice: `${total.toLocaleString("vi-VN")}đ`,
-    products: used,
-    matchScore: 88,
-    season: "all_year",
-    occasion: "casual",
-    mood: "Phù hợp",
-  };
+  for (let i = 0; i < Math.min(pool.length, 9); i += 3) {
+    const chunk = pool.slice(i, i + 3);
+    if (chunk.length === 0) break;
+    const total = chunk.reduce((s, p) => s + Number(p.price.replace(/[^\d]/g, "")), 0);
+    const idx = groups.length;
+    groups.push({
+      id: Date.now() + idx,
+      title: `${prompt.slice(0, 30) || "Gợi ý"} - Set ${idx + 1}`,
+      emoji: ["✨", "🔥", "💡"][idx] || "✨",
+      image: chunk[0]?.image || pickFallbackImage(String(idx)),
+      style: "Casual",
+      styleTags: ["Casual", "AI"],
+      aiMatch: true,
+      aiComment: `Phối đồ phù hợp với yêu cầu "${prompt}". Tổng cộng ${total.toLocaleString("vi-VN")}đ.`,
+      totalPrice: `${total.toLocaleString("vi-VN")}đ`,
+      products: chunk,
+      matchScore: 85 + Math.floor(Math.random() * 10),
+      season: "all_year",
+      occasion: "casual",
+      mood: "Phù hợp",
+    });
+  }
 
   return {
-    reply: `Đây là gợi ý outfit cho bạn! ${outfit.title}`,
-    outfits: addRuntimeFields([outfit]),
+    reply: `Đây là các gợi ý outfit phù hợp cho yêu cầu của bạn!`,
+    outfits: addRuntimeFields(groups),
     suggestions: [
       { label: "Thoải mái hơn", prompt: "Làm outfit này thoải mái hơn" },
       { label: "Rẻ hơn", prompt: "Outfit tương tự dưới 1 triệu" },
